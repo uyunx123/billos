@@ -1,5 +1,20 @@
-# Cloudflare Pages — SPA fallback
-# Serve index.html for every route so client-side routing (React Router) works
-# on deep links and hard refreshes. The `200` status makes this a rewrite,
-# not a redirect, so the address bar keeps the original path.
-/*    /index.html   200
+# Cloudflare Pages / Workers — SPA fallback
+#
+# NOTE: the old catch-all rewrite `/*  /index.html  200` is intentionally
+# removed. Cloudflare Workers static assets rejects it as an infinite loop
+# (error code 100324): `/index.html` matches the `/*` glob, so the rewrite
+# re-triggers on itself.
+#
+# Handle the SPA fallback the supported way instead:
+#
+#   • Cloudflare Workers (wrangler.toml):
+#       [assets]
+#       directory = "dist"
+#       binding   = "ASSETS"
+#       not_found_handling = "single-page-application"
+#
+#   • Cloudflare Pages: re-add the line below (Pages serves real files first,
+#     so it does NOT loop there):
+#       /*  /index.html  200
+#
+# Keep additional explicit redirects (non-catch-all) below this header.
