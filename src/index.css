@@ -1,0 +1,387 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-heading: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* Royal blue scale — dominant brand hue, tuned for deep-navy surfaces (bright tints 300/400 for dark-bg text) */
+  --color-primary-50: oklch(0.965 0.02 258);
+  --color-primary-100: oklch(0.9 0.045 258);
+  --color-primary-200: oklch(0.838 0.07 258);
+  --color-primary-300: oklch(0.76 0.095 260);
+  --color-primary-400: oklch(0.68 0.12 259);
+  --color-primary-500: oklch(0.6 0.135 257);
+  --color-primary-600: oklch(0.5 0.13 256);
+  --color-primary-700: oklch(0.42 0.115 254);
+  --color-primary-800: oklch(0.34 0.095 253);
+  --color-primary-900: oklch(0.28 0.075 252);
+  --color-primary-950: oklch(0.21 0.06 251);
+  --color-primary: var(--color-primary-600);
+  --color-primary-strong: var(--color-primary-500);
+  --color-on-primary: oklch(0.985 0.004 95);
+
+  /* Accent blue scale — electric azure glow for dark glass (token names kept as gold-* for compatibility) */
+  --color-gold-100: oklch(0.958 0.016 250);
+  --color-gold-200: oklch(0.92 0.038 248);
+  --color-gold-300: oklch(0.872 0.075 246);
+  --color-gold-400: oklch(0.8 0.108 245);
+  --color-gold-500: oklch(0.715 0.13 245);
+  --color-gold-600: oklch(0.62 0.13 248);
+  --color-gold-700: oklch(0.53 0.12 252);
+  --color-accent: var(--color-gold-500);
+  --color-accent-soft: oklch(0.86 0.06 246);
+  /* Marketplace accents — Shopee & Tokopedia design language */
+  --color-shopee: oklch(0.7 0.19 32);
+  --color-tokopedia: oklch(0.66 0.16 151);
+
+  --color-secondary: oklch(0.64 0.12 243);
+
+  /* Deep navy luxury surfaces — blue-tinted charcoal (hue ~262) */
+  --color-background: oklch(0.16 0.012 262);
+  --color-surface: oklch(0.21 0.018 263);
+  --color-surface-2: oklch(0.26 0.022 264);
+  --color-foreground: oklch(0.955 0.014 252);
+  --color-muted: oklch(0.72 0.02 253);
+  --color-border: oklch(0.33 0.024 264);
+  --color-destructive: oklch(0.62 0.21 25);
+  --color-ring: var(--color-gold-400);
+
+  --shadow-soft: 0 16px 40px -20px rgb(0 0 0 / 0.55);
+  --shadow-lift: 0 34px 60px -28px rgb(0 0 0 / 0.65);
+  --shadow-gold: 0 14px 30px -10px oklch(0.7 0.13 245 / 0.5); /* azure glow (was gold) */
+  --shadow-green: 0 14px 30px -12px oklch(0.55 0.14 256 / 0.45); /* royal blue (was felt green) */
+
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 11s ease-in-out infinite;
+  --animate-marquee: marquee 34s linear infinite;
+  --animate-glow-pulse: glow-pulse 2.6s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 14px 30px -10px oklch(0.7 0.13 245 / 0.4);
+    }
+    50% {
+      box-shadow: 0 18px 44px -8px oklch(0.7 0.13 245 / 0.85);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Kill the grey tap flash on iOS/Android + 300ms ghost taps */
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    /* Decorative glow blobs are absolutely positioned; keep them from
+       creating a horizontal scrollbar on small screens */
+    overflow-x: clip;
+  }
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-gold-400) 38%, transparent);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-gold-400) 30%, var(--color-surface-2));
+    border-radius: 999px;
+    border: 2px solid var(--color-background);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-150 ease-out cursor-pointer select-none;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Primary — deep felt-green with a soft green glow */
+  .btn-primary {
+    color: var(--color-on-primary);
+    padding: 0.8rem 1.6rem;
+    background-image: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
+    box-shadow: var(--shadow-green);
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.12);
+    box-shadow: 0 18px 34px -12px oklch(0.55 0.14 256 / 0.6);
+  }
+
+  /* Accent — luminous gold with deep-ink text */
+  .btn-accent {
+    color: oklch(0.19 0.05 258);
+    padding: 0.8rem 1.6rem;
+    background-image: linear-gradient(135deg, var(--color-gold-300), var(--color-gold-500));
+    box-shadow: var(--shadow-gold);
+  }
+  .btn-accent:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+  }
+
+  /* Outline — glass button for dark surfaces */
+  .btn-outline {
+    @apply border border-primary-300/30 bg-primary-300/5 px-5 py-3 text-primary-200 backdrop-blur-sm hover:border-primary-200 hover:bg-primary-300/10 hover:text-primary-100;
+  }
+  /* Translucent ivory outline for hero-on-dark moments */
+  .btn-on-dark {
+    @apply border-2 border-on-primary/30 px-5 py-3 text-on-primary hover:border-accent-soft hover:text-accent-soft;
+  }
+  .btn-ghost {
+    @apply px-3 py-2 text-foreground/60 hover:text-gold-300;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] text-foreground shadow-inner placeholder:text-foreground/35 transition-all duration-150;
+  }
+  .input:focus {
+    @apply border-gold-400 ring-2 ring-gold-400/20;
+  }
+  .input-dark {
+    @apply w-full rounded-xl border border-on-primary/25 bg-black/40 px-4 py-3 text-[15px] text-on-primary transition-all duration-150 placeholder:text-on-primary/50;
+  }
+  .input-dark:focus {
+    outline: 2px solid var(--color-accent-soft);
+    border-color: transparent;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-semibold text-foreground/80;
+  }
+
+  .chip {
+    @apply inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-white/5 px-3.5 py-2 text-sm font-semibold text-foreground/70 transition-all duration-150;
+  }
+  .chip:hover {
+    @apply border-primary-300 text-primary-200;
+  }
+  .chip-active {
+    @apply border-primary bg-primary text-on-primary shadow-green;
+  }
+
+  /* Card — dark glass surface */
+  .card {
+    @apply rounded-3xl border border-white/10 bg-surface shadow-soft;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-gold-300;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply h-px w-6 bg-gradient-to-r from-transparent via-gold-500 to-gold-500;
+  }
+  .eyebrow-on-dark {
+    @apply inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-gold-300;
+  }
+  .eyebrow-on-dark::after {
+    content: "";
+    @apply h-px w-6 bg-gradient-to-r from-gold-500 to-transparent;
+  }
+
+  .section-title {
+    @apply text-balance font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl;
+  }
+  .section-lead {
+    @apply mt-2 text-sm text-foreground/60 sm:text-base;
+  }
+
+  /* Dark glass */
+  .glass {
+    @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+  }
+  .glass-strong {
+    @apply border border-white/12 bg-surface-2/80 backdrop-blur-2xl;
+  }
+  .dot-grid {
+    background-image: radial-gradient(circle, oklch(1 0 0 / 0.08) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .nav-grid {
+    background-image:
+      linear-gradient(to right, oklch(1 0 0 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(1 0 0 / 0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .text-gradient-gold {
+    background-image: linear-gradient(120deg, var(--color-gold-200), var(--color-gold-400) 55%, var(--color-gold-600));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-deep {
+    background-image: linear-gradient(120deg, var(--color-primary-300), var(--color-gold-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-glow-gold {
+    text-shadow: 0 0 28px oklch(0.78 0.1 245 / 0.45);
+  }
+
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.3rem;
+    height: 2px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-gold-300), var(--color-gold-500));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms ease;
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    transform: scaleX(1);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lift on hover for cards — gated behind hover-capable pointer to avoid sticky hovers on touch */
+.lift {
+  transition:
+    transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 250ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in oklab, var(--color-gold-400) 35%, transparent);
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Print — receipts only: hide the page furniture, render the sheet as a
+   clean white document that browsers save to PDF cleanly. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .receipt-sheet {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+  }
+  .receipt-sheet * {
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    background: transparent !important;
+  }
+  .receipt-sheet img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    background: #ffffff !important;
+  }
+}
+
+/* Leaflet delivery-pin (divIcon) */
+.isak-pin {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-800));
+  border: 2px solid #fff;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 0.4);
+}
+.isak-pin::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-gold-200), var(--color-gold-500));
+}
+.leaflet-container {
+  font-family: var(--font-sans), sans-serif;
+}

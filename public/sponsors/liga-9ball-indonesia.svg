@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 96" role="img" aria-label="Liga 9-Ball Indonesia">
+  <circle cx="36" cy="48" r="28" fill="#f4f5f7" stroke="#1e2130" stroke-width="3"/>
+  <text x="36" y="57" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#b9891f" text-anchor="middle">9</text>
+  <text x="178" y="48" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" fill="#17131f" letter-spacing="2" text-anchor="middle">LIGA 9-BALL</text>
+  <text x="178" y="70" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#b9891f" letter-spacing="5" text-anchor="middle">INDONESIA</text>
+</svg>

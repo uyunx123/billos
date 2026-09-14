@@ -1,0 +1,5 @@
+# Cloudflare Pages — SPA fallback
+# Serve index.html for every route so client-side routing (React Router) works
+# on deep links and hard refreshes. The `200` status makes this a rewrite,
+# not a redirect, so the address bar keeps the original path.
+/*    /index.html   200

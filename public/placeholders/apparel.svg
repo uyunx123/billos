@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2c6e4f"/><stop offset="1" stop-color="#123627"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="480" fill="url(#g)"/>
+  <path d="M150 190 h180 v120 c0 28 -22 50 -50 50 h-80 c-28 0 -50 -22 -50 -50 v-120 z" fill="#f4f1e6"/>
+  <path d="M150 200 v110 c0 28 22 50 50 50" fill="none" stroke="#c9b98f" stroke-width="6"/>
+  <path d="M258 70 h60 c20 0 32 16 32 36 v150 h-92" fill="none" stroke="#f4f1e6" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="330" cy="120" r="16" fill="#2e86c1"/>
+  <text x="240" y="404" fill="#f4f8f4" font-family="Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">Apparel</text>
+  <text x="240" y="432" fill="#b9d0c4" font-family="Arial, sans-serif" font-size="15" text-anchor="middle">Billiards Store sample</text>
+</svg>

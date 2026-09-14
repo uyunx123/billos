@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /orders
+
+Sitemap: https://billiards-online-shop.nativelyai.app/sitemap.xml
