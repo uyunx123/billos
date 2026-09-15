@@ -489,11 +489,12 @@ export default function CheckoutPage() {
               const p = products.find((prod) => prod.id === l.productId);
               if (!p) return null;
               return (
-                <li key={l.productId} className="flex justify-between gap-3">
-                  <span className="text-foreground/70">
-                    {p.name} × {l.qty}
+                <li key={l.productId} className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 break-words text-foreground/70">
+                    {p.name}
+                    <span className="whitespace-nowrap"> × {l.qty}</span>
                     {p.freeShipping && (
-                      <span className="ml-1.5 inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary-400 align-middle">
+                      <span className="ml-1.5 inline-flex shrink-0 items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 align-middle text-[10px] font-bold text-primary-400">
                         <Truck className="h-2.5 w-2.5" aria-hidden="true" /> free ship
                       </span>
                     )}
