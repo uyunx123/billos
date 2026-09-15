@@ -7,6 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f9fafc" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Canonical + language alternates (absolute URLs for crawl consistency) -->
+    <link rel="canonical" href="https://billiards-online-shop.nativelyai.app/" />
+    <link rel="alternate" hreflang="en" href="https://billiards-online-shop.nativelyai.app/" />
+    <link rel="alternate" hreflang="id" href="https://billiards-online-shop.nativelyai.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://billiards-online-shop.nativelyai.app/" />
+
+    <!-- Font preconnects (parallel DNS + TLS before CSS @import resolves) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <meta name="author" content="ISAK Billiard Co." />
     <meta
       name="description"
@@ -23,8 +33,9 @@
       property="og:description"
       content="Tournament cues, tables, balls and gear from Jakarta — order here or via our Shopee &amp; Tokopedia official stores, with live tracking on every order."
     />
-    <meta property="og:url" content="/" />
-    <meta property="og:image" content="/logo.svg" />
+    <meta property="og:url" content="https://billiards-online-shop.nativelyai.app/" />
+    <meta property="og:image" content="https://billiards-online-shop.nativelyai.app/logo.svg" />
+    <meta property="og:image:alt" content="ISAK Billiard Co. logo" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -33,17 +44,22 @@
       name="twitter:description"
       content="Tournament cues, tables, balls and gear from Jakarta — order here or via our Shopee &amp; Tokopedia official stores."
     />
-    <meta name="twitter:image" content="/logo.svg" />
+    <meta name="twitter:image" content="https://billiards-online-shop.nativelyai.app/logo.svg" />
 
-    <!-- Structured data: organization + website -->
+    <!-- Structured data: organization (with social profiles) + website (with search action) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "ISAK Billiard Co.",
-        "url": "/",
-        "logo": "/logo.svg",
+        "url": "https://billiards-online-shop.nativelyai.app/",
+        "logo": "https://billiards-online-shop.nativelyai.app/logo.svg",
         "description": "Official store for billiard cues, tables, balls and player gear from Jakarta, Indonesia.",
+        "sameAs": [
+          "https://instagram.com/isakbilliard",
+          "https://facebook.com/isakbilliard",
+          "https://www.youtube.com/"
+        ],
         "contactPoint": {
           "@type": "ContactPoint",
           "telephone": "+62-819-6567-8901",
@@ -57,9 +73,17 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "ISAK Billiard Co.",
-        "url": "/",
+        "url": "https://billiards-online-shop.nativelyai.app/",
         "inLanguage": "en-ID",
-        "description": "Official store for billiard cues, tables, balls and player gear — order online with live tracking."
+        "description": "Official store for billiard cues, tables, balls and player gear — order online with live tracking.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://billiards-online-shop.nativelyai.app/shop?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
       }
     </script>
   </head>

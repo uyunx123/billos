@@ -1,0 +1,8 @@
+# Security contact and disclosure policy for ISAK Billiard Co.
+# See https://securitytxt.org/ for the specification.
+
+Contact: mailto:hallo@isakbilliard.co.id
+Contact: https://billiards-online-shop.nativelyai.app/contact
+Preferred-Languages: en, id
+Canonical: https://billiards-online-shop.nativelyai.app/.well-known/security.txt
+Expires: 2026-12-31T23:59:59.000Z

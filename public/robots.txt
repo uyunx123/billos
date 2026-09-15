@@ -3,5 +3,8 @@ Allow: /
 Disallow: /admin
 Disallow: /checkout
 Disallow: /orders
+Disallow: /receipt
+Disallow: /profile
+Disallow: /gateway
 
 Sitemap: https://billiards-online-shop.nativelyai.app/sitemap.xml

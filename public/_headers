@@ -1,5 +1,35 @@
-# Cloudflare Pages — security headers
-/*
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: SAMEORIGIN
-  Referrer-Policy: strict-origin-when-cross-origin
+# Cloudflare Pages — hardened security headers
+#
+# Policy notes (for QA verification):
+# • CSP script-src 'self' — the build emits zero inline executable scripts
+#   (the JSON-LD <script type="application/ld+json"> blocks in index.html are
+#   data-only, NOT executable, so they are exempt from script-src per the CSP3
+#   spec — no 'unsafe-inline' or nonce needed).
+# • style-src 'unsafe-inline' is required: React sets style="" attributes
+#   across the app (CSP treats inline style attributes as inline styles).
+# • fonts: stylesheet fetched from fonts.googleapis.com (style-src), woff2
+#   files from fonts.gstatic.com (font-src). App remains fully functional with
+#   system-font fallback if the CDN is unreachable.
+# • img-src allows Supabase storage (product/category/blog images) and
+#   OpenStreetMap vector tiles (AddressMapPicker). data:/blob: keep inline
+#   SVG icons working.
+# • connect-src allows Supabase edge functions (create-payment, manage-gateway
+#   — Midtrans key stays server-side) and nominatim reverse geocoding.
+# • frame-src only privacy-friendly YouTube + Vimeo embeds (VideoEmbed).
+# • frame-ancestors 'self' + X-Frame-Options SAMEORIGIN block cross-origin
+#   clickjacking while allowing same-origin embedding (platform preview shell).
+# • Permissions-Policy keeps geolocation=(self) — AddressMapPicker's "use my
+#   location" button needs it; camera/microphone/payment/usb are denied.
+# • COOP same-origin + CORP same-origin isolate this origin from cross-origin
+#   windows (payment flow is a full-page redirect, no popup — safe).
+# • upgrade-insecure-requests is a no-op on HTTPS (Cloudflare Pages is HTTPS).
+
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Permitted-Cross-Domain-Policies: none
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=(), usb=(), interest-cohort=(), autoplay=(self), fullscreen=(self)
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://*.tile.openstreetmap.org; connect-src 'self' https://*.supabase.co https://nominatim.openstreetmap.org; frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
