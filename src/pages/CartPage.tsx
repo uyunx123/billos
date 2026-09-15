@@ -134,17 +134,19 @@ export default function CartPage() {
                       )}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                     <QuantityStepper value={line.qty} onChange={(n) => setQty(product.id, n)} max={product.stock || 99} />
-                    <p className="w-24 text-right font-heading text-base font-bold">{formatIDR(product.price * line.qty)}</p>
-                    <button
-                      type="button"
-                      className="btn btn-ghost !px-2 text-destructive"
-                      aria-label={`Remove ${product.name} from cart`}
-                      onClick={() => removeItem(product.id)}
-                    >
-                      <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    </button>
+                    <div className="flex items-center justify-between gap-3 sm:justify-start">
+                      <p className="w-24 text-right font-heading text-base font-bold sm:w-auto">{formatIDR(product.price * line.qty)}</p>
+                      <button
+                        type="button"
+                        className="btn btn-ghost !px-2 text-destructive"
+                        aria-label={`Remove ${product.name} from cart`}
+                        onClick={() => removeItem(product.id)}
+                      >
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>
