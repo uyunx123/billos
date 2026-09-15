@@ -101,9 +101,9 @@ export default function ShopPage() {
       </div>
 
       {/* Filters */}
-      <div className="sticky top-16 z-20 -mx-4 mb-8 border-b border-border/80 bg-background/90 px-4 py-3 shadow-[0_10px_24px_-20px_oklch(0.24_0.05_150/0.5)] backdrop-blur-xl sm:top-[4.5rem] sm:-mx-6 sm:px-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="relative w-full max-w-sm">
+      <div className="sticky top-16 z-30 -mx-4 mb-8 border-b border-border/80 bg-background/90 px-4 py-2.5 shadow-[0_10px_40px_-20px_oklch(0.24_0.05_150/0.5)] backdrop-blur-xl sm:top-[4.5rem] sm:-mx-6 sm:px-6 sm:py-3">
+        <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+          <div className="relative w-full lg:max-w-sm">
             <label htmlFor="shop-search" className="sr-only">
               Search products
             </label>
@@ -120,7 +120,7 @@ export default function ShopPage() {
               className="input !pl-10"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 lg:flex">
             <label htmlFor="sort" className="whitespace-nowrap text-sm font-semibold text-foreground/60">
               Sort by
             </label>
@@ -137,24 +137,44 @@ export default function ShopPage() {
             </select>
           </div>
         </div>
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter by category">
-          <button
-            type="button"
-            className={`chip ${activeCatId === "all" ? "chip-active" : ""}`}
-            onClick={() => updateParam("category", "all")}
-          >
-            All
-          </button>
-          {enabledCategories.map((c) => (
+        {/* Category chips scroll horizontally; a compact sort control sits at the end on mobile */}
+        <div className="mt-1 flex items-center gap-1.5 lg:mt-3">
+          <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-0.5" role="group" aria-label="Filter by category">
             <button
-              key={c.id}
               type="button"
-              className={`chip whitespace-nowrap ${activeCatId === c.id ? "chip-active" : ""}`}
-              onClick={() => updateParam("category", c.id)}
+              className={`chip shrink-0 ${activeCatId === "all" ? "chip-active" : ""}`}
+              onClick={() => updateParam("category", "all")}
             >
-              {c.name}
+              All
             </button>
-          ))}
+            {enabledCategories.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={`chip shrink-0 whitespace-nowrap ${activeCatId === c.id ? "chip-active" : ""}`}
+                onClick={() => updateParam("category", c.id)}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+          <div className="shrink-0 lg:hidden">
+            <label htmlFor="sort-mobile" className="sr-only">
+              Sort products
+            </label>
+            <select
+              id="sort-mobile"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+              aria-label="Sort products"
+              className="input !w-auto !px-2.5 !py-1.5 text-xs"
+            >
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="rating">Top rated</option>
+            </select>
+          </div>
         </div>
       </div>
 
