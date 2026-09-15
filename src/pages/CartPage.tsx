@@ -95,8 +95,8 @@ export default function CartPage() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-        <ul className="space-y-4">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <ul className="min-w-0 space-y-4">
           {lines.map((line) => {
             const product = products.find((p) => p.id === line.productId);
             if (!product) return null;
