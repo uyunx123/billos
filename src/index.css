@@ -5,52 +5,52 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-heading: "Playfair Display", ui-serif, Georgia, serif;
 
-  /* Royal blue scale — dominant brand hue, tuned for deep-navy surfaces (bright tints 300/400 for dark-bg text) */
-  --color-primary-50: oklch(0.965 0.02 258);
-  --color-primary-100: oklch(0.9 0.045 258);
-  --color-primary-200: oklch(0.838 0.07 258);
-  --color-primary-300: oklch(0.76 0.095 260);
-  --color-primary-400: oklch(0.68 0.12 259);
-  --color-primary-500: oklch(0.6 0.135 257);
-  --color-primary-600: oklch(0.5 0.13 256);
-  --color-primary-700: oklch(0.42 0.115 254);
-  --color-primary-800: oklch(0.34 0.095 253);
-  --color-primary-900: oklch(0.28 0.075 252);
-  --color-primary-950: oklch(0.21 0.06 251);
+  /* Felt green scale — the house hue: rich billiard table, from soft sage (tints for deep-bg text) to dark table green */
+  --color-primary-50: oklch(0.985 0.008 152);
+  --color-primary-100: oklch(0.955 0.015 153);
+  --color-primary-200: oklch(0.895 0.052 154);
+  --color-primary-300: oklch(0.835 0.07 154);
+  --color-primary-400: oklch(0.765 0.088 155);
+  --color-primary-500: oklch(0.695 0.098 155);
+  --color-primary-600: oklch(0.6 0.094 155);
+  --color-primary-700: oklch(0.52 0.09 155);
+  --color-primary-800: oklch(0.44 0.086 155);
+  --color-primary-900: oklch(0.365 0.078 156);
+  --color-primary-950: oklch(0.29 0.068 156);
   --color-primary: var(--color-primary-600);
   --color-primary-strong: var(--color-primary-500);
-  --color-on-primary: oklch(0.985 0.004 95);
+  --color-on-primary: oklch(0.985 0.002 90);
 
-  /* Accent blue scale — electric azure glow for dark glass (token names kept as gold-* for compatibility) */
-  --color-gold-100: oklch(0.958 0.016 250);
-  --color-gold-200: oklch(0.92 0.038 248);
-  --color-gold-300: oklch(0.872 0.075 246);
-  --color-gold-400: oklch(0.8 0.108 245);
-  --color-gold-500: oklch(0.715 0.13 245);
-  --color-gold-600: oklch(0.62 0.13 248);
-  --color-gold-700: oklch(0.53 0.12 252);
+  /* Gold scale — classic trophy gold for accent moments (eyebrows, badges, glows) */
+  --color-gold-100: oklch(0.966 0.024 87);
+  --color-gold-200: oklch(0.932 0.042 87);
+  --color-gold-300: oklch(0.883 0.06 87);
+  --color-gold-400: oklch(0.83 0.074 87);
+  --color-gold-500: oklch(0.768 0.088 87);
+  --color-gold-600: oklch(0.7 0.1 88);
+  --color-gold-700: oklch(0.615 0.104 88);
   --color-accent: var(--color-gold-500);
-  --color-accent-soft: oklch(0.86 0.06 246);
+  --color-accent-soft: oklch(0.885 0.06 87);
   /* Marketplace accents — Shopee & Tokopedia design language */
   --color-shopee: oklch(0.7 0.19 32);
   --color-tokopedia: oklch(0.66 0.16 151);
 
-  --color-secondary: oklch(0.64 0.12 243);
+  --color-secondary: oklch(0.62 0.09 160);
 
-  /* Bright, airy light surfaces — cool off-white with a faint blue cast (hue ~255) */
-  --color-background: oklch(0.982 0.004 255);
-  --color-surface: oklch(0.968 0.007 254);
-  --color-surface-2: oklch(0.935 0.011 254);
-  --color-foreground: oklch(0.24 0.02 258);
-  --color-muted: oklch(0.46 0.02 255);
-  --color-border: oklch(0.885 0.01 253);
+  /* Warm ivory surfaces — tablecloth brightness with a soft green-gold cast */
+  --color-background: oklch(0.987 0.008 92);
+  --color-surface: oklch(0.971 0.006 90);
+  --color-surface-2: oklch(0.94 0.008 90);
+  --color-foreground: oklch(0.235 0.012 93);
+  --color-muted: oklch(0.465 0.02 92);
+  --color-border: oklch(0.885 0.005 90);
   --color-destructive: oklch(0.52 0.2 27);
   --color-ring: var(--color-gold-500);
 
   --shadow-soft: 0 16px 40px -20px rgb(15 23 42 / 0.22);
   --shadow-lift: 0 34px 60px -28px rgb(15 23 42 / 0.26);
-  --shadow-gold: 0 14px 30px -10px oklch(0.62 0.13 248 / 0.35); /* azure glow (was gold) */
-  --shadow-green: 0 14px 30px -12px oklch(0.5 0.13 256 / 0.3); /* royal blue (was felt green) */
+  --shadow-gold: 0 14px 30px -10px oklch(0.7 0.1 87 / 0.35); /* gold glow */
+  --shadow-green: 0 14px 30px -12px oklch(0.55 0.095 155 / 0.4); /* felt-green glow */
 
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-float: float 7s ease-in-out infinite;
@@ -88,10 +88,10 @@
   @keyframes glow-pulse {
     0%,
     100% {
-      box-shadow: 0 14px 30px -10px oklch(0.7 0.13 245 / 0.4);
+      box-shadow: 0 14px 30px -10px oklch(0.7 0.1 87 / 0.4);
     }
     50% {
-      box-shadow: 0 18px 44px -8px oklch(0.7 0.13 245 / 0.85);
+      box-shadow: 0 18px 44px -8px oklch(0.7 0.1 87 / 0.85);
     }
   }
 }
@@ -149,12 +149,12 @@
   .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
     filter: brightness(1.12);
-    box-shadow: 0 18px 34px -12px oklch(0.55 0.14 256 / 0.6);
+    box-shadow: 0 18px 34px -12px oklch(0.56 0.1 155 / 0.55);
   }
 
   /* Accent — luminous gold with deep-ink text */
   .btn-accent {
-    color: oklch(0.19 0.05 258);
+    color: oklch(0.19 0.028 85);
     padding: 0.8rem 1.6rem;
     background-image: linear-gradient(135deg, var(--color-gold-300), var(--color-gold-500));
     box-shadow: var(--shadow-gold);
@@ -239,13 +239,13 @@
     @apply border border-border bg-white/85 backdrop-blur-2xl;
   }
   .dot-grid {
-    background-image: radial-gradient(circle, oklch(0.24 0.02 258 / 0.12) 1px, transparent 1px);
+    background-image: radial-gradient(circle, oklch(0.235 0.012 93 / 0.12) 1px, transparent 1px);
     background-size: 22px 22px;
   }
   .nav-grid {
     background-image:
-      linear-gradient(to right, oklch(0.24 0.02 258 / 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, oklch(0.24 0.02 258 / 0.07) 1px, transparent 1px);
+      linear-gradient(to right, oklch(0.235 0.012 93 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.235 0.012 93 / 0.07) 1px, transparent 1px);
     background-size: 44px 44px;
   }
   .text-gradient-gold {
@@ -261,7 +261,7 @@
     color: transparent;
   }
   .text-glow-gold {
-    text-shadow: 0 0 28px oklch(0.62 0.13 248 / 0.35);
+    text-shadow: 0 0 28px oklch(0.7 0.1 87 / 0.35);
   }
 
   .nav-link {
