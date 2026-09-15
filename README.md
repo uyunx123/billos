@@ -17,7 +17,7 @@ Built with **Vite · React 18 · TypeScript · Tailwind CSS v4**, backed by **Su
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
+- [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Payments & Supabase Architecture](#payments--supabase-architecture)
 - [Deployment](#deployment)
