@@ -69,14 +69,14 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-200">{categoryName}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-700">{categoryName}</p>
           <span className="inline-flex items-center gap-1 rounded-full bg-tokopedia/10 px-2 py-0.5 text-[10px] font-bold text-tokopedia ring-1 ring-tokopedia/20">
             <Check className="h-3 w-3" aria-hidden="true" />
             Official
           </span>
         </div>
         <h3 className="line-clamp-2 font-heading text-[15px] font-bold leading-snug sm:text-base">
-          <Link to={`/product/${product.slug}`} className="transition-colors duration-150 hover:text-gold-300">
+          <Link to={`/product/${product.slug}`} className="transition-colors duration-150 hover:text-gold-600">
             {product.name}
           </Link>
         </h3>
@@ -106,7 +106,7 @@ export default function ProductCard({ product }: { product: Product }) {
             type="button"
             className={`btn mt-3 w-full justify-center py-2.5 text-sm transition-all duration-200 ${
               outOfStock
-                ? "border border-border bg-white/10 !text-foreground/40"
+                ? "border border-border bg-foreground/10 !text-foreground/40"
                 : added
                   ? "btn-primary !bg-none !bg-primary-700"
                   : "btn-primary"

@@ -36,7 +36,7 @@ export default function BlogPage() {
               to={`/blog/${post.slug}`}
               className="card lift group flex h-full flex-col overflow-hidden"
             >
-              <div className="relative aspect-[16/10] overflow-hidden bg-white/5">
+              <div className="relative aspect-[16/10] overflow-hidden bg-foreground/10">
                 <img
                   src={post.image}
                   alt={post.title}
@@ -48,7 +48,7 @@ export default function BlogPage() {
                 </span>
               </div>
               <div className="flex flex-1 flex-col gap-2 p-6">
-                <h2 className="font-heading text-xl font-bold leading-snug transition-colors duration-150 group-hover:text-gold-300">
+                <h2 className="font-heading text-xl font-bold leading-snug transition-colors duration-150 group-hover:text-gold-600">
                   {post.title}
                 </h2>
                 <p className="text-sm text-foreground/60">{post.excerpt}</p>

@@ -94,7 +94,7 @@ export default function ShopPage() {
           {filtered.length} product{filtered.length === 1 ? "" : "s"}
           {query ? ` matching “${query}”` : ""} — exact gear, plus honest care.
         </p>
-        <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-100/60 px-3.5 py-1.5 text-xs font-bold text-gold-200">
+        <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-100/60 px-3.5 py-1.5 text-xs font-bold text-gold-700">
           <Truck className="h-3.5 w-3.5" aria-hidden="true" />
           Official store · Free shipping above Rp 1.000.000
         </span>
@@ -193,7 +193,7 @@ export default function ShopPage() {
         ) : null
       ) : (
         <div className="card mx-auto max-w-md p-10 text-center">
-          <span className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+          <span className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
             <PackageSearch className="h-7 w-7" aria-hidden="true" />
           </span>
           <h2 className="font-heading text-lg font-bold">Nothing on the felt</h2>

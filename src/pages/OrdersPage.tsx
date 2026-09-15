@@ -10,13 +10,13 @@ import OrderTimeline from "../components/OrderTimeline";
 import ReviewModal from "../components/ReviewModal";
 
 const STATUS_STYLES: Record<string, string> = {
-  Pending: "bg-gold-100 text-gold-200",
-  Paid: "bg-primary/10 text-primary-200",
-  Prepared: "bg-primary/10 text-primary-200",
-  Shipped: "bg-primary/10 text-primary-200",
-  Picked: "bg-primary/10 text-primary-200",
-  "In transit": "bg-primary/10 text-primary-200",
-  Delivered: "bg-primary/10 text-primary-200",
+  Pending: "bg-gold-100 text-gold-700",
+  Paid: "bg-primary/10 text-primary-700",
+  Prepared: "bg-primary/10 text-primary-700",
+  Shipped: "bg-primary/10 text-primary-700",
+  Picked: "bg-primary/10 text-primary-700",
+  "In transit": "bg-primary/10 text-primary-700",
+  Delivered: "bg-primary/10 text-primary-700",
   Cancelled: "bg-destructive/10 text-destructive",
 };
 
@@ -29,9 +29,9 @@ const PAYMENT_LABELS: Record<Order["paymentStatus"], string> = {
 };
 
 const PAYMENT_STYLES: Record<Order["paymentStatus"], string> = {
-  pending: "bg-white/5 text-foreground/60",
-  submitted: "bg-gold-100 text-gold-200",
-  accepted: "bg-primary/10 text-primary-200",
+  pending: "bg-foreground/10 text-foreground/60",
+  submitted: "bg-gold-100 text-gold-700",
+  accepted: "bg-primary/10 text-primary-700",
   declined: "bg-destructive/10 text-destructive",
   refunded: "bg-destructive/10 text-destructive",
 };
@@ -53,7 +53,7 @@ export default function OrdersPage() {
   if (myOrders.length === 0) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <PackageOpen className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">No orders yet</h1>
@@ -138,7 +138,7 @@ export default function OrdersPage() {
 
       <p className="mt-8 text-center text-sm text-foreground/55">
         Track a marketplace order from our official{" "}
-        <Link to="/contact" className="font-bold text-primary-200 hover:underline">Shopee / Tokopedia stores</Link> —
+        <Link to="/contact" className="font-bold text-primary-700 hover:underline">Shopee / Tokopedia stores</Link> —
         those live outside this site.
       </p>
     </div>
@@ -189,7 +189,7 @@ function OrderCard({
           <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${PAYMENT_STYLES[o.paymentStatus]}`}>
             {PAYMENT_LABELS[o.paymentStatus]}
           </span>
-          <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${STATUS_STYLES[o.status] ?? "bg-white/5 text-foreground/60"}`}>
+          <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${STATUS_STYLES[o.status] ?? "bg-foreground/10 text-foreground/60"}`}>
             {o.status}
           </span>
         </div>
@@ -200,7 +200,7 @@ function OrderCard({
           {o.items.map((it) => (
             <li key={it.productId + it.name + it.price + it.qty} className="flex items-center justify-between gap-4">
               <span className="flex min-w-0 items-center gap-2.5">
-                <img src={it.image} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-white/5 object-cover" />
+                <img src={it.image} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-foreground/10 object-cover" />
                 <span className="min-w-0 truncate text-foreground/75">{it.name} × {it.qty}</span>
               </span>
               <span className="shrink-0 font-semibold">{formatIDR(it.price * it.qty)}</span>
@@ -212,11 +212,11 @@ function OrderCard({
           {o.discount > 0 && (
             <div className="flex justify-between">
               <dt className="text-foreground/55">{o.couponCode ? `Coupon (${o.couponCode})` : "Discount"}</dt>
-              <dd className="font-semibold text-gold-200">−{formatIDR(o.discount)}</dd>
+              <dd className="font-semibold text-gold-700">−{formatIDR(o.discount)}</dd>
             </div>
           )}
           <div className="flex justify-between"><dt className="text-foreground/55">Shipping ({o.carrier})</dt><dd className="font-semibold">{formatIDR(o.shipping)}</dd></div>
-          <div className="flex justify-between pt-1"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold text-primary-200">{formatIDR(o.total)}</dd></div>
+          <div className="flex justify-between pt-1"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold text-primary-700">{formatIDR(o.total)}</dd></div>
         </dl>
         <p className="mt-3 text-xs text-foreground/50">
           {o.payment}
@@ -224,7 +224,7 @@ function OrderCard({
         </p>
 
         {awaitingStore && (
-          <p className="mt-3 rounded-xl border border-gold-300/40 bg-gold-100/50 px-3.5 py-2.5 text-sm font-semibold text-gold-200">
+          <p className="mt-3 rounded-xl border border-gold-300/40 bg-gold-100/50 px-3.5 py-2.5 text-sm font-semibold text-gold-700">
             Payment received — the store confirms each payment before packing. We&apos;ll update this page the moment it&apos;s accepted.
           </p>
         )}
@@ -254,7 +254,7 @@ function OrderCard({
           )}
           {o.received && (
             <div className="w-full rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3">
-              <p className="flex items-center gap-2 text-sm font-bold text-primary-200">
+              <p className="flex items-center gap-2 text-sm font-bold text-primary-700">
                 <PackageCheck className="h-4 w-4" aria-hidden="true" />
                 Order confirmed — thanks! How did your gear play?
               </p>
@@ -262,7 +262,7 @@ function OrderCard({
                 {o.items.map((it) => {
                   const existing = reviewForOrderItem(o.id, it.productId);
                   return existing ? (
-                    <span key={it.productId} className="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-3 py-1.5 text-xs font-bold text-gold-200">
+                    <span key={it.productId} className="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-3 py-1.5 text-xs font-bold text-gold-700">
                       <Star className="h-3.5 w-3.5 fill-gold-500 text-gold-500" aria-hidden="true" />
                       {it.name.slice(0, 26).trim()}… rated {existing.rating}★
                     </span>

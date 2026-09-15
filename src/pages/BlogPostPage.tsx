@@ -53,7 +53,7 @@ export default function BlogPostPage() {
       </Link>
 
       <header className="mt-6">
-        <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-200">
+        <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-700">
           <span className="h-px w-6 bg-gradient-to-r from-gold-500 to-transparent" aria-hidden="true" />
           {post.category}
         </p>
@@ -110,7 +110,7 @@ export default function BlogPostPage() {
                 to={`/blog/${p.slug}`}
                 className="card lift p-5 transition-colors duration-300 hover:border-gold-400/50"
               >
-                <p className="text-[11px] font-bold uppercase tracking-wider text-primary-200">{p.category}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-primary-700">{p.category}</p>
                 <h3 className="mt-1 font-heading font-bold leading-snug">{p.title}</h3>
                 <p className="mt-1 text-xs font-semibold text-foreground/50">{formatDate(p.date)}</p>
               </Link>

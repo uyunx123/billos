@@ -168,7 +168,7 @@ export default function AdminPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <Lock className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Owners only</h1>
@@ -230,7 +230,7 @@ function AdminConsole() {
           Manage the catalogue, prices, stock, shipping and configuration — changes go live in
           the shop instantly.
         </p>
-        <span className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-200">
+        <span className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
           <Check className="h-3.5 w-3.5" aria-hidden="true" />
           Changes save to this browser instantly
         </span>
@@ -263,7 +263,7 @@ function AdminConsole() {
             onClick={() => setTab(t.id)}
             className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-t-xl border-b-2 px-4 py-2.5 text-sm font-bold transition-colors duration-150 ${
               tab === t.id
-                ? "border-primary bg-primary/5 text-primary-200"
+                ? "border-primary bg-primary/5 text-primary-700"
                 : "border-transparent text-foreground/55 hover:text-foreground"
             }`}
           >
@@ -418,7 +418,7 @@ function formatCompact(value: number): string {
 function TrendChip({ trend }: { trend: number | null }) {
   if (trend === null) {
     return (
-      <span className="inline-flex items-center rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-200">
+      <span className="inline-flex items-center rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-700">
         New
       </span>
     );
@@ -429,7 +429,7 @@ function TrendChip({ trend }: { trend: number | null }) {
     <span
       title="vs the previous 30 days"
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
-        up ? "bg-primary/10 text-primary-200" : down ? "bg-destructive/10 text-destructive" : "bg-white/5 text-foreground/45"
+        up ? "bg-primary/10 text-primary-700" : down ? "bg-destructive/10 text-destructive" : "bg-foreground/10 text-foreground/45"
       }`}
     >
       {up ? <TrendingUp className="h-3 w-3" aria-hidden="true" /> : down ? <TrendingDown className="h-3 w-3" aria-hidden="true" /> : null}
@@ -460,7 +460,7 @@ function MetricTile({
       <div className="flex items-start justify-between gap-2">
         <span
           className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl ${
-            alert ? "bg-destructive/10 text-destructive" : accent ? "bg-gold-100 text-gold-300" : "bg-primary/10 text-primary-200"
+            alert ? "bg-destructive/10 text-destructive" : accent ? "bg-gold-100 text-gold-700" : "bg-primary/10 text-primary-700"
           }`}
         >
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -545,7 +545,7 @@ function OverviewTab() {
   const isTodayKey = localDayKey(new Date());
 
   const PAY_SEGMENTS: { key: string; label: string; count: number; color: string }[] = [
-    { key: "pending", label: "Payment pending", count: stats.paymentCounts.pending, color: "bg-white/20" },
+    { key: "pending", label: "Payment pending", count: stats.paymentCounts.pending, color: "bg-foreground/25" },
     { key: "submitted", label: "Awaiting confirmation", count: stats.paymentCounts.submitted, color: "bg-gradient-to-r from-gold-400 to-gold-600" },
     { key: "accepted", label: "Paid", count: stats.paymentCounts.accepted, color: "bg-primary" },
     { key: "refunded", label: "Refunded", count: stats.paymentCounts.refunded, color: "bg-destructive/50" },
@@ -606,7 +606,7 @@ function OverviewTab() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
             <div>
               <h2 className="flex items-center gap-2 font-heading font-bold">
-                <BarChart3 className="h-4 w-4 text-primary-200" aria-hidden="true" />
+                <BarChart3 className="h-4 w-4 text-primary-700" aria-hidden="true" />
                 Sales trend
               </h2>
               <p className="mt-0.5 text-xs text-foreground/55">
@@ -658,7 +658,7 @@ function OverviewTab() {
                       <div key={b.key} className="group relative flex h-full flex-1 flex-col items-center justify-end">
                         <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-center text-[11px] leading-tight shadow-soft group-hover:block">
                           <p className="font-semibold">{b.label}</p>
-                          <p className="font-bold text-primary-200">{b.revenue > 0 ? formatIDR(b.revenue) : "No sales"}</p>
+                          <p className="font-bold text-primary-700">{b.revenue > 0 ? formatIDR(b.revenue) : "No sales"}</p>
                           <p className="text-foreground/50">
                             {b.orders} order{b.orders === 1 ? "" : "s"} · {b.units} item{b.units === 1 ? "" : "s"}
                           </p>
@@ -671,7 +671,7 @@ function OverviewTab() {
                               ? isToday
                                 ? "bg-gradient-to-t from-gold-600 to-gold-300"
                                 : "bg-gradient-to-t from-primary-700 to-primary-400"
-                              : "bg-white/10"
+                              : "bg-foreground/10"
                           }`}
                           style={{ height: `${pct}%` }}
                         />
@@ -699,12 +699,12 @@ function OverviewTab() {
         {/* Payment breakdown */}
         <div className="card flex flex-col p-5">
           <h2 className="flex items-center gap-2 font-heading font-bold">
-            <Wallet className="h-4 w-4 text-primary-200" aria-hidden="true" /> Payments
+            <Wallet className="h-4 w-4 text-primary-700" aria-hidden="true" /> Payments
           </h2>
           <p className="mt-0.5 text-xs text-foreground/55">
             {totalOrders} order{totalOrders === 1 ? "" : "s"} all-time
             {needsAction > 0 && (
-              <span className="ml-1.5 inline-flex items-center rounded-full bg-gold-100 px-2 py-0.5 font-bold text-gold-200">
+              <span className="ml-1.5 inline-flex items-center rounded-full bg-gold-100 px-2 py-0.5 font-bold text-gold-700">
                 {needsAction} need{needsAction === 1 ? "s" : ""} your confirmation
               </span>
             )}
@@ -719,7 +719,7 @@ function OverviewTab() {
               <div
                 role="img"
                 aria-label={`Payment breakdown: ${PAY_SEGMENTS.filter((p) => p.count > 0).map((p) => `${p.count} ${p.label}`).join(", ")}`}
-                className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-white/5"
+                className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-foreground/10"
               >
                 {PAY_SEGMENTS.filter((p) => p.count > 0).map((p) => (
                   <span key={p.key} className={`h-full ${p.color}`} style={{ width: `${(p.count / totalOrders) * 100}%` }} />
@@ -740,11 +740,11 @@ function OverviewTab() {
               <div className="mt-auto space-y-1.5 border-t border-border pt-3 text-xs font-semibold text-foreground/55">
                 <p className="flex items-center justify-between">
                   <span>Paid revenue (all-time)</span>
-                  <span className="font-bold text-primary-200">{formatIDR(stats.totalRevenue)}</span>
+                  <span className="font-bold text-primary-700">{formatIDR(stats.totalRevenue)}</span>
                 </p>
                 <p className="flex items-center justify-between">
                   <span>Coupon discounts given</span>
-                  <span className="font-bold text-gold-200">−{formatIDR(stats.totalDiscount)}</span>
+                  <span className="font-bold text-gold-700">−{formatIDR(stats.totalDiscount)}</span>
                 </p>
               </div>
             </>
@@ -757,7 +757,7 @@ function OverviewTab() {
         <div className="card overflow-hidden">
           <div className="border-b border-border px-5 py-4">
             <h2 className="flex items-center gap-2 font-heading font-bold">
-              <PackageIcon className="h-4 w-4 text-primary-200" aria-hidden="true" /> Top sellers
+              <PackageIcon className="h-4 w-4 text-primary-700" aria-hidden="true" /> Top sellers
             </h2>
             <p className="mt-0.5 text-xs text-foreground/55">by revenue from paid orders, last 30 days</p>
           </div>
@@ -775,15 +775,15 @@ function OverviewTab() {
                 <li key={t.name} className="flex items-center gap-3 px-5 py-3">
                   <span className="w-5 shrink-0 text-center font-heading text-sm font-bold text-foreground/40">{i + 1}</span>
                   {t.image ? (
-                    <img src={t.image} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-white/5 object-cover" />
+                    <img src={t.image} alt="" className="h-9 w-9 shrink-0 rounded-lg bg-foreground/10 object-cover" />
                   ) : (
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary-200">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary-700">
                       <PackageIcon className="h-4 w-4" aria-hidden="true" />
                     </span>
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">{t.name}</p>
-                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-primary-700 to-primary-400"
                         style={{ width: `${Math.max(4, (t.revenue / (stats.topSellers[0]?.revenue || 1)) * 100)}%` }}
@@ -791,7 +791,7 @@ function OverviewTab() {
                     </div>
                   </div>
                   <p className="shrink-0 text-right">
-                    <span className="block text-sm font-bold text-primary-200">{formatCompact(t.revenue)}</span>
+                    <span className="block text-sm font-bold text-primary-700">{formatCompact(t.revenue)}</span>
                     <span className="block text-[11px] font-semibold text-foreground/45">
                       {t.qty} unit{t.qty === 1 ? "" : "s"} · {t.orders} order{t.orders === 1 ? "" : "s"}
                     </span>
@@ -805,7 +805,7 @@ function OverviewTab() {
         <div className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <h2 className="font-heading font-bold">Recent orders</h2>
-            <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/60">{totalOrders} total</span>
+            <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/60">{totalOrders} total</span>
           </div>
           {orders.length === 0 ? (
             <div className="px-5 py-10 text-center">
@@ -837,7 +837,7 @@ function OverviewTab() {
         </div>
       </div>
 
-      <p className="mt-6 rounded-2xl border border-border bg-white/10 px-4 py-3 text-center text-xs text-foreground/55">
+      <p className="mt-6 rounded-2xl border border-border bg-foreground/10 px-4 py-3 text-center text-xs text-foreground/55">
         Everything syncs with your Supabase database — open the store in another browser and refresh
         to pull in the latest orders, catalogue and accounts.
       </p>
@@ -952,7 +952,7 @@ function ProductsTab() {
       </div>
 
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -964,24 +964,24 @@ function ProductsTab() {
         <ul className="divide-y divide-border">
           {filtered.map((p) => (
             <li key={p.id} className="flex items-center gap-3 px-4 py-3">
-              <img src={p.image} alt="" className="h-12 w-12 shrink-0 rounded-xl bg-white/5 object-cover" />
+              <img src={p.image} alt="" className="h-12 w-12 shrink-0 rounded-xl bg-foreground/10 object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-heading text-sm font-bold">{p.name}</p>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground/55">
                   <span className="font-bold text-foreground">{formatIDR(p.price)}</span>
                   {p.compareAt && (
-                    <span className="rounded-full bg-gold-100 px-2 py-0.5 font-bold text-gold-200">
+                    <span className="rounded-full bg-gold-100 px-2 py-0.5 font-bold text-gold-700">
                       Save {Math.round((1 - p.price / p.compareAt) * 100)}%
                     </span>
                   )}
                   {p.freeShipping && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-bold text-primary-200">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-bold text-primary-700">
                       <Truck className="h-3 w-3" aria-hidden="true" /> Free ship
                     </span>
                   )}
                   <span>·</span>
                   <span>{configCategories.find((c) => c.id === p.category)?.name ?? p.category}</span>
-                  <span className={`font-bold ${p.stock <= 0 ? "text-destructive" : p.stock <= 3 ? "text-gold-200" : "text-primary-200"}`}>
+                  <span className={`font-bold ${p.stock <= 0 ? "text-destructive" : p.stock <= 3 ? "text-gold-700" : "text-primary-700"}`}>
                     {p.stock <= 0 ? "Out of stock" : `${p.stock} in stock`}
                   </span>
                 </p>
@@ -1057,7 +1057,7 @@ function ProductForm({ initial, onSubmit, onCancel }: { initial: ProductFormStat
         <div>
           <label htmlFor="pf-image" className="field-label">Image</label>
           <div className="flex items-center gap-2">
-            <img src={image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-white/5 object-cover" />
+            <img src={image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-foreground/10 object-cover" />
             <select id="pf-image" className="input !py-2" value={image} onChange={(e) => { setImage(e.target.value); set("image", e.target.value); }}>
               {IMAGE_OPTIONS.map((src) => (
                 <option key={src} value={src}>{src.split("/").pop()}</option>
@@ -1156,7 +1156,7 @@ function ProductForm({ initial, onSubmit, onCancel }: { initial: ProductFormStat
 
       <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold text-foreground/80">
         <input type="checkbox" checked={form.freeShipping} onChange={(e) => set("freeShipping", e.target.checked)} className="h-4 w-4 accent-primary" />
-        <Truck className="h-4 w-4 text-primary-200" aria-hidden="true" />
+        <Truck className="h-4 w-4 text-primary-700" aria-hidden="true" />
         Ships free — no shipping charge for this item, whatever the order total
       </label>
 
@@ -1210,10 +1210,10 @@ function StockTab() {
         <ul className="divide-y divide-border">
           {list.map((p) => (
             <li key={p.id} className="flex items-center gap-3 px-4 py-3">
-              <img src={p.image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-white/5 object-cover" />
+              <img src={p.image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-foreground/10 object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold">{p.name}</p>
-                <p className={`text-xs font-bold ${p.stock <= 0 ? "text-destructive" : p.stock <= 3 ? "text-gold-200" : "text-primary-200"}`}>
+                <p className={`text-xs font-bold ${p.stock <= 0 ? "text-destructive" : p.stock <= 3 ? "text-gold-700" : "text-primary-700"}`}>
                   {p.stock <= 0 ? "Out of stock" : `${p.stock} units`}
                 </p>
               </div>
@@ -1275,7 +1275,7 @@ function ShippingTab() {
         <div className="flex-1">
           <label htmlFor="thresh" className="field-label">Free shipping threshold (Rp)</label>
           <div className="flex items-center gap-2">
-            <BadgeDollarSign className="h-5 w-5 shrink-0 text-primary-200" aria-hidden="true" />
+            <BadgeDollarSign className="h-5 w-5 shrink-0 text-primary-700" aria-hidden="true" />
             <input id="thresh" type="number" min="0" step="10000" className="input" value={threshold} onChange={(e) => setThreshold(e.target.value)} />
           </div>
           <p className="mt-1 text-xs text-foreground/50">
@@ -1482,19 +1482,19 @@ function OrderAdminCard({
         <div className="shrink-0 lg:text-right">
           <p className="text-xs font-semibold text-foreground/55">
             Subtotal {formatIDR(o.subtotal)}
-            {o.discount > 0 && <span className="text-gold-200"> − coupon {formatIDR(o.discount)}</span>}
+            {o.discount > 0 && <span className="text-gold-700"> − coupon {formatIDR(o.discount)}</span>}
             {" + ship "}{formatIDR(o.shipping)}
             {o.couponCode && <span className="text-foreground/45"> ({o.couponCode})</span>}
           </p>
-          <p className="font-heading text-2xl font-bold text-primary-200">{formatIDR(o.total)}</p>
+          <p className="font-heading text-2xl font-bold text-primary-700">{formatIDR(o.total)}</p>
         </div>
       </div>
 
       {/* Payment confirmation */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-border bg-white/10 px-5 py-3">
+      <div className="flex flex-wrap items-center gap-2 border-t border-border bg-foreground/10 px-5 py-3">
         {o.paymentStatus === "submitted" ? (
           <>
-            <span className="text-sm font-semibold text-gold-200">Payment submitted — confirm or decline:</span>
+            <span className="text-sm font-semibold text-gold-700">Payment submitted — confirm or decline:</span>
             <button type="button" className="btn btn-primary !px-3.5 !py-1.5 text-xs" onClick={() => onPayment("accepted")}>
               <Check className="h-3.5 w-3.5" aria-hidden="true" /> Accept payment
             </button>
@@ -1553,9 +1553,9 @@ function OrderAdminCard({
 
 function PaymentBadge({ status }: { status: PaymentStatus }) {
   const styles: Record<PaymentStatus, string> = {
-    pending: "bg-white/5 text-foreground/60",
-    submitted: "bg-gold-100 text-gold-200",
-    accepted: "bg-primary/10 text-primary-200",
+    pending: "bg-foreground/10 text-foreground/60",
+    submitted: "bg-gold-100 text-gold-700",
+    accepted: "bg-primary/10 text-primary-700",
     declined: "bg-destructive/10 text-destructive",
     refunded: "bg-destructive/10 text-destructive",
   };
@@ -1571,13 +1571,13 @@ function PaymentBadge({ status }: { status: PaymentStatus }) {
 
 function StatusBadge({ status }: { status: OrderStatus }) {
   const styles: Record<OrderStatus, string> = {
-    Pending: "bg-gold-100 text-gold-200",
-    Paid: "bg-primary/10 text-primary-200",
-    Prepared: "bg-primary/10 text-primary-200",
-    Shipped: "bg-primary/10 text-primary-200",
-    Picked: "bg-primary/10 text-primary-200",
-    "In transit": "bg-primary/10 text-primary-200",
-    Delivered: "bg-primary/10 text-primary-200",
+    Pending: "bg-gold-100 text-gold-700",
+    Paid: "bg-primary/10 text-primary-700",
+    Prepared: "bg-primary/10 text-primary-700",
+    Shipped: "bg-primary/10 text-primary-700",
+    Picked: "bg-primary/10 text-primary-700",
+    "In transit": "bg-primary/10 text-primary-700",
+    Delivered: "bg-primary/10 text-primary-700",
     Cancelled: "bg-destructive/10 text-destructive",
   };
   return <span className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${styles[status]}`}>{status}</span>;
@@ -1614,7 +1614,7 @@ function ReviewsTab() {
   return (
     <div className="space-y-5">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -1698,7 +1698,7 @@ function ReviewsTab() {
                     </span>
                   )}
                 </p>
-                <p className="mt-1 truncate font-semibold text-primary-200">{productName(r.productId)}</p>
+                <p className="mt-1 truncate font-semibold text-primary-700">{productName(r.productId)}</p>
                 {r.comment && <p className="mt-1 text-sm leading-relaxed text-foreground/70">{r.comment}</p>}
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-1.5 lg:justify-end">
@@ -1833,7 +1833,7 @@ function ChatPanel() {
       </div>
 
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -1887,7 +1887,7 @@ function ChatPanel() {
                   className={`flex cursor-pointer items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors duration-150 ${
                     activeThreadId === t.id
                       ? "bg-primary/10 ring-1 ring-primary/30"
-                      : "hover:bg-white/5"
+                      : "hover:bg-foreground/10"
                   }`}
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-500 to-primary-800 text-sm font-extrabold text-on-primary">
@@ -1950,7 +1950,7 @@ function ChatPanel() {
                   </a>
                 </div>
 
-                <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-white/5/30 p-4" aria-live="polite">
+                <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto bg-surface-2 p-4" aria-live="polite">
                   {activeThread.messages.map((m) =>
                     m.from === "customer" ? (
                       <div key={m.id} className="flex justify-end">
@@ -1965,7 +1965,7 @@ function ChatPanel() {
                     ) : (
                       <div key={m.id} className="flex justify-start">
                         <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-border bg-surface-2 px-4 py-2.5 text-sm text-foreground shadow-soft">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-primary-200">{m.senderName}</p>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-primary-700">{m.senderName}</p>
                           <p className="mt-0.5 whitespace-pre-wrap leading-snug">{m.body}</p>
                           <p className="mt-1 text-right text-[10px] font-semibold text-foreground/45">
                             {new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" }).format(new Date(m.at))}
@@ -2016,9 +2016,9 @@ function ChatPanel() {
 
 function RoleBadge({ role }: { role: "customer" | "admin" | "owner" }) {
   const styles = {
-    owner: "bg-gold-100 text-gold-200 ring-gold-500/30",
-    admin: "bg-primary/10 text-primary-200 ring-primary/30",
-    customer: "bg-white/5 text-foreground/60 ring-border",
+    owner: "bg-gold-100 text-gold-700 ring-gold-500/30",
+    admin: "bg-primary/10 text-primary-700 ring-primary/30",
+    customer: "bg-foreground/10 text-foreground/60 ring-border",
   };
   const labels = { owner: "Owner", admin: "Admin", customer: "Customer" };
   return (
@@ -2085,13 +2085,13 @@ function UsersTab() {
         </p>
       )}
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
 
       {!isOwner && (
-        <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+        <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
           You&apos;re an admin — you can edit customers, ban or delete them, but only the store
           owner can assign or revoke admin roles.
         </p>
@@ -2135,7 +2135,7 @@ function UsersTab() {
                     </span>
                   )}
                   {isSelf && (
-                    <span className="inline-flex shrink-0 items-center rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/55">
+                    <span className="inline-flex shrink-0 items-center rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/55">
                       You
                     </span>
                   )}
@@ -2387,17 +2387,17 @@ function GatewaysPanel() {
   function statusBadge(entry: GatewayCatalogEntry) {
     const row = rowFor(entry.slug);
     if (!row || row.status === "not_configured") {
-      return <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/55">Not connected</span>;
+      return <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/55">Not connected</span>;
     }
     if (row.status === "connected" && row.enabled) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary-200">
+        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary-700">
           <Check className="h-3 w-3" aria-hidden="true" /> Connected · live
         </span>
       );
     }
     if (row.status === "connected" && !row.enabled) {
-      return <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/55">Connected · paused</span>;
+      return <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/55">Connected · paused</span>;
     }
     return <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-bold text-destructive">Connection error</span>;
   }
@@ -2405,7 +2405,7 @@ function GatewaysPanel() {
   return (
     <div className="space-y-5">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -2415,7 +2415,7 @@ function GatewaysPanel() {
         </p>
       )}
 
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Connect payment providers or set up manual methods. Connected gateways appear at checkout as
         payment options — you can pause them without losing their settings.
         {loading && <span className="ml-2 text-foreground/40">Syncing…</span>}
@@ -2426,7 +2426,7 @@ function GatewaysPanel() {
 
       {/* Connected count */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-200">
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-700">
           {connectedCount} of {GATEWAY_CATALOG.length} gateways live
         </span>
       </div>
@@ -2540,11 +2540,11 @@ function CategoriesPanel() {
   return (
     <div className="space-y-3">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Deactivated categories disappear from the shop, home page and footer. A category that
         still has products must be emptied before it can be deleted.
       </p>
@@ -2580,7 +2580,7 @@ function CategoriesPanel() {
                 <option key={src} value={src}>{src.split("/").pop()}</option>
               ))}
             </select>
-            <span className={`whitespace-nowrap text-xs font-bold ${count === 0 ? "text-foreground/40" : "text-primary-200"}`}>
+            <span className={`whitespace-nowrap text-xs font-bold ${count === 0 ? "text-foreground/40" : "text-primary-700"}`}>
               {count} product{count === 1 ? "" : "s"}
             </span>
             <div className="flex justify-end gap-2">
@@ -2679,11 +2679,11 @@ function PagesPanel() {
   return (
     <div className="space-y-3">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Enabled pages appear in the footer and at /page/slug. Disabled pages are hidden from
         visitors but kept for later.
       </p>
@@ -2700,7 +2700,7 @@ function PagesPanel() {
                 className="h-4 w-4 accent-primary"
                 aria-label={`${p.enabled ? "Hide" : "Show"} ${p.title}`}
               />
-              <span className={`text-xs font-bold ${p.enabled ? "text-primary-200" : "text-foreground/40"}`}>
+              <span className={`text-xs font-bold ${p.enabled ? "text-primary-700" : "text-foreground/40"}`}>
                 {p.enabled ? "Visible" : "Hidden"}
               </span>
             </label>
@@ -2883,11 +2883,11 @@ function SponsorsPanel() {
   return (
     <div className="space-y-3">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Partner banners shown under the homepage hero, below the shop grid, and above the footer.
         Upload an image (it&apos;s resized in the browser) or link straight to a product.
       </p>
@@ -2944,7 +2944,7 @@ function SponsorsPanel() {
               {image ? (
                 <img src={image} alt="" className="h-12 w-12 rounded-xl border border-border object-cover" />
               ) : (
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-white/5 text-foreground/40">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-foreground/10 text-foreground/40">
                   <ImagePlus className="h-5 w-5" aria-hidden="true" />
                 </span>
               )}
@@ -2978,7 +2978,7 @@ function SponsorsPanel() {
             {s.image ? (
               <img src={s.image} alt="" className="h-14 w-14 shrink-0 rounded-xl border border-border object-cover" />
             ) : (
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-200">
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-700">
                 <Megaphone className="h-6 w-6" aria-hidden="true" />
               </span>
             )}
@@ -3191,11 +3191,11 @@ function CouponsPanel() {
         </p>
       )}
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Customers type a code at checkout. A coupon can be a percentage or a fixed Rupiah amount,
         with optional minimum spend, caps, dates and usage limits.
       </p>
@@ -3278,16 +3278,16 @@ function CouponsPanel() {
         <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface-2">
           {coupons.map((c) => (
             <li key={c.id} className="flex flex-col gap-3 px-4 py-4 lg:flex-row lg:items-center">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-200">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-700">
                 <Ticket className="h-5 w-5" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-2">
                   <span className="font-heading text-sm font-bold">{c.code}</span>
                   {!c.active && (
-                    <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] font-bold text-foreground/50">paused</span>
+                    <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[11px] font-bold text-foreground/50">paused</span>
                   )}
-                  <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-200">
+                  <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-bold text-gold-700">
                     {c.type === "percent" ? `${c.value}% off` : formatIDR(c.value) + " off"}
                   </span>
                 </p>
@@ -3299,7 +3299,7 @@ function CouponsPanel() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className={`text-xs font-bold ${c.usedCount > 0 ? "text-primary-200" : "text-foreground/40"}`}>
+                <span className={`text-xs font-bold ${c.usedCount > 0 ? "text-primary-700" : "text-foreground/40"}`}>
                   {c.usedCount} use{c.usedCount === 1 ? "" : "s"}
                   {c.usageLimit ? ` / ${c.usageLimit}` : ""}
                 </span>
@@ -3367,11 +3367,11 @@ function ReceiptsPanel() {
   return (
     <div className="space-y-4">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         A receipt is generated automatically for every order and customers can save/print it from{" "}
         <span className="font-bold text-foreground/70">/receipt/&lt;order&gt;</span>. The details below
         fill the receipt header, footer and the downloaded copy.
@@ -3430,7 +3430,7 @@ function ReceiptsPanel() {
         {receipts.length === 0 ? (
           <p className="mt-2 text-sm text-foreground/55">
             None yet — the first order placed at checkout auto-generates receipt{" "}
-            <span className="font-mono font-bold text-primary-200">{settings.receiptPrefix}-{new Date().getFullYear()}-0001</span>.
+            <span className="font-mono font-bold text-primary-700">{settings.receiptPrefix}-{new Date().getFullYear()}-0001</span>.
           </p>
         ) : (
           <ul className="mt-2 divide-y divide-border">
@@ -3525,11 +3525,11 @@ function HeroPanel() {
   return (
     <div className="space-y-5">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Edit the headline and paragraph on the homepage hero, and set the showroom photos. Text
         changes go live instantly — images are stored with the rest of the site config.
       </p>
@@ -3558,8 +3558,8 @@ function HeroPanel() {
         </div>
 
         {/* Live preview */}
-        <div className="rounded-2xl border border-border bg-white/5 p-5">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-200">
+        <div className="rounded-2xl border border-border bg-foreground/10 p-5">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-700">
             {hero.badge || "Your badge"}
           </p>
           <p className="font-heading text-2xl font-bold leading-tight tracking-tight">
@@ -3612,7 +3612,7 @@ function HeroPanel() {
             {hero.images.map((src, i) => (
               <li key={`${src}-${i}`} className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3">
                 <span className="relative shrink-0">
-                  <img src={src} alt={`Hero slide ${i + 1}`} className="h-16 w-24 rounded-xl border border-border bg-white/5 object-cover" />
+                  <img src={src} alt={`Hero slide ${i + 1}`} className="h-16 w-24 rounded-xl border border-border bg-foreground/10 object-cover" />
                   {i === 0 && (
                     <span className="absolute -left-1.5 -top-1.5 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 px-1.5 py-0.5 text-[9px] font-extrabold text-primary-950 shadow-gold">
                       FIRST
@@ -3743,11 +3743,11 @@ function SiteSettingsPanel() {
   return (
     <div className="space-y-5">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Contact details, social profiles and official-store links — changes go live in the header,
         footer and contact page instantly.
       </p>
@@ -3829,7 +3829,7 @@ function SiteSettingsPanel() {
           <ul className="divide-y divide-border rounded-2xl border border-border">
             {siteConfig.socials.map((s: SocialLink) => (
               <li key={s.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-200">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-700">
                   <SocialPlatformIcon platform={s.platform} className="h-4 w-4" />
                 </span>
                 <select
@@ -4028,11 +4028,11 @@ function LogoPanel() {
   return (
     <div className="space-y-3">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
-      <p className="rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Change the icon/logo that appears in the header, footer and the sign-in dialog. The image
         is resized in your browser and stored with the rest of the site configuration.
       </p>
@@ -4167,12 +4167,12 @@ function JournalPanel() {
   return (
     <div className="space-y-3">
       {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-xl rounded-xl border border-border bg-white/10 px-4 py-2.5 text-sm text-foreground/55">
+        <p className="max-w-xl rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
           Write, edit and publish journal posts. Hidden posts stay saved but don&apos;t appear on
           the blog — perfect for drafts.
         </p>
@@ -4198,7 +4198,7 @@ function JournalPanel() {
         <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface-2">
           {sorted.map((p) => (
             <li key={p.slug} className="flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center">
-              <img src={p.image} alt="" className="h-12 w-16 shrink-0 rounded-lg bg-white/5 object-cover" />
+              <img src={p.image} alt="" className="h-12 w-16 shrink-0 rounded-lg bg-foreground/10 object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-heading text-sm font-bold">
                   {p.title}
@@ -4298,7 +4298,7 @@ function PostForm({ initial, onSave, onCancel }: { initial: PostFormState; onSav
         <div>
           <label htmlFor="jp-image" className="field-label">Cover image</label>
           <div className="flex items-center gap-2">
-            <img src={form.image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-white/5 object-cover" />
+            <img src={form.image} alt="" className="h-10 w-10 shrink-0 rounded-lg bg-foreground/10 object-cover" />
             <select id="jp-image" className="input !py-2" value={form.image} onChange={(e) => set("image", e.target.value)}>
               {IMAGE_OPTIONS.map((src) => (
                 <option key={src} value={src}>{src.split("/").pop()}</option>

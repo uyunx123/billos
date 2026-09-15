@@ -185,7 +185,7 @@ export default function ChatWidget() {
                   ) : (
                     <div key={m.id} className="flex justify-start">
                       <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-border bg-surface-2 px-4 py-2.5 text-sm text-foreground shadow-soft">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-primary-200">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-primary-700">
                           {m.senderName || "Store team"}
                         </p>
                         <p className="mt-0.5 whitespace-pre-wrap leading-snug">{m.body}</p>
@@ -228,7 +228,7 @@ export default function ChatWidget() {
                   </button>
                 </div>
                 {sent && (
-                  <p role="status" className="mt-2 text-center text-xs font-semibold text-primary-200">
+                  <p role="status" className="mt-2 text-center text-xs font-semibold text-primary-700">
                     Sent — our team will reply here or via {identity.email} / {identity.phone}.
                   </p>
                 )}

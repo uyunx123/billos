@@ -140,7 +140,7 @@ export default function GatewayDemoPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12 sm:py-16">
-      <p className="flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-200">
+      <p className="flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-700">
         <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> {manual ? "Payment instructions" : "Simulated payment gateway"}
       </p>
       <h1 className="mt-2 text-center font-heading text-2xl font-bold tracking-tight">
@@ -171,7 +171,7 @@ export default function GatewayDemoPage() {
         {manual ? (
           <div className="mt-4 rounded-2xl border border-border bg-surface-2 p-5">
             <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-200 ring-1 ring-primary/15">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-700 ring-1 ring-primary/15">
                 <ChannelIcon className="h-5 w-5" aria-hidden="true" />
               </span>
               <div className="min-w-0">
@@ -181,7 +181,7 @@ export default function GatewayDemoPage() {
             </div>
 
             {(manual.accountName || manual.accountNumber || manual.bankName) && (
-              <dl className="mt-4 space-y-2 rounded-xl bg-white/5 p-4 text-sm">
+              <dl className="mt-4 space-y-2 rounded-xl bg-foreground/10 p-4 text-sm">
                 {manual.accountName && (
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/55">Account holder</dt>
@@ -197,7 +197,7 @@ export default function GatewayDemoPage() {
                 {manual.accountNumber && (
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/55">Account number</dt>
-                    <dd className="font-heading text-base font-bold tracking-wide text-primary-200">{manual.accountNumber}</dd>
+                    <dd className="font-heading text-base font-bold tracking-wide text-primary-700">{manual.accountNumber}</dd>
                   </div>
                 )}
               </dl>
@@ -208,7 +208,7 @@ export default function GatewayDemoPage() {
                 <img
                   src={manual.picture}
                   alt={`${manual.title} payment picture`}
-                  className="max-h-64 rounded-2xl border border-border bg-white/5 object-contain p-2"
+                  className="max-h-64 rounded-2xl border border-border bg-foreground/10 object-contain p-2"
                 />
               </div>
             )}
@@ -222,7 +222,7 @@ export default function GatewayDemoPage() {
           </div>
         ) : (
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 p-4 ring-1 ring-primary/15">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary-200 shadow-soft ring-1 ring-primary/10">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary-700 shadow-soft ring-1 ring-primary/10">
               <ChannelIcon className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
@@ -279,7 +279,7 @@ export default function GatewayDemoPage() {
         </div>
         <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-foreground/50">
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          <Link to="/checkout" className="hover:text-gold-300">
+          <Link to="/checkout" className="hover:text-gold-700">
             Back to checkout without paying
           </Link>
         </p>

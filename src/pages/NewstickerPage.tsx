@@ -28,9 +28,9 @@ const LABEL_STYLES: { id: TickerLabelStyle; label: string; hint: string }[] = [
 ];
 
 function chipCls(style: TickerLabelStyle): string {
-  if (style === "big_sale") return "bg-red-500/20 text-red-200 ring-red-400/40";
-  if (style === "custom") return "bg-white/10 text-on-primary/85 ring-white/25";
-  return "bg-gold-400/20 text-gold-200 ring-gold-400/40";
+  if (style === "big_sale") return "bg-red-500/15 text-red-700 ring-red-500/40";
+  if (style === "custom") return "bg-foreground/10 text-foreground/80 ring-foreground/25";
+  return "bg-gold-400/20 text-gold-600 ring-gold-500/40";
 }
 
 export default function NewstickerPage() {
@@ -44,7 +44,7 @@ export default function NewstickerPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <Lock className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Owners only</h1>
@@ -204,7 +204,7 @@ function NewstickerConsole() {
           instantly (it&apos;s running at the bottom of this very page).
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             {ticker.enabled ? `${liveCount} of ${ticker.items.length} items live` : "Bar hidden"} ·{" "}
             {Math.max(8, Math.round(ticker.speed * 0.5))}s per lap
@@ -216,7 +216,7 @@ function NewstickerConsole() {
       </div>
 
       {notice && (
-        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -233,8 +233,8 @@ function NewstickerConsole() {
             <h2 className="font-heading text-lg font-bold">Ticker settings</h2>
             <p className="text-xs text-foreground/55">Turn the bar on or off and set the scroll speed.</p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white/5 px-3 py-1.5 text-xs font-bold text-foreground/70">
-            <Radio className="h-3.5 w-3.5 text-gold-300" aria-hidden="true" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-foreground/10 px-3 py-1.5 text-xs font-bold text-foreground/70">
+            <Radio className="h-3.5 w-3.5 text-gold-600" aria-hidden="true" />
             {ticker.enabled ? "LIVE on the site" : "Off"}
           </span>
         </div>
@@ -252,7 +252,7 @@ function NewstickerConsole() {
         <div>
           <div className="flex items-center justify-between gap-3">
             <span className="field-label !mb-0">Scroll speed</span>
-            <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/70">
+            <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/70">
               {Math.max(8, Math.round(ticker.speed * 0.5))}s per lap
             </span>
           </div>
@@ -268,7 +268,7 @@ function NewstickerConsole() {
           />
           <div className="mt-1 flex justify-between text-[11px] font-semibold text-foreground/45">
             <span>Turbo (8s)</span>
-            <span className="text-gold-300/90">— default ≈ 12s lap —</span>
+            <span className="text-gold-600/90">— default ≈ 12s lap —</span>
             <span>Slow (45s)</span>
           </div>
           <p className="mt-1 text-xs text-foreground/50">
@@ -400,7 +400,7 @@ function NewstickerConsole() {
               </div>
 
               {searchFor.trim() && (
-                <ul className="mt-2 max-h-56 divide-y divide-border overflow-auto rounded-xl border border-border bg-white/5">
+                <ul className="mt-2 max-h-56 divide-y divide-border overflow-auto rounded-xl border border-border bg-foreground/10">
                   {results.length === 0 ? (
                     <li className="px-4 py-6 text-center text-sm text-foreground/55">
                       Nothing matches “{searchFor.trim()}” — try fewer words.
@@ -410,7 +410,7 @@ function NewstickerConsole() {
                       <li key={`${r.kind}-${r.slug}`}>
                         <button
                           type="button"
-                          className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-150 hover:bg-white/10"
+                          className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors duration-150 hover:bg-foreground/10"
                           onClick={() => {
                             setTarget(r);
                             setSearchFor("");
@@ -419,7 +419,7 @@ function NewstickerConsole() {
                           <span
                             className={cn(
                               "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] ring-1",
-                              r.kind === "blog" ? "bg-gold-400/20 text-gold-200 ring-gold-400/40" : "bg-primary-400/20 text-primary-200 ring-primary-400/40"
+                              r.kind === "blog" ? "bg-gold-400/20 text-gold-600 ring-gold-500/40" : "bg-primary-400/20 text-primary-700 ring-primary-500/40"
                             )}
                           >
                             {r.kind === "blog" ? "Blog" : "Product"}
@@ -437,7 +437,7 @@ function NewstickerConsole() {
               )}
 
               {target && target.slug ? (
-                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary-200">
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary-700">
                   <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                   Links to /{target.kind}/{target.slug}
                 </p>
@@ -478,7 +478,7 @@ function NewstickerConsole() {
               The real bar below this page — this is what visitors see, at your speed.
             </p>
           </div>
-          <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/55">
+          <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/55">
             {liveCount} visible
           </span>
         </div>

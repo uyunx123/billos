@@ -112,9 +112,9 @@ export default function ProductDetailPage() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <JsonLd data={[productLd, breadcrumbLd]} />
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-sm text-foreground/55">
-        <Link to="/shop" className="hover:text-gold-300">Shop</Link>
+        <Link to="/shop" className="hover:text-gold-600">Shop</Link>
         <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
-        <Link to={`/shop?category=${product.category}`} className="hover:text-gold-300">
+        <Link to={`/shop?category=${product.category}`} className="hover:text-gold-600">
           {categoryName}
         </Link>
         <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -148,7 +148,7 @@ export default function ProductDetailPage() {
         </div>
 
         <div>
-          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-200">
+          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-700">
             <span className="h-px w-6 bg-gradient-to-r from-gold-500 to-transparent" aria-hidden="true" />
             {categoryName}
           </p>
@@ -170,7 +170,7 @@ export default function ProductDetailPage() {
             <span>({summary.reviews} reviews)</span>
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-white/10 px-5 py-4">
+          <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-foreground/10 px-5 py-4">
             <p className="font-heading text-3xl font-bold tracking-tight">{formatIDR(product.price)}</p>
             {product.compareAt && (
               <p className="text-lg font-semibold text-destructive/60 line-through">
@@ -206,7 +206,7 @@ export default function ProductDetailPage() {
             ) : (
               <>
                 <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-                <span className="text-primary-200">In stock and ready to ship</span>
+                <span className="text-primary-700">In stock and ready to ship</span>
               </>
             )}
           </p>
@@ -233,9 +233,9 @@ export default function ProductDetailPage() {
             </button>
           </div>
 
-          <ul className="mt-8 grid gap-3 rounded-2xl border border-border bg-white/10 p-5 text-sm sm:grid-cols-3">
+          <ul className="mt-8 grid gap-3 rounded-2xl border border-border bg-foreground/10 p-5 text-sm sm:grid-cols-3">
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-200">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-700">
                 <Truck className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">
@@ -245,13 +245,13 @@ export default function ProductDetailPage() {
               </span>
             </li>
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-100 to-gold-200 text-gold-300">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-100 to-gold-200 text-gold-700">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">30-day easy returns</span>
             </li>
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-200">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-700">
                 <Undo2 className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">QRIS, VA, e-wallet &amp; card</span>
@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
               <p className="eyebrow">From the rack</p>
               <h2 className="section-title mt-3">Verified buyer reviews</h2>
             </div>
-            <span className="rounded-full bg-gold-100 px-3 py-1 text-sm font-bold text-gold-200">
+            <span className="rounded-full bg-gold-100 px-3 py-1 text-sm font-bold text-gold-700">
               {summary.rating.toFixed(1)} / 5 · {verifiedReviews.length} new
             </span>
           </div>

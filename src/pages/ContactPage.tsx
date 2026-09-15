@@ -84,7 +84,7 @@ export default function ContactPage() {
                     {...(row.href ? { href: row.href, target: row.href.startsWith("http") ? "_blank" : undefined, rel: "noreferrer" } : {})}
                     className={`card h-full block p-5 transition-all duration-200 ${row.href ? "hover:-translate-y-0.5 hover:border-gold-400/60 hover:shadow-soft" : ""}`}
                   >
-                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-300 ring-1 ring-gold-300/50">
+                    <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-700 ring-1 ring-gold-300/50">
                       <row.icon className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <h2 className="font-heading font-bold">{row.title}</h2>
@@ -113,7 +113,7 @@ export default function ContactPage() {
                       className="card group block h-full p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary-200">
+                        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary-700">
                           <span className="font-heading text-sm font-extrabold">{s.label.slice(0, 2).toUpperCase()}</span>
                         </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-gold-400 to-gold-600 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-primary-950 shadow-gold">
@@ -123,7 +123,7 @@ export default function ContactPage() {
                       </div>
                       <h3 className="mt-3 font-heading font-bold">{s.label}</h3>
                       <p className="mt-0.5 truncate text-sm text-foreground/60">{s.url}</p>
-                      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-primary-200 transition-colors group-hover:text-gold-300">
+                      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-primary-700 transition-colors group-hover:text-gold-700">
                         Open store <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </span>
                     </a>
@@ -139,7 +139,7 @@ export default function ContactPage() {
               <span className="h-px flex-1 bg-gradient-to-r from-gold-500/40 to-transparent" aria-hidden="true" />
             </div>
             {sent ? (
-              <p className="mt-4 flex items-start gap-2.5 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100/60 px-4 py-3.5 text-sm font-semibold text-primary-200 ring-1 ring-primary-200">
+              <p className="mt-4 flex items-start gap-2.5 rounded-xl bg-gradient-to-r from-primary-50 to-primary-100/60 px-4 py-3.5 text-sm font-semibold text-primary-700 ring-1 ring-primary-200">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                 Thanks, {form.name.split(" ")[0] || "friend"}! Your message is in. We reply within one
                 business day.

@@ -10,7 +10,7 @@ export default function CustomPage() {
   if (!page) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <FileText className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Page not found</h1>
@@ -50,7 +50,7 @@ export default function CustomPage() {
                 <li key={p.id}>
                   <Link
                     to={`/page/${p.slug}`}
-                    className="chip transition-colors hover:border-primary/50 hover:text-gold-300"
+                    className="chip transition-colors hover:border-primary/50 hover:text-gold-700"
                   >
                     {p.title}
                   </Link>

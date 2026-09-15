@@ -61,7 +61,7 @@ export default function PartnershipsPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <Lock className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Owners only</h1>
@@ -199,7 +199,7 @@ function PartnershipsConsole() {
           sits at the top of the strip. Changes go live instantly and sync to your database.
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             {activeCount} of {partners.length} partner{partners.length === 1 ? "" : "s"} live
           </span>
@@ -210,7 +210,7 @@ function PartnershipsConsole() {
       </div>
 
       {notice && (
-        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-200">
+        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
           {notice}
         </p>
       )}
@@ -353,11 +353,11 @@ function PartnershipsConsole() {
               Exactly how the strip appears under the hero — order and the active toggle apply here.
             </p>
           </div>
-          <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs font-bold text-foreground/55">
+          <span className="rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-bold text-foreground/55">
             {activeCount} visible
           </span>
         </div>
-        <div className="mt-4 rounded-2xl border border-border bg-white/5 p-4">
+        <div className="mt-4 rounded-2xl border border-border bg-foreground/10 p-4">
           <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.24em] text-foreground/45">
             In partnership with
           </p>
@@ -430,12 +430,12 @@ function PartnershipsConsole() {
                 <p className="flex flex-wrap items-center gap-2">
                   <span className="truncate font-heading text-sm font-bold">{p.name}</span>
                   {p.isMain && (
-                    <span className="rounded-full bg-gold-400/15 px-2 py-0.5 text-[11px] font-bold text-gold-200 ring-1 ring-gold-400/30">
+                    <span className="rounded-full bg-gold-400/15 px-2 py-0.5 text-[11px] font-bold text-gold-700 ring-1 ring-gold-400/30">
                       Main sponsor
                     </span>
                   )}
                   {!p.active && (
-                    <span className="rounded-full bg-white/5 px-2 py-0.5 text-[11px] font-bold text-foreground/50">paused</span>
+                    <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[11px] font-bold text-foreground/50">paused</span>
                   )}
                 </p>
                 <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-foreground/55">
@@ -472,7 +472,7 @@ function PartnershipsConsole() {
                   />
                   {p.active ? "Live" : "Paused"}
                 </label>
-                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gold-200" title="Feature as main sponsor — big logo up top">
+                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gold-700" title="Feature as main sponsor — big logo up top">
                   <input
                     type="checkbox"
                     checked={p.isMain}

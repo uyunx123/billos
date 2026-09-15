@@ -129,8 +129,8 @@ export default function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28 lg:pt-24">
           <div className="max-w-xl">
-            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-surface-2/60 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-200 backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-gold-300" aria-hidden="true" />
+            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-surface-2/60 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-700 backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-gold-600" aria-hidden="true" />
               {hero.badge}
             </span>
             <h1 className="animate-fade-up mt-6 text-balance font-heading text-[2.5rem] font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl" style={{ animationDelay: "90ms" }}>
@@ -156,7 +156,7 @@ export default function HomePage() {
                 ["98%", "delivered on time"],
               ].map(([num, label]) => (
                 <div key={label} className="px-3 first:pl-0">
-                  <dd className="font-heading text-2xl font-bold text-gold-300">{num}</dd>
+                  <dd className="font-heading text-2xl font-bold text-gold-600">{num}</dd>
                   <dt className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-foreground/55">{label}</dt>
                 </div>
               ))}
@@ -244,7 +244,7 @@ export default function HomePage() {
               <span className="text-xs font-bold text-foreground">4.8/5 from 12,000+ players</span>
             </div>
             <div className="absolute -bottom-5 -right-2 hidden animate-float-slow items-center gap-2 rounded-2xl border border-border bg-surface-2/85 px-4 py-3 shadow-soft backdrop-blur-xl sm:flex">
-              <Truck className="h-4 w-4 text-gold-300" aria-hidden="true" />
+              <Truck className="h-4 w-4 text-gold-600" aria-hidden="true" />
               <span className="text-xs font-bold text-foreground">Free shipping over Rp 1jt</span>
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== Official stores band ===== */}
-      <section aria-label="Official stores" className="border-y border-border bg-white/10">
+      <section aria-label="Official stores" className="border-y border-border bg-foreground/10">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <p className="mb-5 text-center text-[11px] font-bold uppercase tracking-[0.24em] text-foreground/45">
             Order on your favourite marketplace · Official stores
@@ -457,7 +457,7 @@ export default function HomePage() {
             <li key={v.title}>
               <Reveal delay={i * 70} className="h-full">
                 <div className="card lift h-full p-6">
-                  <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-300 ring-1 ring-gold-300/60">
+                  <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-700 ring-1 ring-gold-500/40">
                     <v.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <h3 className="font-heading text-lg font-bold">{v.title}</h3>
@@ -470,7 +470,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== Testimonials ===== */}
-      <section className="relative overflow-hidden border-y border-border bg-white/10 py-16 lg:py-24">
+      <section className="relative overflow-hidden border-y border-border bg-foreground/10 py-16 lg:py-24">
         <div className="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-primary-200/40 blur-3xl" aria-hidden="true" />
 
@@ -538,7 +538,7 @@ export default function HomePage() {
               <Reveal className="h-full">
                 <div className="card flex h-full flex-col p-6">
                   <div className="flex items-end gap-3">
-                    <p className="font-heading text-5xl font-bold tracking-tight text-primary-200">
+                    <p className="font-heading text-5xl font-bold tracking-tight text-primary-700">
                       {avgRating.toFixed(1)}
                     </p>
                     <div className="pb-1.5">
@@ -563,7 +563,7 @@ export default function HomePage() {
                       return (
                         <li key={d.star} className="flex items-center gap-2.5 text-xs">
                           <span className="w-6 shrink-0 font-bold text-foreground/60">{d.star}★</span>
-                          <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/5" aria-hidden="true">
+                          <span className="h-2 flex-1 overflow-hidden rounded-full bg-foreground/10" aria-hidden="true">
                             <span
                               className="block h-full rounded-full bg-gradient-to-r from-gold-400 to-gold-600"
                               style={{ width: `${pct}%` }}
@@ -588,7 +588,7 @@ export default function HomePage() {
                   <Reveal delay={60}>
                     <ul className="grid grid-cols-3 gap-3 sm:grid-cols-6" aria-label="Customer review photos">
                       {photoWall.map((p, i) => (
-                        <li key={i} className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-white/5">
+                        <li key={i} className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-foreground/10">
                           <img
                             src={p.src}
                             alt={`Review photo from ${p.review.author}`}
@@ -649,7 +649,7 @@ export default function HomePage() {
                                 {prod ? (
                                   <Link
                                     to={`/product/${prod.slug}`}
-                                    className="block truncate text-xs font-semibold text-primary-200 hover:underline"
+                                    className="block truncate text-xs font-semibold text-primary-700 hover:underline"
                                   >
                                     on {prod.name}
                                   </Link>
@@ -688,7 +688,7 @@ export default function HomePage() {
             <li key={post.slug}>
               <Reveal delay={i * 80} className="h-full">
                 <Link to={`/blog/${post.slug}`} className="card lift group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-gold-400/50">
-                  <div className="relative aspect-[16/10] overflow-hidden bg-white/5">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-foreground/10">
                     <img
                       src={post.image}
                       alt={post.title}
@@ -700,7 +700,7 @@ export default function HomePage() {
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-2.5 p-5">
-                    <h3 className="font-heading text-lg font-bold leading-snug transition-colors duration-150 group-hover:text-gold-300">
+                    <h3 className="font-heading text-lg font-bold leading-snug transition-colors duration-150 group-hover:text-gold-600">
                       {post.title}
                     </h3>
                     <p className="line-clamp-2 text-sm leading-relaxed text-foreground/60">{post.excerpt}</p>

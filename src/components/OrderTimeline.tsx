@@ -61,7 +61,7 @@ export default function OrderTimeline({ order }: { order: Order }) {
                     className={`grid h-10 w-10 place-items-center rounded-full ring-2 transition-colors ${
                       done
                         ? "bg-primary text-on-primary ring-primary"
-                        : "bg-white/5 text-foreground/35 ring-border"
+                        : "bg-foreground/10 text-foreground/35 ring-border"
                     }`}
                     aria-hidden="true"
                   >

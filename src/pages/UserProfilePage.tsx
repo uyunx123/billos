@@ -26,7 +26,7 @@ export default function UserProfilePage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-200 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
           <UserRound className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Sign in to view your profile</h1>
@@ -100,7 +100,7 @@ export default function UserProfilePage() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {isAdmin && (
-              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-200 ring-1 ring-primary/30">
+              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-700 ring-1 ring-primary/30">
                 {ROLE_LABEL[user.role]}
               </span>
             )}
@@ -119,7 +119,7 @@ export default function UserProfilePage() {
               <Wrapper
                 {...(row.href ? { href: row.href, className: "block" } : { className: "block" })}
               >
-                <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary-200">
+                <span className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary-700">
                   <row.icon className="h-4.5 w-4.5" aria-hidden="true" />
                 </span>
                 <p className="text-xs font-bold uppercase tracking-wider text-foreground/45">

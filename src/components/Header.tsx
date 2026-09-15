@@ -150,7 +150,7 @@ export default function Header() {
                 end={link.to === "/"}
                 className={({ isActive }) =>
                   `nav-link rounded-xl px-4 py-2 text-sm font-semibold transition-colors duration-150 ${
-                    isActive ? "active text-primary-200" : "text-foreground/70 hover:text-gold-300"
+                    isActive ? "active text-primary-700" : "text-foreground/70 hover:text-gold-600"
                   }`
                 }
               >
@@ -201,14 +201,14 @@ export default function Header() {
                       <Link
                         to="/orders"
                         role="menuitem"
-                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-300"
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-gold-600"
                       >
                         <Package className="h-4 w-4 text-foreground/45" aria-hidden="true" /> My orders
                       </Link>
                       <Link
                         to="/profile"
                         role="menuitem"
-                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-300"
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-gold-600"
                       >
                         <UserRound className="h-4 w-4 text-foreground/45" aria-hidden="true" /> My profile
                       </Link>
@@ -216,7 +216,7 @@ export default function Header() {
                         <Link
                           to="/admin"
                           role="menuitem"
-                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-300"
+                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-gold-600"
                         >
                           <LayoutDashboard className="h-4 w-4 text-foreground/45" aria-hidden="true" /> Admin console
                         </Link>
@@ -324,14 +324,14 @@ export default function Header() {
                     end={link.to === "/"}
                     className={({ isActive }) =>
                       `flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 ${
-                        isActive ? "bg-primary-400/15 text-primary-200" : "text-foreground/80 hover:bg-white/5"
+                        isActive ? "bg-primary-400/15 text-primary-700" : "text-foreground/80 hover:bg-foreground/10"
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         {link.label}
-                        {isActive && <ChevronRight className="h-4 w-4 text-gold-300" aria-hidden="true" />}
+                        {isActive && <ChevronRight className="h-4 w-4 text-gold-600" aria-hidden="true" />}
                       </>
                     )}
                   </NavLink>
@@ -345,7 +345,7 @@ export default function Header() {
                   <Link
                     key={c.id}
                     to={`/shop?category=${c.id}`}
-                    className="flex items-center justify-between rounded-xl px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-white/5 hover:text-gold-300"
+                    className="flex items-center justify-between rounded-xl px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-foreground/10 hover:text-gold-600"
                   >
                     {c.name}
                     <ChevronRight className="h-3.5 w-3.5 text-foreground/30" aria-hidden="true" />
@@ -354,7 +354,7 @@ export default function Header() {
               </nav>
             </div>
 
-            <div className="border-t border-border bg-white/10 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            <div className="border-t border-border bg-foreground/10 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
               {user ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 px-1 pb-1">
