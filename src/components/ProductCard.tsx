@@ -31,7 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
     <article className="card lift group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-gold-400/50">
       <Link
         to={`/product/${product.slug}`}
-        className="relative block aspect-square overflow-hidden bg-gradient-to-br from-primary-100 via-muted to-primary-50"
+        className="relative block aspect-square overflow-hidden bg-gradient-to-br from-primary-900 via-primary-950 to-background"
         aria-label={product.name}
       >
         <img
@@ -69,7 +69,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-700">{categoryName}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary-400">{categoryName}</p>
           <span className="inline-flex items-center gap-1 rounded-full bg-tokopedia/10 px-2 py-0.5 text-[10px] font-bold text-tokopedia ring-1 ring-tokopedia/20">
             <Check className="h-3 w-3" aria-hidden="true" />
             Official

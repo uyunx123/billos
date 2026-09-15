@@ -150,7 +150,7 @@ export default function Header() {
                 end={link.to === "/"}
                 className={({ isActive }) =>
                   `nav-link rounded-xl px-4 py-2 text-sm font-semibold transition-colors duration-150 ${
-                    isActive ? "active text-primary-700" : "text-foreground/70 hover:text-gold-600"
+                    isActive ? "active text-primary-400" : "text-foreground/70 hover:text-gold-600"
                   }`
                 }
               >
@@ -324,7 +324,7 @@ export default function Header() {
                     end={link.to === "/"}
                     className={({ isActive }) =>
                       `flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150 ${
-                        isActive ? "bg-primary-400/15 text-primary-700" : "text-foreground/80 hover:bg-foreground/10"
+                        isActive ? "bg-primary-400/15 text-primary-400" : "text-foreground/80 hover:bg-foreground/10"
                       }`
                     }
                   >

@@ -53,7 +53,7 @@ export default function BlogPostPage() {
       </Link>
 
       <header className="mt-6">
-        <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-700">
+        <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-400">
           <span className="h-px w-6 bg-gradient-to-r from-gold-500 to-transparent" aria-hidden="true" />
           {post.category}
         </p>
@@ -68,7 +68,7 @@ export default function BlogPostPage() {
         </p>
       </header>
 
-      <div className="relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-primary-100 via-muted to-primary-50 ring-1 ring-border/60">
+      <div className="relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-br from-primary-900 via-primary-950 to-background ring-1 ring-border/60">
         <img src={post.image} alt="" className="aspect-[16/9] w-full object-cover" />
       </div>
 
@@ -110,7 +110,7 @@ export default function BlogPostPage() {
                 to={`/blog/${p.slug}`}
                 className="card lift p-5 transition-colors duration-300 hover:border-gold-400/50"
               >
-                <p className="text-[11px] font-bold uppercase tracking-wider text-primary-700">{p.category}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-primary-400">{p.category}</p>
                 <h3 className="mt-1 font-heading font-bold leading-snug">{p.title}</h3>
                 <p className="mt-1 text-xs font-semibold text-foreground/50">{formatDate(p.date)}</p>
               </Link>

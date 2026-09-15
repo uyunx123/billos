@@ -80,7 +80,7 @@ ${renderReceipt(data, totals, settings)}
   if (!order || !data || !totals) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <ReceiptText className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Receipt not found</h1>
@@ -110,7 +110,7 @@ ${renderReceipt(data, totals, settings)}
 
       <p className="no-print mt-4 text-xs text-foreground/50">
         Order <span className="font-bold text-foreground/70">{order.id}</span> ·{" "}
-        <Link to="/orders" className="font-bold text-primary-700 hover:underline">track its status</Link>
+        <Link to="/orders" className="font-bold text-primary-400 hover:underline">track its status</Link>
       </p>
 
       <div className="receipt-sheet card mt-4 overflow-hidden !rounded-2xl">
@@ -125,10 +125,10 @@ ${renderReceipt(data, totals, settings)}
               </div>
             </div>
             <div className="text-right">
-              <p className="font-heading text-lg font-bold text-primary-700">{data.number}</p>
+              <p className="font-heading text-lg font-bold text-primary-400">{data.number}</p>
               <p className="text-xs text-foreground/55">Issued {new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeStyle: "short" }).format(new Date(data.issuedAt))}</p>
               {settings.showStatus && (
-                <span className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${data.paymentStatus === "accepted" ? "bg-primary/10 text-primary-700" : data.status === "Cancelled" ? "bg-destructive/10 text-destructive" : "bg-gold-100 text-gold-700"}`}>
+                <span className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${data.paymentStatus === "accepted" ? "bg-primary/10 text-primary-400" : data.status === "Cancelled" ? "bg-destructive/10 text-destructive" : "bg-gold-500/15 text-gold-300"}`}>
                   {labelForStatus(data.paymentStatus)}
                 </span>
               )}
@@ -184,11 +184,11 @@ ${renderReceipt(data, totals, settings)}
             {totals.discount > 0 && (
               <div className="flex justify-between">
                 <dt className="text-foreground/55">{data.couponCode ? `Coupon (${data.couponCode})` : "Discount"}</dt>
-                <dd className="font-semibold text-gold-700">−{formatIDR(totals.discount)}</dd>
+                <dd className="font-semibold text-gold-300">−{formatIDR(totals.discount)}</dd>
               </div>
             )}
             <div className="flex justify-between"><dt className="text-foreground/55">Shipping ({data.carrier || "delivery"})</dt><dd className="font-semibold">{formatIDR(totals.shipping)}</dd></div>
-            <div className="flex justify-between border-t border-border pt-2"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold text-primary-700">{formatIDR(totals.total)}</dd></div>
+            <div className="flex justify-between border-t border-border pt-2"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold text-primary-400">{formatIDR(totals.total)}</dd></div>
           </dl>
 
           <p className="mt-4 text-xs text-foreground/55">
@@ -206,7 +206,7 @@ ${renderReceipt(data, totals, settings)}
 
       <p className="no-print mt-4 text-center text-xs text-foreground/45">
         Save the receipt as HTML, or print/save-as-PDF for your records. Need help?{" "}
-        <Link to="/contact" className="font-bold text-primary-700 hover:underline">Contact us</Link>.
+        <Link to="/contact" className="font-bold text-primary-400 hover:underline">Contact us</Link>.
       </p>
     </div>
   );

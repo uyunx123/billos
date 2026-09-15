@@ -39,7 +39,7 @@ export default function EditProfilePage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <UserRound className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Sign in to edit your profile</h1>
@@ -117,7 +117,7 @@ export default function EditProfilePage() {
       </div>
 
       {notice && (
-        <p role="status" className="mt-6 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary-700">
+        <p role="status" className="mt-6 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary-400">
           <Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> {notice}
         </p>
       )}
@@ -130,7 +130,7 @@ export default function EditProfilePage() {
       {/* Profile details */}
       <form onSubmit={saveProfile} className="card mt-6 space-y-5 p-6" noValidate>
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary-700">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary-400">
             <UserRound className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
@@ -221,7 +221,7 @@ export default function EditProfilePage() {
       {/* Password */}
       <form onSubmit={savePassword} className="card mt-6 space-y-5 p-6" noValidate>
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-100 text-gold-700">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-500/15 text-gold-300">
             <KeyRound className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>

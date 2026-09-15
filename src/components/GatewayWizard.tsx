@@ -164,7 +164,7 @@ function StepDots({ steps, current }: { steps: string[]; current: number }) {
           >
             {i < current ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : i + 1}
           </span>
-          <span className={`text-xs font-semibold sm:text-sm ${i === current ? "text-foreground" : i < current ? "text-primary-700" : "text-foreground/45"}`}>
+          <span className={`text-xs font-semibold sm:text-sm ${i === current ? "text-foreground" : i < current ? "text-primary-400" : "text-foreground/45"}`}>
             {label}
           </span>
           {i < steps.length - 1 && <span className="h-px flex-1 bg-border" aria-hidden="true" />}
@@ -382,12 +382,12 @@ export default function GatewayWizard({ slug, existing, onClose, onConnected }: 
       return (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary-700 ring-1 ring-primary/25">
+            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary-400 ring-1 ring-primary/25">
               <PlugZap className="h-6 w-6" aria-hidden="true" />
             </span>
             <div>
               <p className="font-heading text-lg font-bold">{entry.name}</p>
-              <p className="text-xs font-bold uppercase tracking-wider text-primary-700">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary-400">
                 {GATEWAY_TYPE_LABEL[entry.type]} · {entry.tagline}
               </p>
             </div>
@@ -398,14 +398,14 @@ export default function GatewayWizard({ slug, existing, onClose, onConnected }: 
             <ul className="mt-2 space-y-1.5 text-sm text-foreground/70">
               {entry.needs.map((n) => (
                 <li key={n} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-700" aria-hidden="true" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary-400" aria-hidden="true" />
                   {n}
                 </li>
               ))}
             </ul>
           </div>
           <p className="flex items-center gap-1.5 text-xs text-foreground/50">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary-700" aria-hidden="true" />
+            <ShieldCheck className="h-3.5 w-3.5 text-primary-400" aria-hidden="true" />
             API keys are stored server-side and never shown to customers.
           </p>
         </div>
@@ -415,7 +415,7 @@ export default function GatewayWizard({ slug, existing, onClose, onConnected }: 
     if (step === totalSteps - 1) {
       return (
         <div className="py-4 text-center">
-          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary/15 text-primary-700 ring-1 ring-primary/30">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary/15 text-primary-400 ring-1 ring-primary/30">
             <CheckCircle2 className="h-8 w-8" aria-hidden="true" />
           </span>
           <h3 className="mt-4 font-heading text-xl font-bold">Gateway connected</h3>
@@ -423,7 +423,7 @@ export default function GatewayWizard({ slug, existing, onClose, onConnected }: 
             <strong>{values.display_name?.trim() || entry.name}</strong> is live at checkout — customers can
             now pay with it. You can pause or reconfigure it any time from the configuration page.
           </p>
-          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
+          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/15/60 px-3 py-1 text-xs font-bold text-gold-300">
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             Live in the shop
           </div>
@@ -480,7 +480,7 @@ export default function GatewayWizard({ slug, existing, onClose, onConnected }: 
               <p
                 role="status"
                 className={`mt-3 flex items-start gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold ${
-                  testResult.ok ? "bg-primary/10 text-primary-700" : "bg-destructive/10 text-destructive"
+                  testResult.ok ? "bg-primary/10 text-primary-400" : "bg-destructive/10 text-destructive"
                 }`}
               >
                 {testResult.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}

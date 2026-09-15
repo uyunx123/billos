@@ -94,7 +94,7 @@ export default function ShopPage() {
           {filtered.length} product{filtered.length === 1 ? "" : "s"}
           {query ? ` matching “${query}”` : ""} — exact gear, plus honest care.
         </p>
-        <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-100/60 px-3.5 py-1.5 text-xs font-bold text-gold-700">
+        <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/15/60 px-3.5 py-1.5 text-xs font-bold text-gold-300">
           <Truck className="h-3.5 w-3.5" aria-hidden="true" />
           Official store · Free shipping above Rp 1.000.000
         </span>
@@ -162,7 +162,7 @@ export default function ShopPage() {
       {sponsoredPicks.length > 0 && (
         <section aria-label="Sponsored products" className="mb-10">
           <div className="mb-4 flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-100/70 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-gold-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/15/70 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-gold-300">
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               Sponsored
             </span>
@@ -193,7 +193,7 @@ export default function ShopPage() {
         ) : null
       ) : (
         <div className="card mx-auto max-w-md p-10 text-center">
-          <span className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+          <span className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
             <PackageSearch className="h-7 w-7" aria-hidden="true" />
           </span>
           <h2 className="font-heading text-lg font-bold">Nothing on the felt</h2>

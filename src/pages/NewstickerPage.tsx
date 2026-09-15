@@ -44,7 +44,7 @@ export default function NewstickerPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <Lock className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Owners only</h1>
@@ -204,7 +204,7 @@ function NewstickerConsole() {
           instantly (it&apos;s running at the bottom of this very page).
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/15/60 px-3 py-1 text-xs font-bold text-gold-300">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             {ticker.enabled ? `${liveCount} of ${ticker.items.length} items live` : "Bar hidden"} ·{" "}
             {Math.max(8, Math.round(ticker.speed * 0.5))}s per lap
@@ -216,7 +216,7 @@ function NewstickerConsole() {
       </div>
 
       {notice && (
-        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
+        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
           {notice}
         </p>
       )}
@@ -419,7 +419,7 @@ function NewstickerConsole() {
                           <span
                             className={cn(
                               "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] ring-1",
-                              r.kind === "blog" ? "bg-gold-400/20 text-gold-600 ring-gold-500/40" : "bg-primary-400/20 text-primary-700 ring-primary-500/40"
+                              r.kind === "blog" ? "bg-gold-400/20 text-gold-600 ring-gold-500/40" : "bg-primary-400/20 text-primary-400 ring-primary-500/40"
                             )}
                           >
                             {r.kind === "blog" ? "Blog" : "Product"}
@@ -437,7 +437,7 @@ function NewstickerConsole() {
               )}
 
               {target && target.slug ? (
-                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary-700">
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary-400">
                   <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                   Links to /{target.kind}/{target.slug}
                 </p>

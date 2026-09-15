@@ -61,7 +61,7 @@ export default function PartnershipsPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <Lock className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Owners only</h1>
@@ -199,7 +199,7 @@ function PartnershipsConsole() {
           sits at the top of the strip. Changes go live instantly and sync to your database.
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-100/60 px-3 py-1 text-xs font-bold text-gold-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/25 bg-gold-500/15/60 px-3 py-1 text-xs font-bold text-gold-300">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             {activeCount} of {partners.length} partner{partners.length === 1 ? "" : "s"} live
           </span>
@@ -210,7 +210,7 @@ function PartnershipsConsole() {
       </div>
 
       {notice && (
-        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-700">
+        <p role="status" className="mt-6 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
           {notice}
         </p>
       )}
@@ -430,7 +430,7 @@ function PartnershipsConsole() {
                 <p className="flex flex-wrap items-center gap-2">
                   <span className="truncate font-heading text-sm font-bold">{p.name}</span>
                   {p.isMain && (
-                    <span className="rounded-full bg-gold-400/15 px-2 py-0.5 text-[11px] font-bold text-gold-700 ring-1 ring-gold-400/30">
+                    <span className="rounded-full bg-gold-400/15 px-2 py-0.5 text-[11px] font-bold text-gold-300 ring-1 ring-gold-400/30">
                       Main sponsor
                     </span>
                   )}
@@ -472,7 +472,7 @@ function PartnershipsConsole() {
                   />
                   {p.active ? "Live" : "Paused"}
                 </label>
-                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gold-700" title="Feature as main sponsor — big logo up top">
+                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-gold-300" title="Feature as main sponsor — big logo up top">
                   <input
                     type="checkbox"
                     checked={p.isMain}

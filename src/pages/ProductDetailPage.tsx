@@ -122,7 +122,7 @@ export default function ProductDetailPage() {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary-100 via-muted to-primary-50 shadow-soft">
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary-900 via-primary-950 to-background shadow-soft">
           <img
             src={product.image}
             alt={product.name}
@@ -148,7 +148,7 @@ export default function ProductDetailPage() {
         </div>
 
         <div>
-          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-700">
+          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-primary-400">
             <span className="h-px w-6 bg-gradient-to-r from-gold-500 to-transparent" aria-hidden="true" />
             {categoryName}
           </p>
@@ -206,7 +206,7 @@ export default function ProductDetailPage() {
             ) : (
               <>
                 <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-                <span className="text-primary-700">In stock and ready to ship</span>
+                <span className="text-primary-400">In stock and ready to ship</span>
               </>
             )}
           </p>
@@ -235,7 +235,7 @@ export default function ProductDetailPage() {
 
           <ul className="mt-8 grid gap-3 rounded-2xl border border-border bg-foreground/10 p-5 text-sm sm:grid-cols-3">
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-700">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-800 to-primary-950 text-primary-300">
                 <Truck className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">
@@ -245,13 +245,13 @@ export default function ProductDetailPage() {
               </span>
             </li>
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-100 to-gold-200 text-gold-700">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-100 to-gold-200 text-gold-300">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">30-day easy returns</span>
             </li>
             <li className="flex items-center gap-2.5 rounded-xl bg-surface-2/60 px-3.5 py-3 ring-1 ring-border/60">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-700">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-800 to-primary-950 text-primary-300">
                 <Undo2 className="h-4 w-4" aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold leading-snug">QRIS, VA, e-wallet &amp; card</span>
@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
               <p className="eyebrow">From the rack</p>
               <h2 className="section-title mt-3">Verified buyer reviews</h2>
             </div>
-            <span className="rounded-full bg-gold-100 px-3 py-1 text-sm font-bold text-gold-700">
+            <span className="rounded-full bg-gold-500/15 px-3 py-1 text-sm font-bold text-gold-300">
               {summary.rating.toFixed(1)} / 5 · {verifiedReviews.length} new
             </span>
           </div>

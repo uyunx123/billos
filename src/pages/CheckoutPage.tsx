@@ -240,7 +240,7 @@ export default function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-5 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <ShoppingBag className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Nothing to check out</h1>
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
             >
               {s.done ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : i + 1}
             </span>
-            <span className={`text-xs font-semibold sm:text-sm ${s.active ? "text-foreground" : s.done ? "text-primary-700" : "text-foreground/45"}`}>
+            <span className={`text-xs font-semibold sm:text-sm ${s.active ? "text-foreground" : s.done ? "text-primary-400" : "text-foreground/45"}`}>
               {s.label}
             </span>
             {i < steps.length - 1 && <span className="h-px flex-1 bg-border" aria-hidden="true" />}
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
         <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-accent-soft bg-accent-soft/60 p-4 text-sm">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <p>
-            <button type="button" onClick={() => openAuth("signin")} className="cursor-pointer font-bold text-accent underline underline-offset-2 hover:text-gold-700">
+            <button type="button" onClick={() => openAuth("signin")} className="cursor-pointer font-bold text-accent underline underline-offset-2 hover:text-gold-300">
               Sign in
             </button>{" "}
             to save this order to your account and track it later — or continue as a guest.
@@ -368,7 +368,7 @@ export default function CheckoutPage() {
             <div className="mt-5 border-t border-border pt-5">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-foreground/80">
-                  <MapPin className="mr-1.5 inline h-4 w-4 text-primary-700" aria-hidden="true" />
+                  <MapPin className="mr-1.5 inline h-4 w-4 text-primary-400" aria-hidden="true" />
                   Pin on map {form.lat !== undefined && <span className="text-foreground/45">· pin placed</span>}
                 </p>
                 <button type="button" className="btn btn-ghost !py-1.5 text-sm" onClick={() => setShowMap((v) => !v)} aria-expanded={showMap}>
@@ -425,9 +425,9 @@ export default function CheckoutPage() {
                     )}
                     <span className="flex items-center justify-between">
                       <span className="font-heading font-bold">{c.name}</span>
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${carrier === c.id ? "bg-gold-100 text-gold-700" : "bg-foreground/10 text-foreground/70"}`}>{c.eta}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${carrier === c.id ? "bg-gold-500/15 text-gold-300" : "bg-foreground/10 text-foreground/70"}`}>{c.eta}</span>
                     </span>
-                    <span className="mt-2 block text-sm font-semibold text-primary-700">
+                    <span className="mt-2 block text-sm font-semibold text-primary-400">
                       {subtotal >= settings.freeShippingThreshold || allFreeShip ? "Free" : formatIDR(shippingRate(c, Math.max(weightKg, 1)))}
                     </span>
                   </label>
@@ -451,7 +451,7 @@ export default function CheckoutPage() {
                       key={g.id}
                       className={`relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 p-4 transition-all duration-200 ${
                         payment === g.id
-                          ? "border-gold-500 bg-gold-100/40 shadow-gold"
+                          ? "border-gold-500 bg-gold-500/15/40 shadow-gold"
                           : "border-border bg-surface-2 hover:border-primary/50 hover:shadow-soft"
                       }`}
                     >
@@ -471,7 +471,7 @@ export default function CheckoutPage() {
                           <Check className="h-3.5 w-3.5" aria-hidden="true" />
                         </span>
                       )}
-                      <Icon className={`h-5 w-5 shrink-0 ${payment === g.id ? "text-gold-700" : "text-primary-700"}`} aria-hidden="true" />
+                      <Icon className={`h-5 w-5 shrink-0 ${payment === g.id ? "text-gold-300" : "text-primary-400"}`} aria-hidden="true" />
                       <span className="text-sm font-semibold">{g.name}</span>
                     </label>
                   );
@@ -493,7 +493,7 @@ export default function CheckoutPage() {
                   <span className="text-foreground/70">
                     {p.name} × {l.qty}
                     {p.freeShipping && (
-                      <span className="ml-1.5 inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary-700 align-middle">
+                      <span className="ml-1.5 inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary-400 align-middle">
                         <Truck className="h-2.5 w-2.5" aria-hidden="true" /> free ship
                       </span>
                     )}
@@ -512,10 +512,10 @@ export default function CheckoutPage() {
                 }`}
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  <Ticket className={`h-4 w-4 shrink-0 ${appliedEval.ok ? "text-gold-700" : "text-destructive"}`} aria-hidden="true" />
+                  <Ticket className={`h-4 w-4 shrink-0 ${appliedEval.ok ? "text-gold-300" : "text-destructive"}`} aria-hidden="true" />
                   <span className="truncate font-bold">{appliedEval.coupon?.code}</span>
                   {appliedEval.ok ? (
-                    <span className="shrink-0 font-semibold text-primary-700">−{formatIDR(appliedEval.discount)}</span>
+                    <span className="shrink-0 font-semibold text-primary-400">−{formatIDR(appliedEval.discount)}</span>
                   ) : (
                     <span className="shrink-0 text-xs font-semibold text-destructive">{appliedEval.error}</span>
                   )}
@@ -548,7 +548,7 @@ export default function CheckoutPage() {
               </div>
             )}
             {couponMsg && !appliedCode && (
-              <p role="alert" className={`mt-2 text-xs font-semibold ${couponMsg.kind === "ok" ? "text-primary-700" : "text-destructive"}`}>
+              <p role="alert" className={`mt-2 text-xs font-semibold ${couponMsg.kind === "ok" ? "text-primary-400" : "text-destructive"}`}>
                 {couponMsg.text}
               </p>
             )}
@@ -562,7 +562,7 @@ export default function CheckoutPage() {
           <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
             <div className="flex justify-between"><dt className="text-foreground/55">Subtotal</dt><dd className="font-semibold">{formatIDR(subtotal)}</dd></div>
             {discount > 0 && appliedEval?.coupon && (
-              <div className="flex justify-between"><dt className="text-foreground/55">Coupon ({appliedEval.coupon.code})</dt><dd className="font-semibold text-gold-700">−{formatIDR(discount)}</dd></div>
+              <div className="flex justify-between"><dt className="text-foreground/55">Coupon ({appliedEval.coupon.code})</dt><dd className="font-semibold text-gold-300">−{formatIDR(discount)}</dd></div>
             )}
             <div className="flex justify-between"><dt className="text-foreground/55">Shipping ({selected?.name})</dt><dd className="font-semibold">{shippingLabel}</dd></div>
             <div className="flex justify-between border-t border-border pt-2"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold">{formatIDR(total)}</dd></div>

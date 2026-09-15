@@ -21,7 +21,7 @@ export default function CartPage() {
   if (count === 0) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
-        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/25 text-primary-700 ring-1 ring-primary-400/40">
+        <span className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/100/25 text-primary-400 ring-1 ring-primary-400/40">
           <PackageOpen className="h-8 w-8" aria-hidden="true" />
         </span>
         <h1 className="font-heading text-2xl font-bold">Your bag is empty</h1>
@@ -62,17 +62,17 @@ export default function CartPage() {
             {allFreeShip ? (
               <>
                 <Sparkles className="mr-1.5 inline h-4 w-4 text-gold-500" aria-hidden="true" />
-                <span className="font-bold text-primary-700">Everything in your bag ships free — nice rack!</span>
+                <span className="font-bold text-primary-400">Everything in your bag ships free — nice rack!</span>
               </>
             ) : remaining > 0 ? (
               <>
                 <Sparkles className="mr-1.5 inline h-4 w-4 text-gold-500" aria-hidden="true" />
-                Add <span className="font-bold text-primary-700">{formatIDR(remaining)}</span> more for free shipping
+                Add <span className="font-bold text-primary-400">{formatIDR(remaining)}</span> more for free shipping
               </>
             ) : (
               <>
                 <Sparkles className="mr-1.5 inline h-4 w-4 text-gold-500" aria-hidden="true" />
-                <span className="font-bold text-primary-700">You&apos;ve unlocked free shipping — nice rack!</span>
+                <span className="font-bold text-primary-400">You&apos;ve unlocked free shipping — nice rack!</span>
               </>
             )}
           </p>
@@ -104,7 +104,7 @@ export default function CartPage() {
               <li key={line.productId} className="card lift flex gap-4 p-4 transition-colors duration-300 hover:border-gold-400/50 sm:items-center">
                 <Link
                   to={`/product/${product.slug}`}
-                  className="block h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 via-muted to-primary-50 sm:h-28 sm:w-28"
+                  className="block h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-900 via-primary-950 to-background sm:h-28 sm:w-28"
                 >
                   <img
                     src={product.image}
@@ -114,7 +114,7 @@ export default function CartPage() {
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <Link to={`/product/${product.slug}`} className="font-heading font-bold transition-colors hover:text-gold-700">
+                    <Link to={`/product/${product.slug}`} className="font-heading font-bold transition-colors hover:text-gold-300">
                       {product.name}
                     </Link>
                     <p className="mt-1 text-sm text-foreground/55">{formatIDR(product.price)} each</p>
@@ -123,12 +123,12 @@ export default function CartPage() {
                     )}
                     <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       {product.freeShipping && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary-400">
                           <Truck className="h-3 w-3" aria-hidden="true" /> Free shipping
                         </span>
                       )}
                       {product.compareAt && (
-                        <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-bold text-gold-700">
+                        <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-[10px] font-bold text-gold-300">
                           Save {Math.round((1 - product.price / product.compareAt) * 100)}%
                         </span>
                       )}
@@ -171,14 +171,14 @@ export default function CartPage() {
               </dd>
             </div>
             {savings > 0 && (
-              <div className="flex justify-between text-gold-700">
+              <div className="flex justify-between text-gold-300">
                 <dt className="font-semibold">You save</dt>
                 <dd className="font-bold">{formatIDR(savings)}</dd>
               </div>
             )}
             <div className="flex justify-between border-t border-border pt-3 text-base">
               <dt className="font-bold">Total</dt>
-              <dd className="font-heading text-xl font-bold text-primary-700">{formatIDR(subtotal)}</dd>
+              <dd className="font-heading text-xl font-bold text-primary-400">{formatIDR(subtotal)}</dd>
             </div>
           </dl>
           <Link to="/checkout" className="btn btn-accent mt-6 w-full !py-3.5">
@@ -186,7 +186,7 @@ export default function CartPage() {
           </Link>
           <Link to="/shop" className="btn btn-ghost mt-2 w-full">Continue shopping</Link>
           <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-foreground/55">
-            <ShieldCheck className="h-3.5 w-3.5 text-gold-700" aria-hidden="true" />
+            <ShieldCheck className="h-3.5 w-3.5 text-gold-300" aria-hidden="true" />
             Secure checkout · QRIS, VA, e-wallet &amp; card
           </p>
         </aside>

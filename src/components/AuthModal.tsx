@@ -274,7 +274,7 @@ export default function AuthModal() {
                 </button>
                 <button
                   type="button"
-                  className="w-full cursor-pointer text-center text-xs font-bold text-primary-700 underline-offset-2 hover:underline"
+                  className="w-full cursor-pointer text-center text-xs font-bold text-primary-400 underline-offset-2 hover:underline"
                   onClick={() => {
                     setView("auth");
                     setError(null);
@@ -326,7 +326,7 @@ export default function AuthModal() {
                     <button
                       type="button"
                       onClick={() => setView("forgot")}
-                      className="cursor-pointer text-xs font-bold text-primary-700 underline-offset-2 hover:underline"
+                      className="cursor-pointer text-xs font-bold text-primary-400 underline-offset-2 hover:underline"
                     >
                       Forgot password?
                     </button>
@@ -372,18 +372,18 @@ export default function AuthModal() {
           )}
 
           {view === "auth" && mode === "signin" && !success && (
-            <div className="mt-5 rounded-2xl border border-gold-300/40 bg-gold-100/50 p-4">
-              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-700">
+            <div className="mt-5 rounded-2xl border border-gold-300/40 bg-gold-500/15/50 p-4">
+              <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-300">
                 <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
                 Owner demo account
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-foreground/70">
-                Email <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary-700">{DEMO_ADMIN.email}</span> · password{" "}
-                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary-700">{DEMO_ADMIN.password}</span>{" "}
+                Email <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary-400">{DEMO_ADMIN.email}</span> · password{" "}
+                <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-primary-400">{DEMO_ADMIN.password}</span>{" "}
                 opens the Admin console. Any signup gives you a customer account.
               </p>
               {isOwnerDemo && password === DEMO_ADMIN.password && (
-                <p className="mt-2 text-xs font-semibold text-gold-700">✓ That&apos;s it — admin access is unlocked after signing in.</p>
+                <p className="mt-2 text-xs font-semibold text-gold-300">✓ That&apos;s it — admin access is unlocked after signing in.</p>
               )}
             </div>
           )}
@@ -393,7 +393,7 @@ export default function AuthModal() {
             {mode === "signin" ? "Guest checkout is still available — " : "Already have an account? "}
             <button
               type="button"
-              className="cursor-pointer font-bold text-primary-700 underline-offset-2 hover:underline"
+              className="cursor-pointer font-bold text-primary-400 underline-offset-2 hover:underline"
               onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
             >
               {mode === "signin" ? "create an account" : "Sign in"}

@@ -129,7 +129,7 @@ export default function HomePage() {
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28 lg:pt-24">
           <div className="max-w-xl">
-            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-surface-2/60 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-700 backdrop-blur">
+            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-surface-2/60 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-300 backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-gold-600" aria-hidden="true" />
               {hero.badge}
             </span>
@@ -391,7 +391,7 @@ export default function HomePage() {
                     to={`/shop?category=${c.id}`}
                     className="card lift group relative block overflow-hidden"
                   >
-                    <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary-100 via-muted to-primary-50">
+                    <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary-900 via-primary-950 to-background">
                       <img
                         src={c.image}
                         alt={c.name}
@@ -457,7 +457,7 @@ export default function HomePage() {
             <li key={v.title}>
               <Reveal delay={i * 70} className="h-full">
                 <div className="card lift h-full p-6">
-                  <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-700 ring-1 ring-gold-500/40">
+                  <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-100 to-gold-200/70 text-gold-300 ring-1 ring-gold-500/40">
                     <v.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <h3 className="font-heading text-lg font-bold">{v.title}</h3>
@@ -538,7 +538,7 @@ export default function HomePage() {
               <Reveal className="h-full">
                 <div className="card flex h-full flex-col p-6">
                   <div className="flex items-end gap-3">
-                    <p className="font-heading text-5xl font-bold tracking-tight text-primary-700">
+                    <p className="font-heading text-5xl font-bold tracking-tight text-primary-400">
                       {avgRating.toFixed(1)}
                     </p>
                     <div className="pb-1.5">
@@ -649,7 +649,7 @@ export default function HomePage() {
                                 {prod ? (
                                   <Link
                                     to={`/product/${prod.slug}`}
-                                    className="block truncate text-xs font-semibold text-primary-700 hover:underline"
+                                    className="block truncate text-xs font-semibold text-primary-400 hover:underline"
                                   >
                                     on {prod.name}
                                   </Link>
