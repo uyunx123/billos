@@ -2667,6 +2667,12 @@ function GatewaysPanel() {
         <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-400">
           {connectedCount} of {GATEWAY_CATALOG.length} gateways live
         </span>
+        <Link
+          to="/admin/integrations"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-bold text-foreground/70 transition-colors duration-150 hover:border-primary/40 hover:text-primary"
+        >
+          <PlugZap className="h-3.5 w-3.5" aria-hidden="true" /> Provider keys & couriers
+        </Link>
       </div>
 
       {/* Available gateways */}

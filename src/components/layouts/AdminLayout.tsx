@@ -14,6 +14,7 @@ import {
   Menu,
   MonitorPlay,
   PanelLeft,
+  PlugZap,
   ShieldCheck,
   Trophy,
   Users,
@@ -36,6 +37,7 @@ const adminNav = [
   { to: "/admin/users", label: "Users", icon: ShieldCheck },
   { to: "/admin/tv", label: "TV screens", icon: MonitorPlay },
   { to: "/admin/api", label: "API", icon: KeyRound },
+  { to: "/admin/integrations", label: "Integrations", icon: PlugZap },
   { to: "/admin/faq", label: "FAQ", icon: ClipboardList },
   { to: "/admin/clear", label: "Clear data", icon: Eraser },
 ];

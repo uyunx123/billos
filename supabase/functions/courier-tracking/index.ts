@@ -10,6 +10,7 @@
 // CORS enabled + no hard JWT requirement (guest checkout/tracking), matching
 // the store's existing create-payment function.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -99,6 +100,22 @@ async function handleTrack(waybill: string, courier: string) {
   return data;
 }
 
+/** Origin defaults + enabled-courier list from the admin Integrations page
+ *  (`app_config` row "courier"). Returns null when nothing is configured. */
+async function loadCourierConfig(): Promise<Record<string, unknown> | null> {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  if (!url || !serviceKey) return null;
+  try {
+    const supabase = createClient(url, serviceKey);
+    const { data } = await supabase.from("app_config").select("config").eq("id", "courier").maybeSingle();
+    const cfg = (data?.config ?? null) as Record<string, unknown> | null;
+    return cfg && typeof cfg === "object" ? cfg : null;
+  } catch {
+    return null;
+  }
+}
+
 async function handleCreate(body: CreateBody) {
   const apiKey = Deno.env.get("BITESHIP_API_KEY") ?? "";
   if (!apiKey) {
@@ -108,7 +125,32 @@ async function handleCreate(body: CreateBody) {
     );
   }
 
-  const origin = body.origin ?? {};
+  // Admin-configured defaults: origin address + the couriers allowed for shipments.
+  const courierConfig = await loadCourierConfig();
+  const enabledCouriers = Array.isArray(courierConfig?.enabledCouriers)
+    ? (courierConfig.enabledCouriers as string[]).map((c) => String(c).toLowerCase())
+    : [];
+  const courier = cleanText(body.courier, 20).toLowerCase();
+  if (enabledCouriers.length > 0 && !enabledCouriers.includes(courier)) {
+    throw new ApiError(
+      "COURIER_DISABLED",
+      `${courier} is not enabled for shipments in the store's Integrations settings.`
+    );
+  }
+
+  // Map the Integrations-page config keys into the Biteship origin shape,
+  // then let per-order overrides win.
+  const cfg = (courierConfig ?? {}) as Record<string, unknown>;
+  const origin = {
+    contactName: String(cfg.originName ?? ""),
+    contactPhone: String(cfg.originPhone ?? ""),
+    contactEmail: String(cfg.originEmail ?? ""),
+    organization: String(cfg.originOrganization ?? ""),
+    address: String(cfg.originAddress ?? ""),
+    postalCode: String(cfg.originPostalCode ?? ""),
+    note: String(cfg.originNote ?? ""),
+    ...(body.origin ?? {}),
+  };
   const destination = body.destination ?? {};
   const items = (body.items ?? [])
     .slice(0, 50)
@@ -131,7 +173,7 @@ async function handleCreate(body: CreateBody) {
   ) {
     throw new ApiError(
       "MISSING_FIELDS",
-      "Origin and destination need an address + postal code, the destination needs a recipient name, and at least one item is required."
+      "Origin and destination need an address + postal code (origin defaults come from the Integrations page), the destination needs a recipient name, and at least one item is required."
     );
   }
 

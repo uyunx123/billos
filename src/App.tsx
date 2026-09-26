@@ -31,6 +31,7 @@ import BlogPostPage from "./pages/BlogPostPage";
 import ContactPage from "./pages/ContactPage";
 import CustomPage from "./pages/CustomPage";
 import AdminPage from "./pages/AdminPage";
+import { AdminIntegrationsPage } from "./pages/admin/AdminIntegrations";
 import PartnershipsPage from "./pages/PartnershipsPage";
 import NewstickerPage from "./pages/NewstickerPage";
 import TrackOrderPage from "./pages/TrackOrderPage";
@@ -72,6 +73,7 @@ export default function App() {
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/page/:slug" element={<CustomPage />} />
                         <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/admin/integrations" element={<AdminIntegrationsPage />} />
                         <Route path="/admin/partnerships" element={<PartnershipsPage />} />
                         <Route path="/admin/newsticker" element={<NewstickerPage />} />
                         <Route path="*" element={<NotFoundPage />} />
