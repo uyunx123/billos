@@ -214,6 +214,7 @@ export default function CheckoutPage() {
       lat: form.lat,
       lng: form.lng,
       carrier: selected.name,
+      courierCode: selected.courierCode ?? selected.id,
       payment: activeGateways.find((g) => g.id === payment)?.name ?? payment,
       paymentMethodId: payment,
       shipping,

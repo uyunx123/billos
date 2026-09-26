@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Download, Printer, ReceiptText } from "lucide-react";
+import { ArrowLeft, Download, Printer, ReceiptText, Truck } from "lucide-react";
 import { useStore, labelForStatus } from "../context/StoreContext";
 import { useReceipts, type ReceiptData, type ReceiptSettingsConfig } from "../context/ReceiptContext";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { formatIDR } from "../lib/format";
 import { BRAND_LOGO } from "../lib/logo";
+import { courierName } from "../lib/courier";
 
 interface Totals {
   subtotal: number;
@@ -22,6 +23,7 @@ export default function ReceiptPage() {
   const { orders } = useStore();
   const { receiptForOrder, settings } = useReceipts();
   const order = orders.find((o) => o.id === orderId);
+  const courierLine = order ? { name: courierName(order.courierCode), awb: order.awb } : null;
   const receipt = receiptForOrder(orderId);
   const data = receipt?.data;
 
@@ -65,7 +67,7 @@ export default function ReceiptPage() {
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   footer { margin-top: 28px; padding-top: 14px; border-top: 1px dashed #c8cfdc; color: #5b6472; font-size: 12px; }
 </style></head><body><div class="sheet">
-${renderReceipt(data, totals, settings)}
+${renderReceipt(data, totals, settings, courierLine ?? undefined)}
 </div></body></html>`;
     const blob = new Blob([html], { type: "text/html" });
     const a = document.createElement("a");
@@ -99,6 +101,11 @@ ${renderReceipt(data, totals, settings)}
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> My orders
         </Link>
         <div className="flex flex-wrap gap-2">
+          {courierLine?.awb && (
+            <Link to={`/track/${encodeURIComponent(order.id)}`} className="btn btn-outline">
+              <Truck className="h-4 w-4" aria-hidden="true" /> Track shipment
+            </Link>
+          )}
           <button type="button" className="btn btn-outline" onClick={handleDownload}>
             <Download className="h-4 w-4" aria-hidden="true" /> Save
           </button>
@@ -191,6 +198,17 @@ ${renderReceipt(data, totals, settings)}
             <div className="flex justify-between border-t border-border pt-2"><dt className="font-bold">Total</dt><dd className="font-heading text-lg font-bold text-primary-400">{formatIDR(totals.total)}</dd></div>
           </dl>
 
+          {courierLine?.awb && (
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 text-xs text-foreground/55">
+              <span>
+                Courier <strong className="text-foreground/75">{courierLine.name}</strong> · AWB{" "}
+                <span className="font-mono font-bold text-primary-400">{courierLine.awb}</span>
+              </span>
+              <Link to={`/track/${encodeURIComponent(order.id)}`} className="font-bold text-primary-400 hover:underline">
+                Track live →
+              </Link>
+            </p>
+          )}
           <p className="mt-4 text-xs text-foreground/55">
             Paid via {data.payment || "the selected payment method"}.
           </p>
@@ -215,7 +233,8 @@ ${renderReceipt(data, totals, settings)}
 function renderReceipt(
   data: ReceiptData,
   totals: Totals,
-  settings: Pick<ReceiptSettingsConfig, "storeName" | "tagline" | "address" | "phone" | "email" | "footerNote">
+  settings: Pick<ReceiptSettingsConfig, "storeName" | "tagline" | "address" | "phone" | "email" | "footerNote">,
+  courier?: { name?: string; awb?: string }
 ): string {
   const fmt = (n: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
   const rows = data.items
@@ -246,7 +265,7 @@ function renderReceipt(
     <div><span>Shipping (${escapeHtml(data.carrier ?? "delivery")})</span><span>${fmt(totals.shipping)}</span></div>
     <div class="grand"><span>Total</span><span>${fmt(totals.total)}</span></div>
   </div>
-  <p class="muted" style="margin-top:16px">Paid via ${escapeHtml(data.payment || "the selected payment method")}.</p>
+  <p class="muted" style="margin-top:16px">Paid via ${escapeHtml(data.payment || "the selected payment method")}${courier?.awb ? ` &middot; Courier ${escapeHtml(courier.name ?? "")} &middot; AWB ${escapeHtml(courier.awb)}` : ""}.</p>
   <footer>${escapeHtml(settings.footerNote)}</footer>`;
 }
 

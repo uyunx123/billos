@@ -44,6 +44,9 @@ import {
   Users,
   Wallet,
   X,
+  ChevronDown,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
@@ -80,8 +83,10 @@ import ReviewModal from "../components/ReviewModal";
 import { BRAND_LOGO } from "../lib/logo";
 import { type CategoryId, type Product } from "../data/products";
 import { useReviews, type ProductReview } from "../context/ReviewContext";
-import { formatIDR } from "../lib/format";
+import { formatIDR, formatDateTime } from "../lib/format";
 import OrderTimeline from "../components/OrderTimeline";
+import { COURIER_CATALOG, STATUS_KEY_LABEL, courierName } from "../lib/courier";
+import { useCourier } from "../context/CourierContext";
 
 type Tab = "overview" | "products" | "stock" | "shipping" | "orders" | "reviews" | "chat" | "users" | "config";
 
@@ -1431,10 +1436,71 @@ function OrderAdminCard({
   onPayment: (p: "accepted" | "declined") => void;
   onRefund: () => void;
 }) {
+  const { tracking, loading: courierLoading, error: courierError, refreshTracking, createShipment, attachAwb } = useCourier();
+  const { settings: receiptSettings } = useReceipts();
+  const [showCourier, setShowCourier] = useState(false);
+  const [courierCode, setCourierCode] = useState(o.courierCode ?? "");
+  const [awbInput, setAwbInput] = useState(o.awb ?? "");
+  const [originAddress, setOriginAddress] = useState(receiptSettings.address ?? "");
+  const [originPostal, setOriginPostal] = useState("");
+  const [originPhone, setOriginPhone] = useState(receiptSettings.phone ?? "");
+  const [busy, setBusy] = useState<"create" | "attach" | null>(null);
+  const [courierMsg, setCourierMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const live = tracking[o.id] ?? null;
+  const liveLoading = courierLoading[o.id] ?? false;
+  const liveError = courierError[o.id] ?? null;
+
   const nextSteps = (["Prepared", "Shipped", "In transit", "Delivered", "Cancelled"] as OrderStatus[]).filter(
     (s) => canTransition(o.status, s)
   );
   const [confirmRefund, setConfirmRefund] = useState(false);
+
+  function handleAttach() {
+    const awb = awbInput.trim();
+    if (!awb) {
+      setCourierMsg({ kind: "error", text: "Paste the courier's tracking number first." });
+      return;
+    }
+    setBusy("attach");
+    setCourierMsg(null);
+    attachAwb(o.id, awb, courierCode.trim() || undefined);
+    setBusy(null);
+    setCourierMsg({ kind: "ok", text: "Tracking number attached — customers can follow the parcel live now." });
+    void refreshTracking(o.id);
+  }
+
+  async function handleCreateShipment() {
+    if (!courierCode.trim()) {
+      setCourierMsg({ kind: "error", text: "Pick a courier before creating a shipment." });
+      return;
+    }
+    if (!originAddress.trim() || !originPostal.trim()) {
+      setCourierMsg({ kind: "error", text: "Fill the store's origin address and postal code to create a shipment." });
+      return;
+    }
+    setBusy("create");
+    setCourierMsg(null);
+    const res = await createShipment({
+      order: o,
+      courier: courierCode.trim().toLowerCase(),
+      origin: {
+        contactName: receiptSettings.storeName || "ISAK Billiard Co.",
+        contactPhone: originPhone.trim(),
+        contactEmail: receiptSettings.email,
+        organization: receiptSettings.storeName,
+        address: originAddress.trim(),
+        postalCode: originPostal.trim(),
+      },
+    });
+    setBusy(null);
+    if (res.ok) {
+      setAwbInput(res.waybill ?? "");
+      setCourierMsg({ kind: "ok", text: `Shipment created — AWB ${res.waybill} attached and live tracking enabled.` });
+      void refreshTracking(o.id);
+    } else {
+      setCourierMsg({ kind: "error", text: res.error ?? "Couldn't create the shipment — try again." });
+    }
+  }
 
   return (
     <li className="card overflow-hidden">
@@ -1488,6 +1554,178 @@ function OrderAdminCard({
           </p>
           <p className="font-heading text-2xl font-bold text-primary-400">{formatIDR(o.total)}</p>
         </div>
+      </div>
+
+      {/* Courier & AWB */}
+      <div className="border-t border-border px-5 py-3">
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+          onClick={() => setShowCourier((v) => !v)}
+          aria-expanded={showCourier}
+        >
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <Truck className="h-4 w-4 text-primary-400" aria-hidden="true" />
+            Courier &amp; tracking
+          </span>
+          <span className="flex items-center gap-2 text-xs font-semibold text-foreground/55">
+            {o.awb ? (
+              <span className="font-mono text-primary-400">{o.awb}</span>
+            ) : (
+              "no AWB yet"
+            )}
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-150 ${showCourier ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            />
+          </span>
+        </button>
+
+        {showCourier && (
+          <div className="mt-3 space-y-3">
+            {o.awb && (
+              <div className="flex flex-wrap items-center gap-2 rounded-xl bg-foreground/10 px-3.5 py-2.5 text-sm">
+                {live ? (
+                  <>
+                    <span
+                      className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${
+                        live.statusKey === "delivered"
+                          ? "bg-primary/10 text-primary-400"
+                          : live.statusKey === "cancelled"
+                            ? "bg-destructive/10 text-destructive"
+                            : live.statusKey === "awaiting"
+                              ? "bg-gold-500/15 text-gold-300"
+                              : "bg-primary/10 text-primary-400"
+                      }`}
+                    >
+                      {STATUS_KEY_LABEL[live.statusKey]}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-foreground/70">
+                      {live.status || courierName(live.courierCode)}
+                    </span>
+                    <span className="shrink-0 text-xs text-foreground/45">updated {formatDateTime(live.updatedAt)}</span>
+                  </>
+                ) : liveError ? (
+                  <span className="flex-1 text-destructive">{liveError}</span>
+                ) : (
+                  <span className="flex-1 text-foreground/55">
+                    Tracking number attached — refresh to pull the courier&apos;s live status.
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-ghost !px-3 !py-1.5 text-xs"
+                  disabled={liveLoading}
+                  onClick={() => void refreshTracking(o.id)}
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${liveLoading ? "animate-spin" : ""}`} aria-hidden="true" /> Refresh
+                </button>
+              </div>
+            )}
+
+            <div className="grid gap-2 sm:grid-cols-[10rem_1fr_auto]">
+              <label className="sr-only" htmlFor={`courier-code-${o.id}`}>Courier</label>
+              <select
+                id={`courier-code-${o.id}`}
+                className="input !py-2 text-sm"
+                value={courierCode}
+                onChange={(e) => setCourierCode(e.target.value)}
+              >
+                <option value="">— courier —</option>
+                {COURIER_CATALOG.map((c) => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
+              <label className="sr-only" htmlFor={`awb-${o.id}`}>Tracking number</label>
+              <input
+                id={`awb-${o.id}`}
+                className="input !py-2 font-mono text-sm"
+                value={awbInput}
+                onChange={(e) => setAwbInput(e.target.value)}
+                placeholder="e.g. 00300904500879"
+              />
+              <button
+                type="button"
+                className="btn btn-primary !px-3.5 !py-2 text-xs"
+                disabled={busy === "attach"}
+                onClick={handleAttach}
+              >
+                {busy === "attach" ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                )}{" "}
+                Attach AWB
+              </button>
+            </div>
+
+            <div className="rounded-xl border border-dashed border-border p-3">
+              <p className="text-xs font-semibold text-foreground/60">
+                Or create a real shipment with Biteship (JNE / J&amp;T / SiCepat) — needs the Biteship API key configured.
+              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                <div className="sm:col-span-3">
+                  <label className="sr-only" htmlFor={`origin-address-${o.id}`}>Store origin address</label>
+                  <input
+                    id={`origin-address-${o.id}`}
+                    className="input !py-2 text-sm"
+                    value={originAddress}
+                    onChange={(e) => setOriginAddress(e.target.value)}
+                    placeholder="Origin address (the store)"
+                  />
+                </div>
+                <div>
+                  <label className="sr-only" htmlFor={`origin-postal-${o.id}`}>Origin postal code</label>
+                  <input
+                    id={`origin-postal-${o.id}`}
+                    className="input !py-2 text-sm"
+                    value={originPostal}
+                    onChange={(e) => setOriginPostal(e.target.value)}
+                    placeholder="Origin postal code"
+                  />
+                </div>
+                <div>
+                  <label className="sr-only" htmlFor={`origin-phone-${o.id}`}>Origin phone</label>
+                  <input
+                    id={`origin-phone-${o.id}`}
+                    className="input !py-2 text-sm"
+                    value={originPhone}
+                    onChange={(e) => setOriginPhone(e.target.value)}
+                    placeholder="Origin phone"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    className="btn btn-outline w-full !px-3 !py-2 text-xs"
+                    disabled={busy === "create"}
+                    onClick={() => void handleCreateShipment()}
+                  >
+                    {busy === "create" ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Truck className="h-3.5 w-3.5" aria-hidden="true" />
+                    )}{" "}
+                    Create shipment
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {courierMsg && (
+              <p
+                role="status"
+                className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold ${
+                  courierMsg.kind === "ok"
+                    ? "border border-primary/25 bg-primary/10 text-primary-400"
+                    : "border border-destructive/25 bg-destructive/10 text-destructive"
+                }`}
+              >
+                {courierMsg.text}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Payment confirmation */}

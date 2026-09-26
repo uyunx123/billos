@@ -10,6 +10,7 @@ import {
 } from "react";
 import { PRODUCTS, type Product } from "../data/products";
 import { supabase } from "../lib/supabase";
+import { courierCodeFromName } from "../lib/courier";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -22,6 +23,8 @@ export interface ShippingMethod {
   baseRate: number; // Rp
   perKg: number; // Rp per kg
   active: boolean;
+  /** Biteship courier code (jne, jnt, sicepat, …) for live tracking — falls back to the method id. */
+  courierCode?: string;
 }
 
 export type OrderStatus =
@@ -74,6 +77,10 @@ export interface Order {
   couponCode?: string;
   total: number;
   carrier: string;
+  /** Biteship courier code (jne, jnt, sicepat, …) used for live tracking. */
+  courierCode?: string;
+  /** Courier tracking / AWB number attached once the parcel ships. */
+  awb?: string;
   payment: string;
   /** Gateway id chosen at checkout (qris, va, ewallet, card, …) — used to route the live payment channel. */
   paymentMethodId?: string;
@@ -98,6 +105,8 @@ export interface PlaceOrderInput {
   lat?: number;
   lng?: number;
   carrier: string;
+  /** Biteship courier code for live tracking — falls back to the method id / name. */
+  courierCode?: string;
   payment: string;
   paymentMethodId?: string;
   shipping: number;
@@ -299,6 +308,8 @@ interface StoreContextValue {
   refundOrder: (id: string) => void;
   /** Customer confirms they received the parcel — marks the order reviewable. */
   confirmReceived: (id: string) => void;
+  /** Attach (or update) the courier code + AWB tracking number for an order. */
+  setCourier: (id: string, patch: { courierCode?: string; awb?: string }) => void;
   getProductBySlug: (slug: string) => Product | undefined;
 }
 
@@ -515,6 +526,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       couponCode: input.couponCode?.trim().toUpperCase() || undefined,
       total: Math.max(0, subtotal + input.shipping - discount),
       carrier: input.carrier,
+      courierCode: input.courierCode ?? courierCodeFromName(input.carrier),
       payment: input.payment,
       paymentMethodId: input.paymentMethodId,
       createdAt,
@@ -619,6 +631,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setCourier = useCallback((id: string, patch: { courierCode?: string; awb?: string }) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== id) return o;
+        const awbChanged = patch.awb !== undefined && patch.awb !== o.awb;
+        const codeChanged = patch.courierCode !== undefined && patch.courierCode !== o.courierCode;
+        if (!awbChanged && !codeChanged) return o;
+        const at = nowIso();
+        const events =
+          awbChanged && patch.awb
+            ? [
+                ...o.events,
+                {
+                  label: "Courier shipment created",
+                  status: o.status,
+                  at,
+                  note: `Tracking number ${patch.awb} attached`,
+                },
+              ]
+            : o.events;
+        return {
+          ...o,
+          awb: patch.awb ?? o.awb,
+          courierCode: patch.courierCode ?? o.courierCode,
+          updatedAt: at,
+          events,
+        };
+      })
+    );
+  }, []);
+
   const getProductBySlug = useCallback(
     (slug: string) => products.find((p) => p.slug === slug),
     [products]
@@ -643,6 +686,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updatePaymentStatus,
       refundOrder,
       confirmReceived,
+      setCourier,
       getProductBySlug,
     }),
     [
@@ -663,6 +707,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updatePaymentStatus,
       refundOrder,
       confirmReceived,
+      setCourier,
       getProductBySlug,
     ]
   );

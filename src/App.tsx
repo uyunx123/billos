@@ -8,6 +8,7 @@ import { CouponProvider } from "./context/CouponContext";
 import { ReceiptProvider } from "./context/ReceiptContext";
 import { ChatProvider } from "./context/ChatContext";
 import { ReviewProvider } from "./context/ReviewContext";
+import { CourierProvider } from "./context/CourierContext";
 import AuthModal from "./components/AuthModal";
 import ScrollToTop from "./components/ScrollToTop";
 import ChatWidget from "./components/ChatWidget";
@@ -32,12 +33,14 @@ import CustomPage from "./pages/CustomPage";
 import AdminPage from "./pages/AdminPage";
 import PartnershipsPage from "./pages/PartnershipsPage";
 import NewstickerPage from "./pages/NewstickerPage";
+import TrackOrderPage from "./pages/TrackOrderPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
     <StoreProvider>
       <ConfigProvider>
+        <CourierProvider>
         <GatewayProvider>
         <AuthProvider>
           <CartProvider>
@@ -59,6 +62,8 @@ export default function App() {
                         <Route path="/checkout/complete" element={<CheckoutCompletePage />} />
                         <Route path="/gateway/:id" element={<GatewayDemoPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/track" element={<TrackOrderPage />} />
+                        <Route path="/track/:orderId" element={<TrackOrderPage />} />
                         <Route path="/receipt/:orderId" element={<ReceiptPage />} />
                         <Route path="/profile" element={<UserProfilePage />} />
                         <Route path="/profile/edit" element={<EditProfilePage />} />
@@ -85,6 +90,7 @@ export default function App() {
           </CartProvider>
         </AuthProvider>
         </GatewayProvider>
+        </CourierProvider>
       </ConfigProvider>
     </StoreProvider>
   );

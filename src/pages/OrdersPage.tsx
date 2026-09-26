@@ -7,6 +7,7 @@ import { useReviews, type ReviewInput } from "../context/ReviewContext";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { formatIDR } from "../lib/format";
 import OrderTimeline from "../components/OrderTimeline";
+import CourierTrackingCard from "../components/CourierTrackingCard";
 import ReviewModal from "../components/ReviewModal";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -228,6 +229,10 @@ function OrderCard({
             Payment received — the store confirms each payment before packing. We&apos;ll update this page the moment it&apos;s accepted.
           </p>
         )}
+
+        <div className="mt-4">
+          <CourierTrackingCard order={o} />
+        </div>
 
         <div className="mt-4 border-t border-border pt-4">
           <OrderTimeline order={o} />
