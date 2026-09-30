@@ -112,3 +112,18 @@ export async function getCourierConfig(): Promise<CourierIntegrationConfig> {
   const res = await invokeConfig<{ config: CourierIntegrationConfig }>({ action: "get_config", configId: "courier" });
   return res.config ?? {};
 }
+
+/**
+ * Theme & layout settings (palette / width / radius) persisted to the
+ * `app_config` table (configId "theme") so the store's look follows it
+ * across devices. Purely non-secret display settings.
+ */
+export function saveThemeConfig(config: Record<string, unknown>): Promise<ConfigResponse<IntegrationResult>> {
+  return invokeConfig<IntegrationResult>({ action: "save_config", configId: "theme", config });
+}
+
+/** Read the stored theme & layout settings (empty object when unset). */
+export async function getThemeConfig(): Promise<Record<string, unknown>> {
+  const res = await invokeConfig<{ config: Record<string, unknown> }>({ action: "get_config", configId: "theme" });
+  return res.config && typeof res.config === "object" ? res.config : {};
+}

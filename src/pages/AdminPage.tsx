@@ -47,9 +47,16 @@ import {
   ChevronDown,
   Loader2,
   RefreshCw,
+  SwatchBook,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
+import { useTheme } from "../context/ThemeContext";
+import {
+  RADIUS_OPTIONS,
+  THEME_PALETTES,
+  WIDTH_OPTIONS,
+} from "../lib/themes";
 import { useCoupons, normalizeCode, type Coupon, type CouponType, type NewCoupon } from "../context/CouponContext";
 import { useReceipts, type ReceiptSettingsConfig } from "../context/ReceiptContext";
 import {
@@ -2544,6 +2551,7 @@ function UserEditor({
 /* ------------------------------------------------------------------ */
 
 const CONFIG_SECTIONS = [
+  { id: "appearance", label: "Theme & layout", icon: SwatchBook },
   { id: "site", label: "Site settings", icon: Store },
   { id: "hero", label: "Homepage hero", icon: Home },
   { id: "logo", label: "Logo & branding", icon: Palette },
@@ -2587,6 +2595,7 @@ function ConfigTab() {
         ))}
       </div>
 
+      {section === "appearance" && <AppearancePanel />}
       {section === "site" && <SiteSettingsPanel />}
       {section === "hero" && <HeroPanel />}
       {section === "logo" && <LogoPanel />}
@@ -3920,6 +3929,172 @@ function HeroPanel() {
             <RotateCcw className="h-4 w-4" aria-hidden="true" /> Reset hero
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme & layout (palette, page width, corner radius)                 */
+/* ------------------------------------------------------------------ */
+
+function AppearancePanel() {
+  const { theme, setPalette, setWidth, setRadius, reset } = useTheme();
+  const [notice, setNotice] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-5">
+      {notice && (
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
+          {notice}
+        </p>
+      )}
+
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
+        Re-skin the whole store instantly. Pick a colour palette, then fine-tune the layout —
+        the shop updates live as you choose, and the selection is saved to this browser and
+        synced to your Supabase config so every device keeps the same look.
+      </p>
+
+      {/* Colour palette */}
+      <div className="card space-y-4 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="font-heading font-bold">Colour palette</h3>
+            <p className="text-xs text-foreground/55">Primary, accent and surface colours used across the site.</p>
+          </div>
+          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary-400">
+            {THEME_PALETTES.find((p) => p.id === theme.palette)?.name ?? theme.palette}
+          </span>
+        </div>
+
+        <div role="radiogroup" aria-label="Colour palette" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {THEME_PALETTES.map((p) => {
+            const active = theme.palette === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => {
+                  setPalette(p.id);
+                  setNotice(`"${p.name}" palette applied — saved and synced.`);
+                }}
+                className={`cursor-pointer rounded-2xl border p-4 text-left transition-all duration-150 ${
+                  active
+                    ? "border-primary bg-primary/10 ring-2 ring-primary/40"
+                    : "border-border bg-surface-2 hover:border-primary/40"
+                }`}
+              >
+                <span className="flex items-center gap-2" aria-hidden="true">
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.primary }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.deep }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.accent }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.surface }} />
+                </span>
+                <span className="mt-3 flex items-center gap-1.5 font-heading text-sm font-bold">
+                  {p.name}
+                  {active && <Check className="h-4 w-4 text-primary-400" aria-hidden="true" />}
+                </span>
+                <span className="mt-0.5 block text-xs leading-snug text-foreground/55">{p.tagline}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Layout */}
+      <div className="card space-y-5 p-5">
+        <div>
+          <h3 className="font-heading font-bold">Page width</h3>
+          <p className="text-xs text-foreground/55">How wide the main content column is on large screens.</p>
+          <div role="radiogroup" aria-label="Page width" className="mt-3 flex flex-wrap gap-2">
+            {WIDTH_OPTIONS.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                role="radio"
+                aria-checked={theme.width === o.id}
+                onClick={() => setWidth(o.id)}
+                className={`chip ${theme.width === o.id ? "chip-active" : ""}`}
+              >
+                {o.label}
+                <span className="hidden font-normal text-foreground/45 sm:inline">— {o.hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-border pt-5">
+          <h3 className="font-heading font-bold">Corner radius</h3>
+          <p className="text-xs text-foreground/55">How rounded cards, panels and inputs are.</p>
+          <div role="radiogroup" aria-label="Corner radius" className="mt-3 flex flex-wrap gap-2">
+            {RADIUS_OPTIONS.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                role="radio"
+                aria-checked={theme.radius === o.id}
+                onClick={() => setRadius(o.id)}
+                className={`chip ${theme.radius === o.id ? "chip-active" : ""}`}
+              >
+                {o.label}
+                <span className="hidden font-normal text-foreground/45 sm:inline">— {o.hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Live preview */}
+      <div className="card p-5">
+        <h3 className="font-heading font-bold">Live preview</h3>
+        <p className="text-xs text-foreground/55">A snippet of the shop with the current selection — it changes as you pick.</p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-soft">
+            <div className="h-16 bg-gradient-to-br from-primary-500 to-primary-800" aria-hidden="true" />
+            <div className="space-y-2.5 p-4">
+              <span className="block h-2.5 w-2/3 rounded-full bg-foreground/30" aria-hidden="true" />
+              <span className="block h-2.5 w-1/2 rounded-full bg-foreground/20" aria-hidden="true" />
+              <span className="block w-fit rounded-full bg-gold-500/20 px-2 py-0.5 text-[11px] font-bold text-gold-300">Rp 1.250.000</span>
+              <span className="btn btn-primary !h-9 !w-full !px-3 !py-0 text-xs">
+                <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" /> Add to cart
+              </span>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface-2 p-4 sm:col-span-2">
+            <span className="eyebrow">Preview</span>
+            <p className="mt-2 font-heading text-lg font-bold">
+              Your <span className="text-gradient-deep">brand</span> in{" "}
+              {THEME_PALETTES.find((p) => p.id === theme.palette)?.name ?? theme.palette}
+            </p>
+            <p className="mt-1 text-sm text-foreground/60">
+              The hero title uses the primary→accent gradient, buttons glow in the accent hue and
+              every card inherits the current corner radius and width.
+            </p>
+            <span className="btn btn-accent mt-3 !px-4 !py-2 text-xs">
+              <Check className="h-3.5 w-3.5" aria-hidden="true" /> Looks right
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          className="btn btn-ghost text-destructive"
+          onClick={() => {
+            reset();
+            setNotice("Back to the default Cobalt palette and standard layout.");
+          }}
+        >
+          <RotateCcw className="h-4 w-4" aria-hidden="true" /> Reset to defaults
+        </button>
+        <p className="text-xs text-foreground/45">
+          Want a fully custom palette? Edit the <span className="font-mono">@theme</span> tokens in{" "}
+          <span className="font-mono">src/index.css</span> — see the setup guide in the repo docs.
+        </p>
       </div>
     </div>
   );

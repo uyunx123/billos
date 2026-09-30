@@ -9,6 +9,7 @@ import { ReceiptProvider } from "./context/ReceiptContext";
 import { ChatProvider } from "./context/ChatContext";
 import { ReviewProvider } from "./context/ReviewContext";
 import { CourierProvider } from "./context/CourierContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import AuthModal from "./components/AuthModal";
 import ScrollToTop from "./components/ScrollToTop";
 import ChatWidget from "./components/ChatWidget";
@@ -39,7 +40,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
-    <StoreProvider>
+    <ThemeProvider>
+      <StoreProvider>
       <ConfigProvider>
         <CourierProvider>
         <GatewayProvider>
@@ -94,6 +96,7 @@ export default function App() {
         </GatewayProvider>
         </CourierProvider>
       </ConfigProvider>
-    </StoreProvider>
+      </StoreProvider>
+    </ThemeProvider>
   );
 }
