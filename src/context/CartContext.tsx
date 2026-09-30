@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { Product } from "../data/products";
 import { useStore } from "./StoreContext";
+import { effectivePrice } from "../lib/flashSale";
 
 interface CartLine {
   productId: string;
@@ -100,7 +101,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const product = products.find((p) => p.id === line.productId);
       if (!product) continue;
       count += line.qty;
-      subtotal += product.price * line.qty;
+      // A live flash sale discounts the line — checkout charges the same price.
+      subtotal += effectivePrice(product) * line.qty;
     }
     return { count, subtotal };
   }, [lines, products]);

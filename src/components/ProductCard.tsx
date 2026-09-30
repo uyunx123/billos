@@ -5,6 +5,7 @@ import type { Product } from "../data/products";
 import { formatIDR } from "../lib/format";
 import { useCart } from "../context/CartContext";
 import { useConfig } from "../context/ConfigContext";
+import { flashDiscountPercent, flashPhase, flashPrice } from "../lib/flashSale";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -14,6 +15,11 @@ export default function ProductCard({ product }: { product: Product }) {
   const categoryName = categories.find((c) => c.id === product.category)?.name ?? "Gear";
   const outOfStock = product.stock <= 0;
   const discount = product.compareAt ? Math.round((1 - product.price / product.compareAt) * 100) : 0;
+  // A live flash sale prices the card down (and is charged the same at checkout).
+  const isFlash = flashPhase(product) === "live";
+  const salePrice = isFlash ? flashPrice(product) : product.price;
+  const badgePct = isFlash ? flashDiscountPercent(product) : discount;
+  const onSale = isFlash || Boolean(product.compareAt);
 
   useEffect(() => () => {
     if (timer.current) window.clearTimeout(timer.current);
@@ -47,9 +53,9 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {/* Badges */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {product.compareAt && (
+          {onSale && (
             <span className="rounded-full bg-gradient-to-r from-gold-400 to-gold-600 px-2.5 py-1 text-[11px] font-bold text-primary-950 shadow-gold">
-              Save {discount}%
+              {isFlash ? "Flash sale" : "Save"} {badgePct}%
             </span>
           )}
           {product.featured && (
@@ -84,21 +90,21 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="mt-auto pt-3">
           <div
             className={
-              product.compareAt
+              onSale
                 ? "animate-glow-pulse flex items-center justify-between rounded-full bg-gradient-to-r from-gold-300 to-gold-500 pl-3.5 pr-2 py-1 shadow-gold"
                 : "flex items-baseline gap-2"
             }
           >
             <p
               className={`font-heading text-lg font-bold tracking-tight ${
-                product.compareAt ? "text-primary-950" : "text-foreground"
+                onSale ? "text-primary-950" : "text-foreground"
               }`}
             >
-              {formatIDR(product.price)}
+              {formatIDR(salePrice)}
             </p>
-            {product.compareAt && (
+            {onSale && (
               <span className="rounded-full bg-primary-950/20 px-2 py-0.5 text-[11px] font-bold text-primary-950">
-                -{discount}%
+                -{badgePct}%
               </span>
             )}
           </div>

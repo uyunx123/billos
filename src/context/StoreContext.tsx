@@ -8,9 +8,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { PRODUCTS, type Product } from "../data/products";
+import { PRODUCTS, type Product, type FlashSale } from "../data/products";
 import { supabase } from "../lib/supabase";
 import { courierCodeFromName } from "../lib/courier";
+import { effectivePrice, flashPhase } from "../lib/flashSale";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -222,10 +223,17 @@ interface ProductRow {
   description: string | null;
   featured: boolean | null;
   video_url: string | null;
+  flash_sale: boolean | null;
+  flash_discount: number | null;
+  flash_price: number | null;
+  flash_starts_at: string | null;
+  flash_ends_at: string | null;
+  flash_stock: number | null;
+  flash_claimed: number | null;
 }
 
 const PRODUCT_COLUMNS =
-  "id,slug,name,category,price,compare_at_price,free_shipping,stock,rating,reviews,weight_grams,image,blurb,description,featured,video_url";
+  "id,slug,name,category,price,compare_at_price,free_shipping,stock,rating,reviews,weight_grams,image,blurb,description,featured,video_url,flash_sale,flash_discount,flash_price,flash_starts_at,flash_ends_at,flash_stock,flash_claimed";
 
 function productToRow(p: Product): Record<string, unknown> {
   return {
@@ -244,6 +252,34 @@ function productToRow(p: Product): Record<string, unknown> {
     description: p.description ?? null,
     featured: p.featured ?? false,
     video_url: p.videoUrl ?? null,
+    flash_sale: p.flashSale?.enabled ?? false,
+    flash_discount: p.flashSale?.discountPercent ?? null,
+    flash_price: p.flashSale?.salePrice ?? null,
+    flash_starts_at: p.flashSale?.startsAt ?? null,
+    flash_ends_at: p.flashSale?.endsAt ?? null,
+    flash_stock: p.flashSale?.stockLimit ?? null,
+    flash_claimed: p.flashSale?.claimed ?? null,
+  };
+}
+
+function flashSaleFromRow(row: ProductRow): FlashSale | undefined {
+  const enabled = row.flash_sale ?? false;
+  const hasAny =
+    enabled ||
+    row.flash_discount != null ||
+    row.flash_price != null ||
+    row.flash_starts_at != null ||
+    row.flash_ends_at != null ||
+    row.flash_stock != null;
+  if (!hasAny) return undefined;
+  return {
+    enabled,
+    discountPercent: row.flash_discount ?? undefined,
+    salePrice: row.flash_price ?? undefined,
+    startsAt: row.flash_starts_at ?? undefined,
+    endsAt: row.flash_ends_at ?? undefined,
+    stockLimit: row.flash_stock ?? undefined,
+    claimed: row.flash_claimed ?? undefined,
   };
 }
 
@@ -265,6 +301,7 @@ function productFromRow(row: ProductRow): Product {
     description: row.description ?? "",
     featured: row.featured ?? false,
     videoUrl: row.video_url ?? undefined,
+    flashSale: flashSaleFromRow(row),
   };
 }
 
@@ -296,6 +333,10 @@ interface StoreContextValue {
   updateProduct: (id: string, patch: Partial<Product>) => void;
   updateStock: (id: string, stock: number) => void;
   deleteProduct: (id: string) => void;
+  /** Attach (or replace) a flash sale on a single product. Pass undefined to clear it. */
+  setFlashSale: (id: string, sale: FlashSale | undefined) => void;
+  /** Attach the same flash sale to many products at once. Pass undefined to clear them. */
+  setFlashSaleBulk: (ids: string[], sale: FlashSale | undefined) => void;
   addShippingMethod: (m: Omit<ShippingMethod, "id">) => void;
   updateShippingMethod: (id: string, patch: Partial<ShippingMethod>) => void;
   deleteShippingMethod: (id: string) => void;
@@ -357,10 +398,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           const dbIds = new Set(rows.map((r) => r.id));
           const db = rows.map((r) => {
             const local = prev.find((p) => p.id === r.id);
-            return productFromRow({
+            const fromRow = productFromRow({
               ...r,
               video_url: r.video_url ?? local?.videoUrl ?? null,
             });
+            // Preserve a locally-set flash sale when the DB row doesn't carry one yet.
+            return fromRow.flashSale || !local?.flashSale
+              ? fromRow
+              : { ...fromRow, flashSale: local.flashSale };
           });
           const localOnly = prev.filter((p) => !dbIds.has(p.id));
           return [...db, ...localOnly];
@@ -473,6 +518,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setFlashSale = useCallback((id: string, sale: FlashSale | undefined) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, flashSale: sale?.enabled ? sale : undefined } : p))
+    );
+  }, []);
+
+  const setFlashSaleBulk = useCallback((ids: string[], sale: FlashSale | undefined) => {
+    const idSet = new Set(ids);
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (!idSet.has(p.id)) return p;
+        if (!sale?.enabled) return { ...p, flashSale: undefined };
+        // Keep each product's own claimed counter when a sale is re-applied.
+        return { ...p, flashSale: { ...sale, claimed: p.flashSale?.claimed ?? 0 } };
+      })
+    );
+  }, []);
+
   const addShippingMethod = useCallback((m: Omit<ShippingMethod, "id">) => {
     setShippingMethods((prev) => [
       ...prev,
@@ -497,7 +560,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .map((l) => {
         const p = products.find((prod) => prod.id === l.productId);
         if (!p) return null;
-        return { productId: p.id, name: p.name, price: p.price, qty: l.qty, image: p.image };
+        return { productId: p.id, name: p.name, price: effectivePrice(p), qty: l.qty, image: p.image };
       })
       .filter(Boolean) as OrderItem[];
 
@@ -533,11 +596,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updatedAt: createdAt,
     };
 
-    // Decrement stock for every purchased line.
+    // Decrement stock for every purchased line; a live flash sale also counts
+    // the units claimed so the storefront's progress bar moves.
     setProducts((prev) =>
       prev.map((p) => {
         const line = items.find((it) => it.productId === p.id);
-        return line ? { ...p, stock: Math.max(0, p.stock - line.qty) } : p;
+        if (!line) return p;
+        const live = p.flashSale && flashPhase(p) === "live";
+        return {
+          ...p,
+          stock: Math.max(0, p.stock - line.qty),
+          flashSale: live
+            ? {
+                ...p.flashSale!,
+                claimed: Math.max(0, Math.round(p.flashSale!.claimed ?? 0)) + line.qty,
+              }
+            : p.flashSale,
+        };
       })
     );
     setOrders((prev) => [order, ...prev]);
@@ -677,6 +752,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateProduct,
       updateStock,
       deleteProduct,
+      setFlashSale,
+      setFlashSaleBulk,
       addShippingMethod,
       updateShippingMethod,
       deleteShippingMethod,
@@ -698,6 +775,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateProduct,
       updateStock,
       deleteProduct,
+      setFlashSale,
+      setFlashSaleBulk,
       addShippingMethod,
       updateShippingMethod,
       deleteShippingMethod,

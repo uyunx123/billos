@@ -91,4 +91,9 @@
   <url><loc>https://billshop.nativelyai.app/product/silver-cup-chalk-pink</loc></url>
   <url><loc>https://billshop.nativelyai.app/product/pion-soccer-4-ft</loc></url>
   <url><loc>https://billshop.nativelyai.app/product/ferrule-eceran-12-mm-panjang-2-0-cm-coklat</loc></url>
+  <url>
+    <loc>https://billshop.nativelyai.app/flash-sale</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>

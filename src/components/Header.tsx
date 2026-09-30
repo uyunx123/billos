@@ -43,6 +43,7 @@ export function BrandMark({
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/shop", label: "Shop" },
+  { to: "/flash-sale", label: "Flash sale" },
   { to: "/blog", label: "Journal" },
   { to: "/contact", label: "Contact" },
 ];

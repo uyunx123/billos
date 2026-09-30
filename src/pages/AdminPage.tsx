@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ArrowDown,
   ArrowUp,
@@ -48,6 +48,9 @@ import {
   Loader2,
   RefreshCw,
   SwatchBook,
+  Flame,
+  Timer,
+  Compass,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
@@ -98,8 +101,11 @@ import { formatIDR, formatDateTime } from "../lib/format";
 import OrderTimeline from "../components/OrderTimeline";
 import { COURIER_CATALOG, STATUS_KEY_LABEL, courierName } from "../lib/courier";
 import { useCourier } from "../context/CourierContext";
+import FlashSaleEditor from "../components/FlashSaleEditor";
+import AdminSetupGuide from "./admin/AdminSetupGuide";
+import { flashDiscountPercent, flashPhase } from "../lib/flashSale";
 
-type Tab = "overview" | "products" | "stock" | "shipping" | "orders" | "reviews" | "chat" | "users" | "config";
+type Tab = "overview" | "products" | "stock" | "shipping" | "orders" | "reviews" | "chat" | "users" | "config" | "setup";
 
 const TABS: { id: Tab; label: string; icon: typeof Boxes }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -111,6 +117,7 @@ const TABS: { id: Tab; label: string; icon: typeof Boxes }[] = [
   { id: "chat", label: "Chat", icon: MessageSquare },
   { id: "users", label: "Users", icon: Users },
   { id: "config", label: "Configuration", icon: Settings2 },
+  { id: "setup", label: "Setup guide", icon: Compass },
 ];
 
 const IMAGE_OPTIONS = [
@@ -221,8 +228,19 @@ export default function AdminPage() {
 }
 
 function AdminConsole() {
-  const [tab, setTab] = useState<Tab>("overview");
+  const location = useLocation();
+  const [tab, setTab] = useState<Tab>(() => {
+    const id = window.location.hash.replace(/^#/, "");
+    return (TABS.map((t) => t.id) as string[]).includes(id) ? (id as Tab) : "overview";
+  });
   const { unreadCount } = useChat();
+
+  // Deep links such as /admin#products (used by the setup guide) switch tabs.
+  useEffect(() => {
+    const id = location.hash.replace(/^#/, "");
+    const next = (TABS.map((t) => t.id) as string[]).includes(id) ? (id as Tab) : null;
+    if (next) setTab(next);
+  }, [location.hash]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     const idx = TABS.findIndex((t) => t.id === tab);
@@ -256,6 +274,9 @@ function AdminConsole() {
           </Link>
           <Link to="/admin/newsticker" className="btn btn-outline w-fit !px-4 !py-2.5 text-sm">
             <Newspaper className="h-4 w-4" aria-hidden="true" /> Newsticker
+          </Link>
+          <Link to="/admin/setup-guide" className="btn btn-outline w-fit !px-4 !py-2.5 text-sm">
+            <Compass className="h-4 w-4" aria-hidden="true" /> Setup guide
           </Link>
         </div>
       </div>
@@ -338,6 +359,11 @@ function AdminConsole() {
         {tab === "config" && (
           <div id="admin-panel-config" role="tabpanel" aria-labelledby="admin-tab-config">
             <ConfigTab onOpenShipping={() => setTab("shipping")} />
+          </div>
+        )}
+        {tab === "setup" && (
+          <div id="admin-panel-setup" role="tabpanel" aria-labelledby="admin-tab-setup">
+            <AdminSetupGuide />
           </div>
         )}
       </div>
@@ -872,6 +898,13 @@ function ProductsTab() {
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [flashTargets, setFlashTargets] = useState<string[] | null>(null);
+
+  const liveSales = useMemo(() => products.filter((p) => flashPhase(p) === "live"), [products]);
+  const toggleSelected = (id: string) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const targets = flashTargets ? products.filter((p) => flashTargets.includes(p.id)) : [];
 
   function startNew() {
     setEditing({ id: null, form: EMPTY_FORM });
@@ -973,6 +1006,58 @@ function ProductsTab() {
         </p>
       )}
 
+      {/* Flash sale summary */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold-500/25 bg-gold-500/10 px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gold-500/15 text-gold-300">
+            <Flame className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="font-heading text-sm font-bold">Flash sale</p>
+            <p className="text-xs text-foreground/60">
+              {liveSales.length > 0
+                ? `${liveSales.length} product${liveSales.length === 1 ? "" : "s"} live at a discount right now.`
+                : "Nothing is on sale — tick items below and add them to a flash sale."}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link to="/flash-sale" className="btn btn-ghost !px-3 !py-1.5 text-xs">
+            <Timer className="h-3.5 w-3.5" aria-hidden="true" /> View storefront page
+          </Link>
+          {liveSales.length > 0 && (
+            <button
+              type="button"
+              className="btn btn-ghost !px-3 !py-1.5 text-xs"
+              onClick={() => setFlashTargets(liveSales.map((p) => p.id))}
+            >
+              <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Edit live sale
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Bulk actions */}
+      {selected.length > 0 && (
+        <div
+          role="region"
+          aria-label="Bulk actions"
+          className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary/25 bg-primary/10 px-4 py-3"
+        >
+          <span className="text-sm font-semibold text-primary-400">
+            {selected.length} product{selected.length === 1 ? "" : "s"} selected
+          </span>
+          <span className="ml-auto flex flex-wrap gap-2">
+            <button type="button" className="btn btn-accent !px-3.5 !py-2 text-xs" onClick={() => setFlashTargets(selected)}>
+              <Flame className="h-3.5 w-3.5" aria-hidden="true" /> Add to flash sale
+            </button>
+            <button type="button" className="btn btn-ghost !px-3 !py-2 text-xs" onClick={() => setSelected([])}>
+              Clear
+            </button>
+          </span>
+        </div>
+      )}
+
       {editing && <ProductForm key={editing.id ?? "new"} initial={editing.form} onSubmit={save} onCancel={() => setEditing(null)} />}
 
       {/* List */}
@@ -980,6 +1065,13 @@ function ProductsTab() {
         <ul className="divide-y divide-border">
           {filtered.map((p) => (
             <li key={p.id} className="flex items-center gap-3 px-4 py-3">
+              <input
+                type="checkbox"
+                className="h-4 w-4 shrink-0 accent-primary"
+                checked={selected.includes(p.id)}
+                onChange={() => toggleSelected(p.id)}
+                aria-label={`Select ${p.name}`}
+              />
               <img src={p.image} alt="" className="h-12 w-12 shrink-0 rounded-xl bg-foreground/10 object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-heading text-sm font-bold">{p.name}</p>
@@ -988,6 +1080,24 @@ function ProductsTab() {
                   {p.compareAt && (
                     <span className="rounded-full bg-gold-500/15 px-2 py-0.5 font-bold text-gold-300">
                       Save {Math.round((1 - p.price / p.compareAt) * 100)}%
+                    </span>
+                  )}
+                  {p.flashSale?.enabled && (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-bold ${
+                        flashPhase(p) === "live"
+                          ? "bg-gold-500/15 text-gold-300"
+                          : flashPhase(p) === "upcoming"
+                            ? "bg-primary/10 text-primary-400"
+                            : "bg-foreground/10 text-foreground/50"
+                      }`}
+                    >
+                      <Flame className="h-3 w-3" aria-hidden="true" />
+                      {flashPhase(p) === "live"
+                        ? `Flash −${flashDiscountPercent(p)}%`
+                        : flashPhase(p) === "upcoming"
+                          ? "Flash · scheduled"
+                          : "Flash · ended"}
                     </span>
                   )}
                   {p.freeShipping && (
@@ -1014,6 +1124,14 @@ function ProductsTab() {
                   </>
                 ) : (
                   <>
+                    <button
+                      type="button"
+                      className="btn btn-ghost !px-3 !py-1.5 text-xs text-gold-300"
+                      onClick={() => setFlashTargets([p.id])}
+                      aria-label={`Flash sale for ${p.name}`}
+                    >
+                      <Flame className="h-3.5 w-3.5" aria-hidden="true" /> Flash
+                    </button>
                     <button type="button" className="btn btn-ghost !px-3 !py-1.5 text-xs" onClick={() => startEdit(p)} aria-label={`Edit ${p.name}`}>
                       <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Edit
                     </button>
@@ -1038,6 +1156,10 @@ function ProductsTab() {
           </div>
         )}
       </div>
+
+      {flashTargets && targets.length > 0 && (
+        <FlashSaleEditor products={targets} onClose={() => setFlashTargets(null)} />
+      )}
     </div>
   );
 }

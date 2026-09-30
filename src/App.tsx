@@ -35,6 +35,8 @@ import AdminPage from "./pages/AdminPage";
 import { AdminIntegrationsPage } from "./pages/admin/AdminIntegrations";
 import PartnershipsPage from "./pages/PartnershipsPage";
 import NewstickerPage from "./pages/NewstickerPage";
+import FlashSalePage from "./pages/FlashSalePage";
+import AdminSetupGuide from "./pages/admin/AdminSetupGuide";
 import TrackOrderPage from "./pages/TrackOrderPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -59,6 +61,7 @@ export default function App() {
                       <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/shop" element={<ShopPage />} />
+                        <Route path="/flash-sale" element={<FlashSalePage />} />
                         <Route path="/product/:slug" element={<ProductDetailPage />} />
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
@@ -75,6 +78,7 @@ export default function App() {
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/page/:slug" element={<CustomPage />} />
                         <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/admin/setup-guide" element={<AdminSetupGuide />} />
                         <Route path="/admin/integrations" element={<AdminIntegrationsPage />} />
                         <Route path="/admin/partnerships" element={<PartnershipsPage />} />
                         <Route path="/admin/newsticker" element={<NewstickerPage />} />

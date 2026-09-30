@@ -13,6 +13,23 @@ export interface Category {
   image: string;
 }
 
+/** Time-boxed flash sale attached to a product (managed from the admin console). */
+export interface FlashSale {
+  enabled: boolean;
+  /** Percentage off the base price (1–95). */
+  discountPercent?: number;
+  /** Fixed sale price in Rupiah — takes precedence over discountPercent. */
+  salePrice?: number;
+  /** ISO timestamp the sale goes live (optional — empty means "right away"). */
+  startsAt?: string;
+  /** ISO timestamp the sale ends. */
+  endsAt?: string;
+  /** Units available at the sale price (optional). */
+  stockLimit?: number;
+  /** Units already claimed at the sale price. */
+  claimed?: number;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -32,6 +49,8 @@ export interface Product {
   featured?: boolean;
   /** Optional demo/review video — YouTube, Vimeo or a direct .mp4/.webm link. */
   videoUrl?: string;
+  /** Optional flash sale — a time-boxed discount managed from the admin console. */
+  flashSale?: FlashSale;
 }
 
 export const CATEGORIES: Category[] = [
