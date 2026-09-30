@@ -52,6 +52,8 @@ import {
   Timer,
   Compass,
   Calculator,
+  LayoutGrid,
+  HelpCircle,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
@@ -89,6 +91,8 @@ import {
   type SocialLink,
   type SocialPlatform,
   type SponsorPlacement,
+  type FAQItem,
+  type TickerLabelStyle,
 } from "../context/ConfigContext";
 import { useGateways } from "../context/GatewayContext";
 import { GATEWAY_CATALOG, GATEWAY_TYPE_LABEL, type GatewayCatalogEntry } from "../data/gatewayCatalog";
@@ -2685,6 +2689,7 @@ function UserEditor({
 /* ------------------------------------------------------------------ */
 
 const CONFIG_SECTIONS = [
+  { id: "main", label: "Main", icon: LayoutGrid },
   { id: "appearance", label: "Theme & layout", icon: SwatchBook },
   { id: "site", label: "Site settings", icon: Store },
   { id: "hero", label: "Homepage hero", icon: Home },
@@ -2701,7 +2706,7 @@ const CONFIG_SECTIONS = [
 type ConfigSection = (typeof CONFIG_SECTIONS)[number]["id"];
 
 function ConfigTab({ onOpenShipping }: { onOpenShipping: () => void }) {
-  const [section, setSection] = useState<ConfigSection>("gateways");
+  const [section, setSection] = useState<ConfigSection>("main");
   const { siteConfig, logo } = useConfig();
   const { gateways } = useGateways();
   const { shippingMethods } = useStore();
@@ -2748,6 +2753,7 @@ function ConfigTab({ onOpenShipping }: { onOpenShipping: () => void }) {
         ))}
       </div>
 
+      {section === "main" && <MainPanel />}
       {section === "appearance" && <AppearancePanel />}
       {section === "site" && <SiteSettingsPanel />}
       {section === "hero" && <HeroPanel />}
@@ -2759,6 +2765,651 @@ function ConfigTab({ onOpenShipping }: { onOpenShipping: () => void }) {
       {section === "receipts" && <ReceiptsPanel />}
       {section === "sponsors" && <SponsorsPanel />}
       {section === "pages" && <PagesPanel />}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Main — the storefront sections people see first                    */
+/* ------------------------------------------------------------------ */
+
+function MainPanel() {
+  return (
+    <div className="space-y-5">
+      <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
+        The storefront sections people see first — the announcement bar, the sticky newsticker,
+        the FAQ, sponsor banners and the social / marketplace links. Every change goes live
+        instantly.
+      </p>
+      <AnnouncementCard />
+      <NewstickerCard />
+      <FaqCard />
+      <SponsorsPanel />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <SocialLinksEditor />
+        <ShopLinksEditor />
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementCard() {
+  const { siteConfig, updateSiteConfig } = useConfig();
+  const { settings } = useStore();
+  const threshold = formatIDR(settings.freeShippingThreshold);
+  const preview = siteConfig.announcement.replace(/\{threshold\}/g, threshold);
+
+  return (
+    <div className="card space-y-4 p-5">
+      <div>
+        <h3 className="flex items-center gap-2 font-heading font-bold">
+          <Megaphone className="h-4 w-4 text-primary-400" aria-hidden="true" /> Announcement bar
+        </h3>
+        <p className="mt-0.5 text-xs text-foreground/55">
+          The slim bar above the header. Use <span className="font-mono">{`{threshold}`}</span> to
+          insert the free-shipping amount automatically.
+        </p>
+      </div>
+      <label htmlFor="main-announcement" className="sr-only">Announcement text</label>
+      <input
+        id="main-announcement"
+        className="input"
+        value={siteConfig.announcement}
+        onChange={(e) => updateSiteConfig({ announcement: e.target.value })}
+        placeholder="e.g. Free shipping above {threshold} — nationwide"
+      />
+      <div className="rounded-2xl border border-border bg-surface-2 px-4 py-3">
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground/45">Live preview</p>
+        <p className="mt-1 text-sm font-semibold">{preview || "The bar hides when the text is empty."}</p>
+      </div>
+      <p className="text-xs text-foreground/50">
+        Current free-shipping threshold:{" "}
+        <span className="font-bold text-primary-400">{threshold}</span> — set it in the Shipping tab.
+      </p>
+    </div>
+  );
+}
+
+function NewstickerCard() {
+  const { ticker, updateTicker, addTickerItem, updateTickerItem, deleteTickerItem, resetTicker } = useConfig();
+  const [draft, setDraft] = useState("");
+  const [draftStyle, setDraftStyle] = useState<TickerLabelStyle>("featured");
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  function addItem() {
+    if (!draft.trim()) {
+      setNotice("Write a short announcement before adding it.");
+      return;
+    }
+    addTickerItem({ text: draft, labelStyle: draftStyle });
+    setDraft("");
+    setNotice("Newsticker item added — it scrolls on the sticky bar now.");
+  }
+
+  return (
+    <div className="card space-y-4 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="flex items-center gap-2 font-heading font-bold">
+            <Newspaper className="h-4 w-4 text-primary-400" aria-hidden="true" /> Newsticker
+          </h3>
+          <p className="mt-0.5 text-xs text-foreground/55">
+            The sticky marquee at the bottom of the screen — {ticker.items.length} item
+            {ticker.items.length === 1 ? "" : "s"}.
+          </p>
+        </div>
+        {confirmReset ? (
+          <span className="flex items-center gap-1.5">
+            <button type="button" className="btn btn-primary !px-3 !py-1.5 text-xs" onClick={() => { resetTicker(); setConfirmReset(false); setNotice("Newsticker restored to the default items."); }}>
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Reset
+            </button>
+            <button type="button" className="btn btn-ghost !px-2 !py-1.5 text-xs" onClick={() => setConfirmReset(false)}>Keep</button>
+          </span>
+        ) : (
+          <button type="button" className="btn btn-ghost !px-3 !py-1.5 text-xs" onClick={() => setConfirmReset(true)}>
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Reset
+          </button>
+        )}
+      </div>
+
+      {notice && (
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
+          {notice}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-surface-2 px-4 py-3">
+        <label className="flex cursor-pointer items-center gap-2.5 text-sm font-semibold">
+          <input
+            type="checkbox"
+            checked={ticker.enabled}
+            onChange={(e) => updateTicker({ enabled: e.target.checked })}
+            className="h-4 w-4 accent-primary"
+          />
+          {ticker.enabled ? "Bar visible" : "Bar hidden"}
+        </label>
+        <label className="flex items-center gap-2 text-sm font-semibold">
+          <Timer className="h-4 w-4 text-primary-400" aria-hidden="true" />
+          <span className="text-foreground/70">Speed</span>
+          <input
+            aria-label="Newsticker speed, seconds per lap"
+            type="number"
+            min={10}
+            max={90}
+            className="input !w-20 !py-1.5 text-sm"
+            value={ticker.speed}
+            onChange={(e) => updateTicker({ speed: Math.min(90, Math.max(10, Number(e.target.value) || 24)) })}
+          />
+          <span className="text-xs text-foreground/45">sec/lap</span>
+        </label>
+      </div>
+
+      <form
+        className="grid gap-3 sm:grid-cols-[10rem_1fr_auto] sm:items-center"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addItem();
+        }}
+      >
+        <div>
+          <label htmlFor="nt-style" className="sr-only">Chip style</label>
+          <select id="nt-style" className="input !py-2 text-sm" value={draftStyle} onChange={(e) => setDraftStyle(e.target.value as TickerLabelStyle)}>
+            <option value="featured">Featured (gold)</option>
+            <option value="big_sale">Big sale (red)</option>
+            <option value="custom">Custom label</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="nt-text" className="sr-only">Announcement text</label>
+          <input
+            id="nt-text"
+            className="input !py-2 text-sm"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="e.g. Mid-season sale — up to 30% off"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-sm">
+          <Plus className="h-4 w-4" aria-hidden="true" /> Add item
+        </button>
+      </form>
+
+      {ticker.items.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
+          No items — add one above and the bar starts scrolling.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
+          {ticker.items.map((it) => (
+            <li key={it.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
+              <select
+                aria-label="Chip style"
+                className="input !w-40 !py-2 text-sm"
+                value={it.labelStyle}
+                onChange={(e) => updateTickerItem(it.id, { labelStyle: e.target.value as TickerLabelStyle })}
+              >
+                <option value="featured">Featured</option>
+                <option value="big_sale">Big sale</option>
+                <option value="custom">Custom</option>
+              </select>
+              {it.labelStyle === "custom" && (
+                <input
+                  aria-label="Custom chip label"
+                  className="input !w-44 !py-2 text-sm"
+                  value={it.label ?? ""}
+                  onChange={(e) => updateTickerItem(it.id, { label: e.target.value })}
+                  placeholder="Chip label"
+                />
+              )}
+              <input
+                aria-label="Announcement text"
+                className="input !py-2 text-sm lg:flex-1"
+                value={it.text}
+                onChange={(e) => updateTickerItem(it.id, { text: e.target.value })}
+              />
+              <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={it.enabled}
+                  onChange={(e) => updateTickerItem(it.id, { enabled: e.target.checked })}
+                  className="h-4 w-4 accent-primary"
+                />
+                {it.enabled ? "Live" : "Paused"}
+              </label>
+              <button
+                type="button"
+                className="btn btn-ghost !px-2.5 !py-1.5 text-xs text-destructive"
+                onClick={() => deleteTickerItem(it.id)}
+                aria-label="Delete item"
+              >
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function FaqCard() {
+  const { faq, addFaqItem, updateFaqItem, deleteFaqItem, resetFaq } = useConfig();
+  const [editor, setEditor] = useState<"new" | string | null>(null);
+  const [form, setForm] = useState({ question: "", answer: "", category: "General", sortOrder: "" });
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const sorted = [...faq].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  function openNew() {
+    setForm({ question: "", answer: "", category: "General", sortOrder: String(sorted.length + 1) });
+    setEditor("new");
+    setNotice(null);
+  }
+
+  function openEdit(f: FAQItem) {
+    setForm({ question: f.question, answer: f.answer, category: f.category, sortOrder: String(f.sortOrder) });
+    setEditor(f.id);
+    setNotice(null);
+  }
+
+  function save(e: FormEvent) {
+    e.preventDefault();
+    const question = form.question.trim();
+    if (!question) {
+      setNotice("Write the question first.");
+      return;
+    }
+    if (!form.answer.trim()) {
+      setNotice("Add an answer so the FAQ is actually helpful.");
+      return;
+    }
+    const patch = {
+      question,
+      answer: form.answer.trim(),
+      category: form.category.trim() || "General",
+      sortOrder: Math.max(0, Math.round(Number(form.sortOrder) || 0)),
+    };
+    if (editor && editor !== "new") {
+      updateFaqItem(editor, patch);
+      setNotice("Question updated — live on the /faq page.");
+    } else {
+      addFaqItem(patch);
+      setNotice("Question added — live on the /faq page.");
+    }
+    setEditor(null);
+  }
+
+  return (
+    <div className="card space-y-4 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="flex items-center gap-2 font-heading font-bold">
+            <HelpCircle className="h-4 w-4 text-primary-400" aria-hidden="true" /> FAQ
+          </h3>
+          <p className="mt-0.5 text-xs text-foreground/55">
+            {sorted.length} question{sorted.length === 1 ? "" : "s"} — shown on the public /faq page.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" className="btn btn-ghost !px-3 !py-1.5 text-xs" onClick={() => setConfirming("__reset")}>
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Reset
+          </button>
+          <button type="button" className="btn btn-accent !px-3 !py-1.5 text-xs" onClick={openNew}>
+            <Plus className="h-3.5 w-3.5" aria-hidden="true" /> New question
+          </button>
+        </div>
+      </div>
+
+      {notice && (
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
+          {notice}
+        </p>
+      )}
+
+      {confirming === "__reset" ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-destructive/25 bg-destructive/5 px-4 py-3">
+          <span className="text-sm font-semibold text-destructive">Restore the default FAQ questions?</span>
+          <span className="ml-auto flex gap-2">
+            <button type="button" className="btn btn-primary !px-3 !py-1.5 text-xs" onClick={() => { resetFaq(); setConfirming(null); setNotice("FAQ restored to the defaults."); }}>
+              Yes, reset
+            </button>
+            <button type="button" className="btn btn-ghost !px-3 !py-1.5 text-xs" onClick={() => setConfirming(null)}>Keep</button>
+          </span>
+        </div>
+      ) : null}
+
+      {editor !== null && (
+        <form className="space-y-3 rounded-2xl border border-primary/25 bg-primary/5 p-4" onSubmit={save}>
+          <h4 className="font-heading text-sm font-bold">{editor === "new" ? "New question" : "Edit question"}</h4>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label htmlFor="faq-q" className="field-label">Question *</label>
+              <input id="faq-q" className="input" required value={form.question} onChange={(e) => setForm((f) => ({ ...f, question: e.target.value }))} placeholder="e.g. How do I choose a cue?" />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="faq-a" className="field-label">Answer *</label>
+              <textarea id="faq-a" rows={3} className="input resize-none" required value={form.answer} onChange={(e) => setForm((f) => ({ ...f, answer: e.target.value }))} placeholder="A clear, helpful answer…" />
+            </div>
+            <div>
+              <label htmlFor="faq-c" className="field-label">Category</label>
+              <input id="faq-c" className="input" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} />
+            </div>
+            <div>
+              <label htmlFor="faq-s" className="field-label">Sort order</label>
+              <input id="faq-s" type="number" min="0" className="input" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))} />
+            </div>
+          </div>
+          <div className="flex gap-2 border-t border-border pt-3">
+            <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-xs">
+              <Check className="h-3.5 w-3.5" aria-hidden="true" /> {editor === "new" ? "Add question" : "Save changes"}
+            </button>
+            <button type="button" className="btn btn-ghost !px-3 !py-2 text-xs" onClick={() => setEditor(null)}>Cancel</button>
+          </div>
+        </form>
+      )}
+
+      {sorted.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
+          No questions yet — add the first one and it appears on the /faq page.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
+          {sorted.map((f) => (
+            <li key={f.id} className={`flex flex-col gap-3 px-4 py-4 lg:flex-row lg:items-center ${f.enabled ? "" : "opacity-70"}`}>
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2">
+                  <span className="font-heading text-sm font-bold">{f.question}</span>
+                  <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[11px] font-bold text-foreground/55">{f.category}</span>
+                  {!f.enabled && <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[11px] font-bold text-foreground/45">hidden</span>}
+                </p>
+                {f.answer && <p className="mt-1 line-clamp-2 text-sm text-foreground/65">{f.answer}</p>}
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
+                  <input
+                    type="checkbox"
+                    checked={f.enabled}
+                    onChange={(e) => updateFaqItem(f.id, { enabled: e.target.checked })}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  {f.enabled ? "Live" : "Hidden"}
+                </label>
+                <button type="button" className="btn btn-ghost !px-3 !py-1.5 text-xs" onClick={() => openEdit(f)} aria-label={`Edit ${f.question}`}>
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Edit
+                </button>
+                {confirming === f.id ? (
+                  <span className="flex gap-1.5">
+                    <button type="button" className="btn btn-primary !px-2.5 !py-1 text-xs" onClick={() => { deleteFaqItem(f.id); setConfirming(null); setNotice("Question deleted."); }}>
+                      Delete
+                    </button>
+                    <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => setConfirming(null)}>Keep</button>
+                  </span>
+                ) : (
+                  <button type="button" className="btn btn-ghost !px-2.5 !py-1.5 text-xs text-destructive" onClick={() => setConfirming(f.id)} aria-label={`Delete ${f.question}`}>
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function SocialLinksEditor() {
+  const { siteConfig, addSocialLink, updateSocialLink, deleteSocialLink } = useConfig();
+  const [newSocial, setNewSocial] = useState<{ platform: SocialPlatform; label: string; url: string }>({
+    platform: "instagram",
+    label: "",
+    url: "",
+  });
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  function addSocial() {
+    if (!newSocial.url.trim()) {
+      setNotice("Social links need a URL.");
+      return;
+    }
+    addSocialLink(newSocial);
+    setNewSocial({ platform: newSocial.platform, label: "", url: "" });
+    setNotice("Social link added — it appears in the footer instantly.");
+  }
+
+  return (
+    <div className="card space-y-4 p-5">
+      <h3 className="font-heading font-bold">Social media links</h3>
+      {notice && (
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
+          {notice}
+        </p>
+      )}
+      <form
+        className="grid gap-3 sm:grid-cols-[11rem_1fr_1.4fr_auto] sm:items-center"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addSocial();
+        }}
+      >
+        <div>
+          <label htmlFor="ns-platform" className="sr-only">Platform</label>
+          <select
+            id="ns-platform"
+            className="input !py-2 text-sm"
+            value={newSocial.platform}
+            onChange={(e) => setNewSocial((s) => ({ ...s, platform: e.target.value as SocialPlatform }))}
+          >
+            {SOCIAL_CATALOG.map((c) => (
+              <option key={c.id} value={c.id}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="ns-label" className="sr-only">Display label</label>
+          <input
+            id="ns-label"
+            className="input !py-2 text-sm"
+            value={newSocial.label}
+            onChange={(e) => setNewSocial((s) => ({ ...s, label: e.target.value }))}
+            placeholder="Label (optional)"
+          />
+        </div>
+        <div>
+          <label htmlFor="ns-url" className="sr-only">Profile URL</label>
+          <input
+            id="ns-url"
+            type="url"
+            className="input !py-2 text-sm"
+            value={newSocial.url}
+            onChange={(e) => setNewSocial((s) => ({ ...s, url: e.target.value }))}
+            placeholder="https://instagram.com/…"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-sm">
+          <Plus className="h-4 w-4" aria-hidden="true" /> Add
+        </button>
+      </form>
+
+      {siteConfig.socials.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
+          No social links yet — add the first one above.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border rounded-2xl border border-border">
+          {siteConfig.socials.map((s: SocialLink) => (
+            <li key={s.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-400">
+                <SocialPlatformIcon platform={s.platform} className="h-4 w-4" />
+              </span>
+              <select
+                aria-label={`Platform for ${s.label || s.platform}`}
+                className="input !w-auto !py-2 text-sm"
+                value={s.platform}
+                onChange={(e) => updateSocialLink(s.id, { platform: e.target.value as SocialPlatform })}
+              >
+                {SOCIAL_CATALOG.map((c) => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
+              </select>
+              <input
+                aria-label="Social link label"
+                className="input !py-2 text-sm"
+                value={s.label}
+                onChange={(e) => updateSocialLink(s.id, { label: e.target.value })}
+              />
+              <input
+                aria-label="Social link URL"
+                type="url"
+                className="input !py-2 text-sm lg:flex-1"
+                value={s.url}
+                onChange={(e) => updateSocialLink(s.id, { url: e.target.value })}
+              />
+              <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={s.enabled}
+                  onChange={(e) => updateSocialLink(s.id, { enabled: e.target.checked })}
+                  className="h-4 w-4 accent-primary"
+                />
+                {s.enabled ? "Visible" : "Hidden"}
+              </label>
+              {confirming === s.id ? (
+                <span className="flex gap-1.5">
+                  <button type="button" className="btn btn-primary !px-2.5 !py-1 text-xs" onClick={() => { deleteSocialLink(s.id); setConfirming(null); }}>
+                    Delete
+                  </button>
+                  <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => setConfirming(null)}>Keep</button>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost !px-2 !py-1 text-xs text-destructive"
+                  onClick={() => setConfirming(s.id)}
+                  aria-label={`Delete ${s.label || s.platform}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function ShopLinksEditor() {
+  const { siteConfig, addShopLink, updateShopLink, deleteShopLink } = useConfig();
+  const [newShop, setNewShop] = useState({ label: "", url: "" });
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  function addShop() {
+    if (!newShop.label.trim() || !newShop.url.trim()) {
+      setNotice("Store links need both a label and a URL.");
+      return;
+    }
+    addShopLink(newShop);
+    setNewShop({ label: "", url: "" });
+    setNotice("Store link added — shown in the footer and contact page.");
+  }
+
+  return (
+    <div className="card space-y-4 p-5">
+      <h3 className="font-heading font-bold">Official store links</h3>
+      {notice && (
+        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
+          {notice}
+        </p>
+      )}
+      <form
+        className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto] sm:items-center"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addShop();
+        }}
+      >
+        <div>
+          <label htmlFor="nshop-label" className="sr-only">Store label</label>
+          <input
+            id="nshop-label"
+            className="input !py-2 text-sm"
+            value={newShop.label}
+            onChange={(e) => setNewShop((s) => ({ ...s, label: e.target.value }))}
+            placeholder="Store name (e.g. Shopee)"
+          />
+        </div>
+        <div>
+          <label htmlFor="nshop-url" className="sr-only">Store URL</label>
+          <input
+            id="nshop-url"
+            type="url"
+            className="input !py-2 text-sm"
+            value={newShop.url}
+            onChange={(e) => setNewShop((s) => ({ ...s, url: e.target.value }))}
+            placeholder="https://shopee.co.id/…"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-sm">
+          <Plus className="h-4 w-4" aria-hidden="true" /> Add
+        </button>
+      </form>
+
+      {siteConfig.shopLinks.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
+          No store links yet — add Shopee, Tokopedia or any partner store above.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border rounded-2xl border border-border">
+          {siteConfig.shopLinks.map((s: ShopLink) => (
+            <li key={s.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
+              <input
+                aria-label="Store label"
+                className="input !py-2 text-sm lg:w-52"
+                value={s.label}
+                onChange={(e) => updateShopLink(s.id, { label: e.target.value })}
+              />
+              <input
+                aria-label="Store URL"
+                type="url"
+                className="input !py-2 text-sm lg:flex-1"
+                value={s.url}
+                onChange={(e) => updateShopLink(s.id, { url: e.target.value })}
+              />
+              <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={s.enabled}
+                  onChange={(e) => updateShopLink(s.id, { enabled: e.target.checked })}
+                  className="h-4 w-4 accent-primary"
+                />
+                {s.enabled ? "Visible" : "Hidden"}
+              </label>
+              {confirming === s.id ? (
+                <span className="flex gap-1.5">
+                  <button type="button" className="btn btn-primary !px-2.5 !py-1 text-xs" onClick={() => { deleteShopLink(s.id); setConfirming(null); }}>
+                    Delete
+                  </button>
+                  <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => setConfirming(null)}>Keep</button>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost !px-2 !py-1 text-xs text-destructive"
+                  onClick={() => setConfirming(s.id)}
+                  aria-label={`Delete ${s.label}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -4445,47 +5096,9 @@ function AppearancePanel() {
 type SiteTextField = "phone" | "whatsapp" | "email" | "address" | "hours" | "mapEmbedUrl" | "announcement";
 
 function SiteSettingsPanel() {
-  const {
-    siteConfig,
-    updateSiteConfig,
-    addSocialLink,
-    updateSocialLink,
-    deleteSocialLink,
-    addShopLink,
-    updateShopLink,
-    deleteShopLink,
-  } = useConfig();
-  const [newSocial, setNewSocial] = useState<{ platform: SocialPlatform; label: string; url: string }>({
-    platform: "instagram",
-    label: "",
-    url: "",
-  });
-  const [newShop, setNewShop] = useState({ label: "", url: "" });
-  const [confirmingSocial, setConfirmingSocial] = useState<string | null>(null);
-  const [confirmingShop, setConfirmingShop] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const { siteConfig, updateSiteConfig } = useConfig();
 
   const set = (key: SiteTextField, value: string) => updateSiteConfig({ [key]: value });
-
-  function addSocial() {
-    if (!newSocial.url.trim()) {
-      setNotice("Social links need a URL.");
-      return;
-    }
-    addSocialLink(newSocial);
-    setNewSocial({ platform: newSocial.platform, label: "", url: "" });
-    setNotice("Social link added — it appears in the footer instantly.");
-  }
-
-  function addShop() {
-    if (!newShop.label.trim() || !newShop.url.trim()) {
-      setNotice("Store links need both a label and a URL.");
-      return;
-    }
-    addShopLink(newShop);
-    setNewShop({ label: "", url: "" });
-    setNotice("Store link added — shown in the footer and contact page.");
-  }
 
   const FIELDS: { key: SiteTextField; label: string; type?: string; hint?: string; full?: boolean }[] = [
     { key: "phone", label: "Phone", hint: "Shown in the footer & contact page (tap-to-call)." },
@@ -4499,11 +5112,6 @@ function SiteSettingsPanel() {
 
   return (
     <div className="space-y-5">
-      {notice && (
-        <p role="status" className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary-400">
-          {notice}
-        </p>
-      )}
       <p className="rounded-xl border border-border bg-foreground/10 px-4 py-2.5 text-sm text-foreground/55">
         Contact details, social profiles and official-store links — changes go live in the header,
         footer and contact page instantly.
@@ -4529,209 +5137,9 @@ function SiteSettingsPanel() {
         </div>
       </div>
 
-      {/* Social links */}
-      <div className="card space-y-4 p-5">
-        <h3 className="font-heading font-bold">Social media links</h3>
-        <form
-          className="grid gap-3 sm:grid-cols-[11rem_1fr_1.4fr_auto] sm:items-center"
-          onSubmit={(e) => {
-            e.preventDefault();
-            addSocial();
-          }}
-        >
-          <div>
-            <label htmlFor="ns-platform" className="sr-only">Platform</label>
-            <select
-              id="ns-platform"
-              className="input !py-2 text-sm"
-              value={newSocial.platform}
-              onChange={(e) => setNewSocial((s) => ({ ...s, platform: e.target.value as SocialPlatform }))}
-            >
-              {SOCIAL_CATALOG.map((c) => (
-                <option key={c.id} value={c.id}>{c.label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="ns-label" className="sr-only">Display label</label>
-            <input
-              id="ns-label"
-              className="input !py-2 text-sm"
-              value={newSocial.label}
-              onChange={(e) => setNewSocial((s) => ({ ...s, label: e.target.value }))}
-              placeholder="Label (optional)"
-            />
-          </div>
-          <div>
-            <label htmlFor="ns-url" className="sr-only">Profile URL</label>
-            <input
-              id="ns-url"
-              type="url"
-              className="input !py-2 text-sm"
-              value={newSocial.url}
-              onChange={(e) => setNewSocial((s) => ({ ...s, url: e.target.value }))}
-              placeholder="https://instagram.com/…"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-sm">
-            <Plus className="h-4 w-4" aria-hidden="true" /> Add
-          </button>
-        </form>
+      <SocialLinksEditor />
 
-        {siteConfig.socials.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
-            No social links yet — add the first one above.
-          </p>
-        ) : (
-          <ul className="divide-y divide-border rounded-2xl border border-border">
-            {siteConfig.socials.map((s: SocialLink) => (
-              <li key={s.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-400">
-                  <SocialPlatformIcon platform={s.platform} className="h-4 w-4" />
-                </span>
-                <select
-                  aria-label={`Platform for ${s.label || s.platform}`}
-                  className="input !w-auto !py-2 text-sm"
-                  value={s.platform}
-                  onChange={(e) => updateSocialLink(s.id, { platform: e.target.value as SocialPlatform })}
-                >
-                  {SOCIAL_CATALOG.map((c) => (
-                    <option key={c.id} value={c.id}>{c.label}</option>
-                  ))}
-                </select>
-                <input
-                  aria-label="Social link label"
-                  className="input !py-2 text-sm"
-                  value={s.label}
-                  onChange={(e) => updateSocialLink(s.id, { label: e.target.value })}
-                />
-                <input
-                  aria-label="Social link URL"
-                  type="url"
-                  className="input !py-2 text-sm lg:flex-1"
-                  value={s.url}
-                  onChange={(e) => updateSocialLink(s.id, { url: e.target.value })}
-                />
-                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={s.enabled}
-                    onChange={(e) => updateSocialLink(s.id, { enabled: e.target.checked })}
-                    className="h-4 w-4 accent-primary"
-                  />
-                  {s.enabled ? "Visible" : "Hidden"}
-                </label>
-                {confirmingSocial === s.id ? (
-                  <span className="flex gap-1.5">
-                    <button type="button" className="btn btn-primary !px-2.5 !py-1 text-xs" onClick={() => { deleteSocialLink(s.id); setConfirmingSocial(null); }}>
-                      Delete
-                    </button>
-                    <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => setConfirmingSocial(null)}>Keep</button>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-ghost !px-2 !py-1 text-xs text-destructive"
-                    onClick={() => setConfirmingSocial(s.id)}
-                    aria-label={`Delete ${s.label || s.platform}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Shop links */}
-      <div className="card space-y-4 p-5">
-        <h3 className="font-heading font-bold">Official store links</h3>
-        <form
-          className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto] sm:items-center"
-          onSubmit={(e) => {
-            e.preventDefault();
-            addShop();
-          }}
-        >
-          <div>
-            <label htmlFor="nshop-label" className="sr-only">Store label</label>
-            <input
-              id="nshop-label"
-              className="input !py-2 text-sm"
-              value={newShop.label}
-              onChange={(e) => setNewShop((s) => ({ ...s, label: e.target.value }))}
-              placeholder="Store name (e.g. Shopee)"
-            />
-          </div>
-          <div>
-            <label htmlFor="nshop-url" className="sr-only">Store URL</label>
-            <input
-              id="nshop-url"
-              type="url"
-              className="input !py-2 text-sm"
-              value={newShop.url}
-              onChange={(e) => setNewShop((s) => ({ ...s, url: e.target.value }))}
-              placeholder="https://shopee.co.id/…"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary !px-3.5 !py-2 text-sm">
-            <Plus className="h-4 w-4" aria-hidden="true" /> Add
-          </button>
-        </form>
-
-        {siteConfig.shopLinks.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-foreground/55">
-            No store links yet — add Shopee, Tokopedia or any partner store above.
-          </p>
-        ) : (
-          <ul className="divide-y divide-border rounded-2xl border border-border">
-            {siteConfig.shopLinks.map((s: ShopLink) => (
-              <li key={s.id} className="flex flex-col gap-2.5 px-4 py-3 lg:flex-row lg:items-center">
-                <input
-                  aria-label="Store label"
-                  className="input !py-2 text-sm lg:w-52"
-                  value={s.label}
-                  onChange={(e) => updateShopLink(s.id, { label: e.target.value })}
-                />
-                <input
-                  aria-label="Store URL"
-                  type="url"
-                  className="input !py-2 text-sm lg:flex-1"
-                  value={s.url}
-                  onChange={(e) => updateShopLink(s.id, { url: e.target.value })}
-                />
-                <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={s.enabled}
-                    onChange={(e) => updateShopLink(s.id, { enabled: e.target.checked })}
-                    className="h-4 w-4 accent-primary"
-                  />
-                  {s.enabled ? "Visible" : "Hidden"}
-                </label>
-                {confirmingShop === s.id ? (
-                  <span className="flex gap-1.5">
-                    <button type="button" className="btn btn-primary !px-2.5 !py-1 text-xs" onClick={() => { deleteShopLink(s.id); setConfirmingShop(null); }}>
-                      Delete
-                    </button>
-                    <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => setConfirmingShop(null)}>Keep</button>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-ghost !px-2 !py-1 text-xs text-destructive"
-                    onClick={() => setConfirmingShop(s.id)}
-                    aria-label={`Delete ${s.label}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <ShopLinksEditor />
     </div>
   );
 }

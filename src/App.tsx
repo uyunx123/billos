@@ -31,6 +31,7 @@ import EditProfilePage from "./pages/EditProfilePage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import ContactPage from "./pages/ContactPage";
+import { FaqPage } from "./pages/FaqPage";
 import CustomPage from "./pages/CustomPage";
 import AdminPage from "./pages/AdminPage";
 import AdminAccountingPage from "./pages/admin/AdminAccounting";
@@ -79,6 +80,7 @@ export default function App() {
                         <Route path="/blog" element={<BlogPage />} />
                         <Route path="/blog/:slug" element={<BlogPostPage />} />
                         <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/faq" element={<FaqPage />} />
                         <Route path="/page/:slug" element={<CustomPage />} />
                         <Route path="/admin" element={<AdminPage />} />
                         <Route path="/admin/accounting" element={<AdminAccountingPage />} />

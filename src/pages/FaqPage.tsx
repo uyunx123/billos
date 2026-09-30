@@ -1,22 +1,24 @@
-import { HelpCircle } from "lucide-react";
-import { Card, EmptyState, Spinner } from "../components/ui";
-import { useAsync, fetchFaq } from "../lib/data";
 import { useState } from "react";
+import { HelpCircle } from "lucide-react";
+import { Card, EmptyState } from "../components/ui";
+import { useConfig } from "../context/ConfigContext";
 
 export function FaqPage() {
-  const { data: faqs, loading } = useAsync(() => fetchFaq(), []);
+  const { faq } = useConfig();
   const [open, setOpen] = useState<string | null>(null);
+
+  const items = faq
+    .filter((f) => f.enabled && f.question.trim())
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <div className="mb-8">
         <h1 className="font-heading text-3xl font-extrabold">Frequently asked questions</h1>
-        <p className="mt-1 text-muted">Everything you need to know about playing in our tournaments.</p>
+        <p className="mt-1 text-muted">Everything you need to know before you order.</p>
       </div>
 
-      {loading ? (
-        <Spinner label="Loading FAQ…" />
-      ) : !faqs || faqs.length === 0 ? (
+      {items.length === 0 ? (
         <EmptyState
           icon={<HelpCircle className="h-8 w-8" />}
           title="No FAQs yet"
@@ -24,7 +26,7 @@ export function FaqPage() {
         />
       ) : (
         <div className="space-y-3">
-          {faqs.map((f) => {
+          {items.map((f) => {
             const isOpen = open === f.id;
             return (
               <Card key={f.id} className="overflow-hidden">

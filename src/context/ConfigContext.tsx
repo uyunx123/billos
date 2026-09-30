@@ -126,6 +126,16 @@ export interface ShopLink {
   enabled: boolean;
 }
 
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  /** Lower numbers first on the public FAQ page. */
+  sortOrder: number;
+  enabled: boolean;
+}
+
 export interface HeroConfig {
   /** Badge pill above the headline, e.g. "ISAK Billiard Co. — Jakarta". */
   badge: string;
@@ -182,6 +192,7 @@ const SITE_KEY = "isak-config-site-v1";
 const POSTS_KEY = "isak-config-posts-v1";
 const LOGO_KEY = "isak-config-logo-v1";
 const TICKER_KEY = "isak-config-ticker-v1";
+const FAQ_KEY = "isak-config-faq-v1";
 
 export const DEFAULT_GATEWAYS: PaymentGateway[] = [
   { id: "qris", name: "QRIS (all e-wallets & bank apps)", enabled: true },
@@ -385,6 +396,69 @@ function normalizeTicker(stored: TickerConfig | null | undefined): TickerConfig 
   };
 }
 
+/**
+ * Default FAQ — managed in the admin console "Main" section and shown on the
+ * public /faq page.
+ */
+export const DEFAULT_FAQ: FAQItem[] = [
+  {
+    id: "faq-shipping",
+    question: "Do you ship nationwide?",
+    answer:
+      "Yes — every order ships with JNE, J&T Express and SiCepat, and you get a tracking link as soon as it leaves the showroom. Orders at or above the free-shipping threshold shown in the shop ship free.",
+    category: "Shipping",
+    sortOrder: 1,
+    enabled: true,
+  },
+  {
+    id: "faq-packing",
+    question: "How are cues packed?",
+    answer:
+      "Tip-shielded and shaft-wrapped, inside a second protective layer. Tables are strapped on pallets and high-value parcels are photographed before dispatch.",
+    category: "Shipping",
+    sortOrder: 2,
+    enabled: true,
+  },
+  {
+    id: "faq-returns",
+    question: "What is the return policy?",
+    answer:
+      "Unused items in original packaging can be returned within 7 days of delivery for a refund or exchange. Tables and custom installation services are exempt.",
+    category: "Orders",
+    sortOrder: 3,
+    enabled: true,
+  },
+  {
+    id: "faq-showroom",
+    question: "Can I try a cue before buying?",
+    answer:
+      "Absolutely — our showroom is open for test swings, Monday to Saturday 10:00–20:00. Bring your favourite cue and stay for a rack.",
+    category: "Showroom",
+    sortOrder: 4,
+    enabled: true,
+  },
+];
+
+/** Normalise stored FAQ against the defaults (fills in missing fields). */
+function normalizeFaq(stored: FAQItem[] | null | undefined): FAQItem[] {
+  const base = DEFAULT_FAQ;
+  if (!Array.isArray(stored)) return base.map((f) => ({ ...f }));
+  const list = stored
+    .map((f) => ({
+      id:
+        typeof f.id === "string" && f.id
+          ? f.id
+          : `faq-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+      question: typeof f.question === "string" ? f.question : "",
+      answer: typeof f.answer === "string" ? f.answer : "",
+      category: typeof f.category === "string" && f.category.trim() ? f.category.trim() : "General",
+      sortOrder: Number.isFinite(Number(f.sortOrder)) ? Number(f.sortOrder) : 0,
+      enabled: typeof f.enabled === "boolean" ? f.enabled : true,
+    }))
+    .filter((f) => f.question.trim());
+  return list.length > 0 ? list : base.map((f) => ({ ...f }));
+}
+
 export const DEFAULT_POSTS: BlogPost[] = POSTS.map((p) => ({
   ...p,
   published: true,
@@ -405,6 +479,7 @@ export interface PersistedConfigBundle {
   posts?: BlogPost[];
   logo?: string;
   ticker?: TickerConfig;
+  faq?: FAQItem[];
 }
 
 const SITE_CONFIG_ROW_ID = "1";
@@ -515,6 +590,12 @@ interface ConfigContextValue {
   updateTickerItem: (id: string, patch: Partial<TickerItem>) => void;
   deleteTickerItem: (id: string) => void;
   resetTicker: () => void;
+  /* ---- FAQ (public /faq page) ---- */
+  faq: FAQItem[];
+  addFaqItem: (item: Pick<FAQItem, "question" | "answer"> & Partial<FAQItem>) => void;
+  updateFaqItem: (id: string, patch: Partial<FAQItem>) => void;
+  deleteFaqItem: (id: string) => void;
+  resetFaq: () => void;
 }
 
 const ConfigContext = createContext<ConfigContextValue | null>(null);
@@ -545,6 +626,9 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [ticker, setTicker] = useState<TickerConfig>(() =>
     normalizeTicker(readJson<TickerConfig | null>(TICKER_KEY, null))
   );
+  const [faq, setFaq] = useState<FAQItem[]>(() =>
+    normalizeFaq(readJson<FAQItem[] | null>(FAQ_KEY, null))
+  );
 
   useEffect(() => writeJson(GATEWAYS_KEY, paymentGateways), [paymentGateways]);
   useEffect(() => writeJson(CATEGORIES_KEY, categories), [categories]);
@@ -555,6 +639,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   useEffect(() => writeJson(POSTS_KEY, posts), [posts]);
   useEffect(() => writeJson(LOGO_KEY, logo), [logo]);
   useEffect(() => writeJson(TICKER_KEY, ticker), [ticker]);
+  useEffect(() => writeJson(FAQ_KEY, faq), [faq]);
 
   /* ---------------- Supabase sync (admin config bundle) ---------------- */
   const hydratedRef = useRef(false);
@@ -592,6 +677,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         if (bundle.ticker && typeof bundle.ticker === "object") {
           setTicker(normalizeTicker(bundle.ticker as TickerConfig));
         }
+        if (Array.isArray(bundle.faq)) setFaq(normalizeFaq(bundle.faq));
       }
       hydratedRef.current = true;
     })();
@@ -617,6 +703,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         posts,
         logo,
         ticker,
+        faq,
       };
       void db
         .from("site_config")
@@ -628,7 +715,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     }, 500);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentGateways, categories, pages, sponsors, partners, siteConfig, posts, logo, ticker, hydratedRef.current]);
+  }, [paymentGateways, categories, pages, sponsors, partners, siteConfig, posts, logo, ticker, faq, hydratedRef.current]);
 
   /* -------------------- payment gateways -------------------- */
 
@@ -968,6 +1055,39 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     setTicker(DEFAULT_TICKER);
   }, []);
 
+  /* -------------------- FAQ -------------------- */
+
+  const addFaqItem = useCallback(
+    (item: Pick<FAQItem, "question" | "answer"> & Partial<FAQItem>) => {
+      const question = item.question.trim();
+      if (!question) return;
+      setFaq((prev) => [
+        ...prev,
+        {
+          id: item.id ?? `faq-${Date.now().toString(36)}`,
+          question,
+          answer: item.answer?.trim() ?? "",
+          category: item.category?.trim() || "General",
+          sortOrder: item.sortOrder ?? prev.length + 1,
+          enabled: item.enabled ?? true,
+        },
+      ]);
+    },
+    []
+  );
+
+  const updateFaqItem = useCallback((id: string, patch: Partial<FAQItem>) => {
+    setFaq((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)));
+  }, []);
+
+  const deleteFaqItem = useCallback((id: string) => {
+    setFaq((prev) => prev.filter((f) => f.id !== id));
+  }, []);
+
+  const resetFaq = useCallback(() => {
+    setFaq(DEFAULT_FAQ.map((f) => ({ ...f })));
+  }, []);
+
   const value = useMemo<ConfigContextValue>(
     () => ({
       paymentGateways,
@@ -1013,6 +1133,11 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       updateTickerItem,
       deleteTickerItem,
       resetTicker,
+      faq,
+      addFaqItem,
+      updateFaqItem,
+      deleteFaqItem,
+      resetFaq,
     }),
     [
       paymentGateways,
@@ -1058,6 +1183,11 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
       updateTickerItem,
       deleteTickerItem,
       resetTicker,
+      faq,
+      addFaqItem,
+      updateFaqItem,
+      deleteFaqItem,
+      resetFaq,
     ]
   );
 
