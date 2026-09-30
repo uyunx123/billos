@@ -13,6 +13,7 @@ import {
   type AccountingConfig,
   type PayrollEmployee,
   type PayoutEntry,
+  type SalaryInvoice,
 } from "../lib/accounting";
 
 /* ------------------------------------------------------------------ */
@@ -52,8 +53,27 @@ export function normalizeConfig(raw: unknown): AccountingConfig {
         role: str(e.role),
         monthlySalary: num(e.monthlySalary),
         perEventRate: num(e.perEventRate),
+        bonus: num(e.bonus),
+        overtime: num(e.overtime),
+        taxRate: num(e.taxRate),
         active: e.active !== false,
         joinedAt: str(e.joinedAt),
+      }))
+    : [];
+
+  const invoices: SalaryInvoice[] = Array.isArray(base.invoices)
+    ? base.invoices.map((i) => ({
+        id: str(i.id),
+        employeeId: str(i.employeeId),
+        month: str(i.month),
+        salary: num(i.salary),
+        bonus: num(i.bonus),
+        overtime: num(i.overtime),
+        taxRate: num(i.taxRate),
+        taxAmount: num(i.taxAmount),
+        net: num(i.net),
+        note: str(i.note) || undefined,
+        issuedAt: str(i.issuedAt),
       }))
     : [];
 
@@ -81,7 +101,7 @@ export function normalizeConfig(raw: unknown): AccountingConfig {
       }))
     : [];
 
-  return { employees, payouts, adjustments };
+  return { employees, payouts, adjustments, invoices };
 }
 
 /* ------------------------------------------------------------------ */
@@ -93,6 +113,7 @@ interface AccountingContextValue {
   employees: PayrollEmployee[];
   payouts: PayoutEntry[];
   adjustments: AccountingAdjustment[];
+  invoices: SalaryInvoice[];
   addEmployee: (e: Omit<PayrollEmployee, "id">) => PayrollEmployee;
   updateEmployee: (id: string, patch: Partial<PayrollEmployee>) => void;
   deleteEmployee: (id: string) => void;
@@ -102,6 +123,9 @@ interface AccountingContextValue {
   addAdjustment: (a: Omit<AccountingAdjustment, "id">) => AccountingAdjustment;
   updateAdjustment: (id: string, patch: Partial<AccountingAdjustment>) => void;
   deleteAdjustment: (id: string) => void;
+  addInvoice: (i: Omit<SalaryInvoice, "id">) => SalaryInvoice;
+  updateInvoice: (id: string, patch: Partial<SalaryInvoice>) => void;
+  deleteInvoice: (id: string) => void;
 }
 
 const AccountingContext = createContext<AccountingContextValue | null>(null);
@@ -119,6 +143,9 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
       id: `emp-${Date.now().toString(36)}`,
       monthlySalary: Math.max(0, Math.round(e.monthlySalary || 0)),
       perEventRate: Math.max(0, Math.round(e.perEventRate || 0)),
+      bonus: Math.max(0, Math.round(e.bonus || 0)),
+      overtime: Math.max(0, Math.round(e.overtime || 0)),
+      taxRate: Math.max(0, Math.min(100, Math.round(e.taxRate || 0))),
     };
     setConfig((prev) => ({ ...prev, employees: [...prev.employees, employee] }));
     return employee;
@@ -177,12 +204,46 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
     setConfig((prev) => ({ ...prev, adjustments: prev.adjustments.filter((a) => a.id !== id) }));
   }, []);
 
+  const addInvoice = useCallback((i: Omit<SalaryInvoice, "id">): SalaryInvoice => {
+    const invoice: SalaryInvoice = {
+      ...i,
+      id: `inv-${Date.now().toString(36)}`,
+      salary: Math.max(0, Math.round(i.salary || 0)),
+      bonus: Math.max(0, Math.round(i.bonus || 0)),
+      overtime: Math.max(0, Math.round(i.overtime || 0)),
+      taxRate: Math.max(0, Math.min(100, Math.round(i.taxRate || 0))),
+      taxAmount: Math.max(0, Math.round(i.taxAmount || 0)),
+      net: Math.max(0, Math.round(i.net || 0)),
+      issuedAt: i.issuedAt || new Date().toISOString(),
+    };
+    setConfig((prev) => ({
+      ...prev,
+      invoices: [
+        ...prev.invoices.filter((x) => !(x.employeeId === invoice.employeeId && x.month === invoice.month)),
+        invoice,
+      ],
+    }));
+    return invoice;
+  }, []);
+
+  const updateInvoice = useCallback((id: string, patch: Partial<SalaryInvoice>) => {
+    setConfig((prev) => ({
+      ...prev,
+      invoices: prev.invoices.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+    }));
+  }, []);
+
+  const deleteInvoice = useCallback((id: string) => {
+    setConfig((prev) => ({ ...prev, invoices: prev.invoices.filter((i) => i.id !== id) }));
+  }, []);
+
   const value = useMemo<AccountingContextValue>(
     () => ({
       config,
       employees: config.employees,
       payouts: config.payouts,
       adjustments: config.adjustments,
+      invoices: config.invoices,
       addEmployee,
       updateEmployee,
       deleteEmployee,
@@ -192,6 +253,9 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
       addAdjustment,
       updateAdjustment,
       deleteAdjustment,
+      addInvoice,
+      updateInvoice,
+      deleteInvoice,
     }),
     [
       config,
@@ -204,6 +268,9 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
       addAdjustment,
       updateAdjustment,
       deleteAdjustment,
+      addInvoice,
+      updateInvoice,
+      deleteInvoice,
     ]
   );
 

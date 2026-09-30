@@ -105,6 +105,14 @@ export interface Tournament {
   status: TournamentStatus;
   description: string | null;
   logo: string | null;
+  /** Wide hero image shown at the top of the public detail page. */
+  banner_url: string | null;
+  /** Main sponsor display name shown on the public detail page. */
+  sponsor_name: string | null;
+  /** Main sponsor logo image. */
+  sponsor_logo_url: string | null;
+  /** Tournament pamphlet / poster (image or PDF URL) shown publicly. */
+  pamflet_url: string | null;
   is_public: boolean;
   featured: boolean;
   created_by: string | null;

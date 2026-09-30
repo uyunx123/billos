@@ -568,6 +568,14 @@ function PayrollPanel({
                 <p className="mt-0.5 text-xs text-foreground/55">
                   Joined {e.joinedAt ? formatDate(e.joinedAt) : "—"}
                   {e.perEventRate > 0 && ` · ${formatIDR(e.perEventRate)} per event`}
+                  {(e.bonus > 0 || e.overtime > 0 || e.taxRate > 0) && (
+                    <span className="text-foreground/45">
+                      {" · "}
+                      {[e.bonus > 0 && `bonus ${formatIDR(e.bonus)}`, e.overtime > 0 && `OT ${formatIDR(e.overtime)}`, e.taxRate > 0 && `tax ${e.taxRate}%`]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="shrink-0 text-left sm:text-right">
@@ -639,6 +647,9 @@ function EmployeeForm({
   const [role, setRole] = useState(initial?.role ?? "");
   const [monthlySalary, setMonthlySalary] = useState(initial ? String(initial.monthlySalary) : "");
   const [perEventRate, setPerEventRate] = useState(initial ? String(initial.perEventRate) : "");
+  const [bonus, setBonus] = useState(initial ? String(initial.bonus) : "");
+  const [overtime, setOvertime] = useState(initial ? String(initial.overtime) : "");
+  const [taxRate, setTaxRate] = useState(initial ? String(initial.taxRate) : "");
   const [joinedAt, setJoinedAt] = useState(initial?.joinedAt ? initial.joinedAt.slice(0, 10) : new Date().toISOString().slice(0, 10));
   const [active, setActive] = useState(initial?.active ?? true);
   const [error, setError] = useState<string | null>(null);
@@ -657,6 +668,9 @@ function EmployeeForm({
       role: role.trim() || "Staff",
       monthlySalary: salary,
       perEventRate: rate,
+      bonus: Math.max(0, Math.round(Number(bonus) || 0)),
+      overtime: Math.max(0, Math.round(Number(overtime) || 0)),
+      taxRate: Math.max(0, Math.min(100, Math.round(Number(taxRate) || 0))),
       active,
       joinedAt: joinedAt || new Date().toISOString().slice(0, 10),
     });
@@ -691,6 +705,26 @@ function EmployeeForm({
         <div>
           <label htmlFor="emp-rate" className="field-label">Per-event rate (Rp, optional)</label>
           <input id="emp-rate" type="number" min="0" step="10000" className="input" value={perEventRate} onChange={(e) => setPerEventRate(e.target.value)} placeholder="e.g. 150000 per match" />
+        </div>
+        <div className="sm:col-span-2">
+          <p className="field-label !mb-0 border-t border-border pt-3 text-[11px] font-bold uppercase tracking-wider text-foreground/45">
+            Salary invoice defaults — bonus &amp; overtime are editable each month before printing
+          </p>
+        </div>
+        <div>
+          <label htmlFor="emp-bonus" className="field-label">Default bonus (Rp)</label>
+          <input id="emp-bonus" type="number" min="0" step="50000" className="input" value={bonus} onChange={(e) => setBonus(e.target.value)} placeholder="e.g. 500000" />
+          <p className="mt-1 text-xs text-foreground/50">Pre-fills every monthly salary invoice — change it per month before printing.</p>
+        </div>
+        <div>
+          <label htmlFor="emp-overtime" className="field-label">Default overtime (Rp)</label>
+          <input id="emp-overtime" type="number" min="0" step="10000" className="input" value={overtime} onChange={(e) => setOvertime(e.target.value)} placeholder="e.g. 250000" />
+          <p className="mt-1 text-xs text-foreground/50">Pre-fills each invoice — adjust to the actual hours before printing.</p>
+        </div>
+        <div>
+          <label htmlFor="emp-tax" className="field-label">Tax rate (%)</label>
+          <input id="emp-tax" type="number" min="0" max="100" step="0.5" className="input" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} placeholder="e.g. 5" />
+          <p className="mt-1 text-xs text-foreground/50">Withheld from gross (salary + bonus + overtime) on each invoice.</p>
         </div>
         <div>
           <label htmlFor="emp-joined" className="field-label">Joined (start of accrual)</label>

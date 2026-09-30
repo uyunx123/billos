@@ -12,6 +12,12 @@ export interface PayrollEmployee {
   monthlySalary: number;
   /** Per-event rate in Rupiah (per match, per shift…) — used to pre-fill payout amounts. */
   perEventRate: number;
+  /** Default monthly bonus in Rupiah — pre-filled when a salary invoice is created. */
+  bonus: number;
+  /** Default overtime pay in Rupiah for the month — pre-filled on the salary invoice. */
+  overtime: number;
+  /** Tax rate as a percentage (0–100) withheld from the gross salary invoice. */
+  taxRate: number;
   active: boolean;
   /** ISO date the employee started. Full salary counts from this month onward. */
   joinedAt: string;
@@ -46,13 +52,57 @@ export interface AccountingConfig {
   employees: PayrollEmployee[];
   payouts: PayoutEntry[];
   adjustments: AccountingAdjustment[];
+  /** Issued monthly salary invoices (bonus & overtime entered manually per period). */
+  invoices: SalaryInvoice[];
 }
 
 export const EMPTY_ACCOUNTING: AccountingConfig = {
   employees: [],
   payouts: [],
   adjustments: [],
+  invoices: [],
 };
+
+/**
+ * A printable salary slip for one employee for one month. Base salary comes
+ * from the employee; bonus and overtime are typed in manually right before
+ * the invoice is printed; tax is withheld from the gross at the tax rate.
+ */
+export interface SalaryInvoice {
+  id: string;
+  employeeId: string;
+  /** Pay period as "YYYY-MM". */
+  month: string;
+  /** Base salary for the period (Rupiah). */
+  salary: number;
+  /** Manual bonus entered before printing (Rupiah). */
+  bonus: number;
+  /** Manual overtime entered before printing (Rupiah). */
+  overtime: number;
+  /** Tax rate percent used on this invoice (defaults to the employee's). */
+  taxRate: number;
+  /** Withheld tax = gross × taxRate / 100. */
+  taxAmount: number;
+  /** Take-home = gross − tax. */
+  net: number;
+  note?: string;
+  issuedAt: string;
+}
+
+/** Gross = salary + bonus + overtime; tax = gross × rate; net = gross − tax. */
+export function salaryInvoiceBreakdown(salary: number, bonus: number, overtime: number, taxRate: number) {
+  const gross = Math.max(0, salary) + Math.max(0, bonus) + Math.max(0, overtime);
+  const taxAmount = Math.round((gross * Math.max(0, Math.min(100, taxRate))) / 100);
+  const net = gross - taxAmount;
+  return { gross, taxAmount, net };
+}
+
+/** Month label for an invoice, e.g. "2026-09" → "Sep 2026". */
+export function invoiceMonthLabel(month: string): string {
+  const [y, m] = month.split("-").map(Number);
+  if (!y || !m) return month;
+  return new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric" }).format(new Date(y, m - 1, 1));
+}
 
 export const SUGGESTED_CATEGORIES = [
   "Tournament entry fees",
