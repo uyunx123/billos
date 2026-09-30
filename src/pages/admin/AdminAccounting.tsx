@@ -21,8 +21,10 @@ import {
   Users,
   UserPlus,
   Wallet,
+  Store,
   X,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useStore } from "../../context/StoreContext";
 import { useAccounting } from "../../context/AccountingContext";
@@ -216,7 +218,11 @@ function AccountingConsole() {
             moment data changes.
           </p>
         </div>
-        <div role="group" aria-label="Reporting period" className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link to="/admin/sales" className="btn btn-accent !px-4 !py-2 text-sm">
+            <Store className="h-4 w-4" aria-hidden="true" /> Offline sales
+          </Link>
+          <div role="group" aria-label="Reporting period" className="flex flex-wrap gap-1.5">
           {periodOptions.map((o) => (
             <button
               key={o.id}
@@ -228,6 +234,7 @@ function AccountingConsole() {
               {o.label}
             </button>
           ))}
+        </div>
         </div>
       </div>
 
@@ -445,7 +452,8 @@ function AccountingConsole() {
           <li className="flex gap-2">
             <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary-400" aria-hidden="true" />
             Store revenue, refunds and coupon discounts are pulled automatically from confirmed
-            orders on the Orders tab.
+            orders on the Orders tab — offline showroom sales recorded on the Offline sales page
+            are added to revenue too.
           </li>
           <li className="flex gap-2">
             <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary-400" aria-hidden="true" />

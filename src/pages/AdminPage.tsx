@@ -54,6 +54,7 @@ import {
   Calculator,
   LayoutGrid,
   HelpCircle,
+  Hash,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
@@ -69,6 +70,7 @@ import {
 } from "../lib/themes";
 import { useCoupons, normalizeCode, type Coupon, type CouponType, type NewCoupon } from "../context/CouponContext";
 import { useReceipts, type ReceiptSettingsConfig } from "../context/ReceiptContext";
+import { useAccounting } from "../context/AccountingContext";
 import {
   useStore,
   slugify,
@@ -103,6 +105,7 @@ import { BRAND_LOGO } from "../lib/logo";
 import { type CategoryId, type Product } from "../data/products";
 import { useReviews, type ProductReview } from "../context/ReviewContext";
 import { formatIDR, formatDateTime } from "../lib/format";
+import { nextInvoiceNumber } from "../lib/invoice";
 import OrderTimeline from "../components/OrderTimeline";
 import { COURIER_CATALOG, STATUS_KEY_LABEL, courierName } from "../lib/courier";
 import { useCourier } from "../context/CourierContext";
@@ -278,6 +281,9 @@ function AdminConsole() {
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link to="/admin/partnerships" className="btn btn-accent w-fit !px-4 !py-2.5 text-sm">
             <Megaphone className="h-4 w-4" aria-hidden="true" /> Manage partnerships
+          </Link>
+          <Link to="/admin/sales" className="btn btn-outline w-fit !px-4 !py-2.5 text-sm">
+            <Store className="h-4 w-4" aria-hidden="true" /> Offline sales
           </Link>
           <Link to="/admin/newsticker" className="btn btn-outline w-fit !px-4 !py-2.5 text-sm">
             <Newspaper className="h-4 w-4" aria-hidden="true" /> Newsticker
@@ -4488,8 +4494,20 @@ function CouponsPanel() {
 
 function ReceiptsPanel() {
   const { receipts, settings, updateSettings, resetSettings } = useReceipts();
+  const { sales } = useAccounting();
   const [notice, setNotice] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+
+  const nextInvoice = useMemo(
+    () =>
+      nextInvoiceNumber(
+        settings.receiptPrefix,
+        settings.invoiceStart,
+        [...receipts.map((r) => r.number), ...sales.map((s) => s.invoiceNumber)],
+        new Date()
+      ),
+    [settings.receiptPrefix, settings.invoiceStart, receipts, sales]
+  );
 
   const FIELDS: { key: keyof ReceiptSettingsConfig; label: string; hint?: string; type?: string; full?: boolean }[] = [
     { key: "storeName", label: "Store name" },
@@ -4498,7 +4516,6 @@ function ReceiptsPanel() {
     { key: "phone", label: "Phone" },
     { key: "whatsapp", label: "WhatsApp" },
     { key: "email", label: "Email" },
-    { key: "receiptPrefix", label: "Receipt number prefix", hint: 'e.g. "INV" → INV-2026-0001' },
     { key: "footerNote", label: "Footer note", full: true, hint: "Shown at the bottom of every receipt." },
   ];
 
@@ -4543,6 +4560,51 @@ function ReceiptsPanel() {
         </label>
       </div>
 
+      {/* Invoice numbering */}
+      <div className="card space-y-4 p-5">
+        <div>
+          <h3 className="flex items-center gap-2 font-heading font-bold">
+            <Hash className="h-4 w-4 text-primary-400" aria-hidden="true" /> Invoice numbering
+          </h3>
+          <p className="mt-0.5 text-xs text-foreground/55">
+            Receipts and offline showroom sales share one sequence per year — the number
+            auto-increments with every sale.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="rs-prefix" className="field-label">Invoice prefix</label>
+            <input
+              id="rs-prefix"
+              className="input"
+              value={settings.receiptPrefix}
+              onChange={(e) => updateSettings({ receiptPrefix: e.target.value })}
+              placeholder="INV"
+            />
+            <p className="mt-1 text-xs text-foreground/50">e.g. &quot;INV&quot; → INV-2026-0001.</p>
+          </div>
+          <div>
+            <label htmlFor="rs-start" className="field-label">Starting number</label>
+            <input
+              id="rs-start"
+              type="number"
+              min="1"
+              step="1"
+              className="input"
+              value={settings.invoiceStart}
+              onChange={(e) => updateSettings({ invoiceStart: Math.max(1, Math.round(Number(e.target.value) || 1)) })}
+            />
+            <p className="mt-1 text-xs text-foreground/50">
+              The first invoice of each year starts here and counts up.
+            </p>
+          </div>
+        </div>
+        <p className="rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm">
+          Next invoice number:{" "}
+          <span className="font-mono font-bold text-primary-400">{nextInvoice}</span>
+        </p>
+      </div>
+
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" className="btn btn-primary" onClick={() => { setNotice("Receipt layout saved — new receipts use these details."); }}>
           <Check className="h-4 w-4" aria-hidden="true" /> Save layout
@@ -4571,7 +4633,7 @@ function ReceiptsPanel() {
         {receipts.length === 0 ? (
           <p className="mt-2 text-sm text-foreground/55">
             None yet — the first order placed at checkout auto-generates receipt{" "}
-            <span className="font-mono font-bold text-primary-400">{settings.receiptPrefix}-{new Date().getFullYear()}-0001</span>.
+            <span className="font-mono font-bold text-primary-400">{nextInvoice}</span>.
           </p>
         ) : (
           <ul className="mt-2 divide-y divide-border">

@@ -48,12 +48,35 @@ export interface AccountingAdjustment {
   note?: string;
 }
 
+/**
+ * A showroom / offline sale recorded by the owner on the Offline sales page.
+ * It counts as store revenue in the P&L and carries its own invoice number.
+ */
+export interface OfflineSale {
+  id: string;
+  /** Shared per-year invoice number, e.g. "INV-2026-0004". */
+  invoiceNumber: string;
+  productId: string;
+  productName: string;
+  image?: string;
+  qty: number;
+  /** Selling price per unit at the counter (Rupiah). */
+  unitPrice: number;
+  /** unitPrice × qty. */
+  total: number;
+  date: string; // ISO
+  note?: string;
+  createdAt: string;
+}
+
 export interface AccountingConfig {
   employees: PayrollEmployee[];
   payouts: PayoutEntry[];
   adjustments: AccountingAdjustment[];
   /** Issued monthly salary invoices (bonus & overtime entered manually per period). */
   invoices: SalaryInvoice[];
+  /** Showroom / offline sales recorded by the owner (count as store revenue). */
+  sales: OfflineSale[];
 }
 
 export const EMPTY_ACCOUNTING: AccountingConfig = {
@@ -61,6 +84,7 @@ export const EMPTY_ACCOUNTING: AccountingConfig = {
   payouts: [],
   adjustments: [],
   invoices: [],
+  sales: [],
 };
 
 /**
@@ -260,6 +284,13 @@ export function computeAccounting(orders: Order[], config: AccountingConfig): Ac
     }
   }
 
+  // Offline / showroom sales recorded by the owner count as store revenue too.
+  for (const s of config.sales) {
+    const key = monthKeyOf(s.date);
+    if (!key) continue;
+    ensure(key).storeRevenue += s.total;
+  }
+
   // Ledger adjustments (tournament fees, sponsorship, venue, utilities…).
   for (const a of config.adjustments) {
     const key = monthKeyOf(a.date);
@@ -298,6 +329,106 @@ export function computeAccounting(orders: Order[], config: AccountingConfig): Ac
     });
 
   return { months, totals: totalsOf(months) };
+}
+
+/* ------------------------------------------------------------------ */
+/* Sold items (online orders + offline sales)                          */
+/* ------------------------------------------------------------------ */
+
+export interface SoldItem {
+  id: string;
+  invoiceNumber: string;
+  productId: string;
+  productName: string;
+  image?: string;
+  qty: number;
+  /** Selling price per unit. */
+  unitPrice: number;
+  total: number;
+  date: string; // ISO
+  channel: "online" | "offline";
+  note?: string;
+}
+
+export interface SoldSummary {
+  revenue: number;
+  units: number;
+  /** Distinct invoice numbers in the selection. */
+  invoices: number;
+  /** Distinct offline invoice numbers. */
+  offlineInvoices: number;
+  /** Distinct online invoice numbers. */
+  onlineInvoices: number;
+  /** Line items. */
+  items: number;
+}
+
+/**
+ * Flatten accepted online orders into per-line sold items and merge them
+ * with the offline sales log. `receiptNumbers` maps an order id to its
+ * generated invoice number (falling back to the order id).
+ */
+export function buildSoldItems(
+  orders: Order[],
+  sales: OfflineSale[],
+  receiptNumbers: Map<string, string>
+): SoldItem[] {
+  const items: SoldItem[] = [];
+  for (const o of orders) {
+    if (o.paymentStatus !== "accepted") continue;
+    const invoiceNumber = receiptNumbers.get(o.id) ?? o.id;
+    for (const it of o.items) {
+      items.push({
+        id: `online-${o.id}-${it.productId}`,
+        invoiceNumber,
+        productId: it.productId,
+        productName: it.name,
+        image: it.image || undefined,
+        qty: it.qty,
+        unitPrice: it.price,
+        total: it.price * it.qty,
+        date: o.createdAt,
+        channel: "online",
+      });
+    }
+  }
+  for (const s of sales) {
+    items.push({
+      id: s.id,
+      invoiceNumber: s.invoiceNumber,
+      productId: s.productId,
+      productName: s.productName,
+      image: s.image,
+      qty: s.qty,
+      unitPrice: s.unitPrice,
+      total: s.total,
+      date: s.date,
+      channel: "offline",
+      note: s.note,
+    });
+  }
+  return items;
+}
+
+export function soldItemsSummary(items: SoldItem[]): SoldSummary {
+  const invoices = new Set(items.map((i) => i.invoiceNumber));
+  let offlineInvoices = 0;
+  let onlineInvoices = 0;
+  const seen = new Set<string>();
+  for (const i of items) {
+    if (seen.has(i.invoiceNumber)) continue;
+    seen.add(i.invoiceNumber);
+    if (i.channel === "offline") offlineInvoices += 1;
+    else onlineInvoices += 1;
+  }
+  return {
+    revenue: items.reduce((s, i) => s + i.total, 0),
+    units: items.reduce((s, i) => s + i.qty, 0),
+    invoices: invoices.size,
+    offlineInvoices,
+    onlineInvoices,
+    items: items.length,
+  };
 }
 
 export type ReportPeriod = "month" | "3" | "6" | "all";

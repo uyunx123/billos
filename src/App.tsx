@@ -35,6 +35,7 @@ import { FaqPage } from "./pages/FaqPage";
 import CustomPage from "./pages/CustomPage";
 import AdminPage from "./pages/AdminPage";
 import AdminAccountingPage from "./pages/admin/AdminAccounting";
+import AdminSalesPage from "./pages/admin/AdminSales";
 import { AdminIntegrationsPage } from "./pages/admin/AdminIntegrations";
 import PartnershipsPage from "./pages/PartnershipsPage";
 import NewstickerPage from "./pages/NewstickerPage";
@@ -84,6 +85,7 @@ export default function App() {
                         <Route path="/page/:slug" element={<CustomPage />} />
                         <Route path="/admin" element={<AdminPage />} />
                         <Route path="/admin/accounting" element={<AdminAccountingPage />} />
+                        <Route path="/admin/sales" element={<AdminSalesPage />} />
                         <Route path="/admin/setup-guide" element={<AdminSetupGuide />} />
                         <Route path="/admin/integrations" element={<AdminIntegrationsPage />} />
                         <Route path="/admin/partnerships" element={<PartnershipsPage />} />

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useStore, type Order, type OrderStatus, type PaymentStatus } from "./StoreContext";
 import { supabase } from "../lib/supabase";
+import { nextInvoiceNumber } from "../lib/invoice";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -65,8 +66,10 @@ export interface ReceiptSettingsConfig {
   email: string;
   /** Coupon/legal note shown under the totals, e.g. VAT-free pricing. */
   footerNote: string;
-  /** Prefix for receipt numbers, e.g. "INV". */
+  /** Prefix for receipt/invoice numbers, e.g. "INV". */
   receiptPrefix: string;
+  /** First invoice number of each year — every sale auto-increments from here. */
+  invoiceStart: number;
   /** Show the order status badge on the receipt. */
   showStatus: boolean;
 }
@@ -80,6 +83,7 @@ export const DEFAULT_RECEIPT_SETTINGS: ReceiptSettingsConfig = {
   email: "hallo@isakbilliard.co.id",
   footerNote: "Terima kasih atas pembelian Anda — every order ships with tips shielded and shafts wrapped.",
   receiptPrefix: "INV",
+  invoiceStart: 1,
   showStatus: true,
 };
 
@@ -129,23 +133,17 @@ function normalizeSettings(stored: Partial<ReceiptSettingsConfig> | null): Recei
     email: stored.email?.trim() ?? b.email,
     footerNote: stored.footerNote?.trim() ?? b.footerNote,
     receiptPrefix: stored.receiptPrefix?.trim() || b.receiptPrefix,
+    invoiceStart: Math.max(1, Math.round(Number(stored.invoiceStart)) || b.invoiceStart),
     showStatus: stored.showStatus ?? b.showStatus,
   };
 }
 
 /** Build the printable snapshot for an order. */
-export function buildReceiptData(order: Order, prefix: string, seq: number, all: ReceiptRow[]): ReceiptData {
-  const year = new Date(order.createdAt).getFullYear();
-  const used = new Set(
-    all
-      .map((r) => r.number)
-      .filter((n) => n.startsWith(`${prefix}-${year}-`))
-  );
-  let seqNo = seq;
-  while (used.has(`${prefix}-${year}-${String(seqNo).padStart(4, "0")}`)) seqNo += 1;
+export function buildReceiptData(order: Order, prefix: string, start: number, all: ReceiptRow[]): ReceiptData {
+  const number = nextInvoiceNumber(prefix, start, all.map((r) => r.number), order.createdAt);
   return {
     orderId: order.id,
-    number: `${prefix}-${year}-${String(seqNo).padStart(4, "0")}`,
+    number,
     issuedAt: new Date().toISOString(),
     status: order.status,
     paymentStatus: order.paymentStatus,
@@ -281,7 +279,7 @@ export function ReceiptProvider({ children }: { children: ReactNode }) {
       if (missing.length === 0) return prev;
       const next = [...prev];
       for (const o of missing) {
-        const data = buildReceiptData(o, settings.receiptPrefix, next.length + 1, next);
+        const data = buildReceiptData(o, settings.receiptPrefix, settings.invoiceStart, next);
         next.push({
           id: `receipt-${o.id}`,
           orderId: o.id,

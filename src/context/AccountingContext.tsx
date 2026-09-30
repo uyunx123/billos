@@ -11,6 +11,7 @@ import {
   EMPTY_ACCOUNTING,
   type AccountingAdjustment,
   type AccountingConfig,
+  type OfflineSale,
   type PayrollEmployee,
   type PayoutEntry,
   type SalaryInvoice,
@@ -101,7 +102,23 @@ export function normalizeConfig(raw: unknown): AccountingConfig {
       }))
     : [];
 
-  return { employees, payouts, adjustments, invoices };
+  const sales: OfflineSale[] = Array.isArray(base.sales)
+    ? base.sales.map((s) => ({
+        id: str(s.id),
+        invoiceNumber: str(s.invoiceNumber),
+        productId: str(s.productId),
+        productName: str(s.productName),
+        image: typeof s.image === "string" && s.image ? s.image : undefined,
+        qty: Math.max(1, Math.round(num(s.qty) || 1)),
+        unitPrice: Math.max(0, Math.round(num(s.unitPrice) || 0)),
+        total: Math.max(0, Math.round(num(s.total) || 0)),
+        date: str(s.date),
+        note: typeof s.note === "string" && s.note ? s.note : undefined,
+        createdAt: str(s.createdAt),
+      }))
+    : [];
+
+  return { employees, payouts, adjustments, invoices, sales };
 }
 
 /* ------------------------------------------------------------------ */
@@ -126,6 +143,9 @@ interface AccountingContextValue {
   addInvoice: (i: Omit<SalaryInvoice, "id">) => SalaryInvoice;
   updateInvoice: (id: string, patch: Partial<SalaryInvoice>) => void;
   deleteInvoice: (id: string) => void;
+  sales: OfflineSale[];
+  addSale: (s: Omit<OfflineSale, "id" | "createdAt">) => OfflineSale;
+  deleteSale: (id: string) => void;
 }
 
 const AccountingContext = createContext<AccountingContextValue | null>(null);
@@ -204,6 +224,25 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
     setConfig((prev) => ({ ...prev, adjustments: prev.adjustments.filter((a) => a.id !== id) }));
   }, []);
 
+  const addSale = useCallback((s: Omit<OfflineSale, "id" | "createdAt">): OfflineSale => {
+    const qty = Math.max(1, Math.round(s.qty || 1));
+    const unitPrice = Math.max(0, Math.round(s.unitPrice || 0));
+    const sale: OfflineSale = {
+      ...s,
+      id: `sale-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      qty,
+      unitPrice,
+      total: Math.max(0, Math.round(qty * unitPrice)),
+      createdAt: new Date().toISOString(),
+    };
+    setConfig((prev) => ({ ...prev, sales: [...prev.sales, sale] }));
+    return sale;
+  }, []);
+
+  const deleteSale = useCallback((id: string) => {
+    setConfig((prev) => ({ ...prev, sales: prev.sales.filter((s) => s.id !== id) }));
+  }, []);
+
   const addInvoice = useCallback((i: Omit<SalaryInvoice, "id">): SalaryInvoice => {
     const invoice: SalaryInvoice = {
       ...i,
@@ -256,6 +295,9 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
       addInvoice,
       updateInvoice,
       deleteInvoice,
+      sales: config.sales,
+      addSale,
+      deleteSale,
     }),
     [
       config,
@@ -271,6 +313,8 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
       addInvoice,
       updateInvoice,
       deleteInvoice,
+      addSale,
+      deleteSale,
     ]
   );
 
