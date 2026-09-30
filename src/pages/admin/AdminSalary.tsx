@@ -14,6 +14,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useAccounting } from "../../context/AccountingContext";
 import { formatIDR, formatDate } from "../../lib/format";
@@ -92,7 +93,7 @@ function SalaryConsole() {
           salary: acc.salary + i.salary,
           bonus: acc.bonus + i.bonus,
           overtime: acc.overtime + i.overtime,
-          tax: acc.taxAmount + i.taxAmount,
+          tax: acc.tax + i.taxAmount,
           net: acc.net + i.net,
         }),
         { salary: 0, bonus: 0, overtime: 0, tax: 0, net: 0 }

@@ -160,9 +160,9 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
 
   const deleteEmployee = useCallback((id: string) => {
     setConfig((prev) => ({
+      ...prev,
       employees: prev.employees.filter((e) => e.id !== id),
       payouts: prev.payouts.filter((p) => p.employeeId !== id),
-      adjustments: prev.adjustments,
     }));
   }, []);
 
