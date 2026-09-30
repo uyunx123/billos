@@ -17,6 +17,12 @@ export type SecretSlotName =
 export interface SecretSlotStatus {
   name: SecretSlotName;
   set: boolean;
+  /**
+   * Recorded value for non-secret slots (currently the Midtrans environment
+   * toggle, "true"/"false"). Never populated for real API keys — the server
+   * returns names only for those.
+   */
+  value?: string;
 }
 
 export interface IntegrationResult {

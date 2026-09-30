@@ -30,6 +30,7 @@ import {
   testSecret,
   type CourierIntegrationConfig,
   type SecretSlotName,
+  type SecretSlotStatus,
 } from "../../lib/integrationsApi";
 
 /**
@@ -82,7 +83,7 @@ export function AdminIntegrationsPage() {
 }
 
 function IntegrationsConsole() {
-  const [slots, setSlots] = useState<{ name: SecretSlotName; set: boolean }[]>([]);
+  const [slots, setSlots] = useState<SecretSlotStatus[]>([]);
   const [config, setConfig] = useState<CourierIntegrationConfig>({});
   const [loaded, setLoaded] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
@@ -118,9 +119,20 @@ function IntegrationsConsole() {
   const setDraft = (name: SecretSlotName, value: string) => setDrafts((d) => ({ ...d, [name]: value }));
 
   async function handleSave(name: SecretSlotName) {
-    const value = drafts[name]?.trim() ?? "";
+    const isToggle = name === "MIDTRANS_IS_PRODUCTION";
+    // The env toggle records "true"/"false". If the admin hasn't picked a new
+    // value, keep (re-record) the value that was already saved — the recorded
+    // value is never silently lost or replaced.
+    const recorded = slots.find((s) => s.name === name)?.value ?? "";
+    const value = drafts[name]?.trim() || (isToggle ? recorded : "");
     if (!value) {
-      setResults((r) => ({ ...r, [name]: { kind: "error", text: "Enter the key value first." } }));
+      setResults((r) => ({
+        ...r,
+        [name]: {
+          kind: "error",
+          text: isToggle ? "Choose the Midtrans environment first." : "Enter the key value first.",
+        },
+      }));
       return;
     }
     setBusy((b) => ({ ...b, [name]: "save" }));
@@ -129,7 +141,9 @@ function IntegrationsConsole() {
     setBusy((b) => ({ ...b, [name]: undefined }));
     if (res.ok) {
       setDraft(name, "");
-      setSlots((prev) => prev.map((s) => (s.name === name ? { ...s, set: true } : s)));
+      setSlots((prev) =>
+        prev.map((s) => (s.name === name ? { ...s, set: true, value: isToggle ? value : s.value } : s))
+      );
       setResults((r) => ({ ...r, [name]: { kind: "ok", text: "Key saved — new payments/shipments will use it." } }));
       setNotice(`${SECRET_SLOT_META[name].label} saved as an Edge Function secret.`);
     } else {
@@ -154,7 +168,7 @@ function IntegrationsConsole() {
     const res = await removeSecret(name);
     setBusy((b) => ({ ...b, [name]: undefined }));
     if (res.ok) {
-      setSlots((prev) => prev.map((s) => (s.name === name ? { ...s, set: false } : s)));
+      setSlots((prev) => prev.map((s) => (s.name === name ? { ...s, set: false, value: undefined } : s)));
       setNotice(`${SECRET_SLOT_META[name].label} removed — the provider is no longer used.`);
     } else {
       setResults((r) => ({ ...r, [name]: { kind: "error", text: res.message ?? "Couldn't remove the key — try again." } }));
@@ -449,7 +463,7 @@ function SecretSlotCard({
   onTest,
   onRemove,
 }: {
-  slot: { name: SecretSlotName; set: boolean };
+  slot: SecretSlotStatus;
   draft: string;
   busy?: "save" | "test" | "remove";
   result?: { kind: "ok" | "error"; text: string };
@@ -486,7 +500,10 @@ function SecretSlotCard({
           {isEnvToggle ? (
             <Select
               aria-label={`${meta.label} value`}
-              value={draft || (slot.set ? "" : "")}
+              // Show the recorded value ("true"/"false") when no new pick is in
+              // the draft — the saved environment is never hidden behind the
+              // placeholder. `value` falls back through draft → recorded → "".
+              value={draft || (slot.value ?? "")}
               onChange={(e) => onDraft(e.target.value)}
             >
               <option value="">— choose environment —</option>
@@ -517,7 +534,12 @@ function SecretSlotCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" onClick={onSave} loading={busy === "save"} disabled={!draft.trim()}>
+          <Button
+            size="sm"
+            onClick={onSave}
+            loading={busy === "save"}
+            disabled={!draft.trim() && !(isEnvToggle && slot.set)}
+          >
             <Check className="h-3.5 w-3.5" aria-hidden="true" /> Save key
           </Button>
           {slot.set && (

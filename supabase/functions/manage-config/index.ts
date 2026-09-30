@@ -256,6 +256,11 @@ Deno.serve(async (req: Request) => {
       const slots = Array.from(SECRET_SLOTS).map((name) => ({
         name,
         set: res.ok ? res.names.includes(name) : false,
+        // MIDTRANS_IS_PRODUCTION isn't a secret key — surface its recorded
+        // value ("true"/"false") so the admin page shows the saved
+        // environment instead of an empty "choose environment" placeholder.
+        value:
+          name === "MIDTRANS_IS_PRODUCTION" ? (Deno.env.get(name) ?? "") : undefined,
       }));
       return json({ ok: res.ok, slots, message: res.message });
     }
