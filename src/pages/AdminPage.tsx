@@ -53,9 +53,13 @@ import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
 import { useTheme } from "../context/ThemeContext";
 import {
+  CUSTOM_DEFAULT_COLORS,
   RADIUS_OPTIONS,
   THEME_PALETTES,
   WIDTH_OPTIONS,
+  customOverrides,
+  paletteLabel,
+  type CustomColors,
 } from "../lib/themes";
 import { useCoupons, normalizeCode, type Coupon, type CouponType, type NewCoupon } from "../context/CouponContext";
 import { useReceipts, type ReceiptSettingsConfig } from "../context/ReceiptContext";
@@ -333,7 +337,7 @@ function AdminConsole() {
         )}
         {tab === "config" && (
           <div id="admin-panel-config" role="tabpanel" aria-labelledby="admin-tab-config">
-            <ConfigTab />
+            <ConfigTab onOpenShipping={() => setTab("shipping")} />
           </div>
         )}
       </div>
@@ -2566,8 +2570,13 @@ const CONFIG_SECTIONS = [
 
 type ConfigSection = (typeof CONFIG_SECTIONS)[number]["id"];
 
-function ConfigTab() {
+function ConfigTab({ onOpenShipping }: { onOpenShipping: () => void }) {
   const [section, setSection] = useState<ConfigSection>("gateways");
+  const { siteConfig, logo } = useConfig();
+  const { gateways } = useGateways();
+  const { shippingMethods } = useStore();
+  const { theme } = useTheme();
+  const { settings: receiptSettings } = useReceipts();
 
   return (
     <div className="space-y-5">
@@ -2580,6 +2589,20 @@ function ConfigTab() {
           </p>
         </div>
       </div>
+
+      <SetupChecklist
+        onGo={(s) => {
+          if (s === "shipping") onOpenShipping();
+          else setSection(s);
+        }}
+        done={{
+          site: Boolean(siteConfig.phone || siteConfig.email || siteConfig.address || siteConfig.whatsapp),
+          payment: gateways.some((g) => g.enabled && g.status === "connected"),
+          shipping: shippingMethods.some((m) => m.active),
+          brand: theme.palette !== "cobalt" || Boolean(theme.custom) || logo !== BRAND_LOGO,
+          receipt: Boolean(receiptSettings.storeName && receiptSettings.storeName !== "ISAK Billiard Co."),
+        }}
+      />
 
       <div role="group" aria-label="Configuration sections" className="flex flex-wrap gap-2">
         {CONFIG_SECTIONS.map((s) => (
@@ -2606,6 +2629,90 @@ function ConfigTab() {
       {section === "receipts" && <ReceiptsPanel />}
       {section === "sponsors" && <SponsorsPanel />}
       {section === "pages" && <PagesPanel />}
+    </div>
+  );
+}
+
+function SetupChecklist({
+  done,
+  onGo,
+}: {
+  done: Record<"site" | "payment" | "shipping" | "brand" | "receipt", boolean>;
+  onGo: (s: ConfigSection | "shipping") => void;
+}) {
+  const steps: { id: keyof typeof done; target: ConfigSection | "shipping"; icon: typeof Store; title: string; hint: string }[] = [
+    { id: "site", target: "site", icon: Store, title: "Contact details", hint: "Phone, WhatsApp, email & address for the footer and contact page." },
+    { id: "payment", target: "gateways", icon: Wallet, title: "Payment methods", hint: "Connect a gateway (Midtrans, Xendit, Stripe…) or set up manual transfers, QRIS or COD." },
+    { id: "shipping", target: "shipping", icon: Truck, title: "Shipping couriers", hint: "Set courier names, delivery times and rates — free shipping above a threshold." },
+    { id: "brand", target: "appearance", icon: SwatchBook, title: "Brand look", hint: "Pick a colour palette or set your own brand colours, logo, width and corner radius." },
+    { id: "receipt", target: "receipts", icon: ReceiptText, title: "Receipt & store name", hint: "The store name and details printed on every order receipt." },
+  ];
+
+  const complete = steps.filter((s) => done[s.id]).length;
+  const pct = Math.round((complete / steps.length) * 100);
+
+  return (
+    <div className="card p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="flex items-center gap-2 font-heading font-bold">
+            <Check className="h-4 w-4 text-primary-400" aria-hidden="true" /> Store setup checklist
+          </h3>
+          <p className="mt-0.5 text-xs text-foreground/55">
+            {complete === steps.length
+              ? "Everything's set — the shop is ready to take orders."
+              : "The essentials to get the shop ready — each one is a quick form."}
+          </p>
+        </div>
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary-400">
+          {complete} of {steps.length} done
+        </span>
+      </div>
+
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={steps.length}
+        aria-valuenow={complete}
+        aria-label={`Store setup: ${complete} of ${steps.length} steps complete`}
+        className="mt-4 h-2 overflow-hidden rounded-full bg-foreground/10"
+      >
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-400 transition-all duration-300"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {steps.map((s) => {
+          const isDone = done[s.id];
+          return (
+            <li key={s.id} className={`flex gap-3 rounded-2xl border p-3.5 ${isDone ? "border-primary/25 bg-primary/5" : "border-border bg-surface-2"}`}>
+              <span
+                className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${
+                  isDone ? "bg-primary/15 text-primary-400" : "bg-foreground/10 text-foreground/45"
+                }`}
+              >
+                <s.icon className="h-4.5 w-4.5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-1.5 text-sm font-bold">
+                  {s.title}
+                  {isDone && <Check className="h-3.5 w-3.5 shrink-0 text-primary-400" aria-hidden="true" />}
+                </span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-foreground/55">{s.hint}</span>
+                <button
+                  type="button"
+                  className="mt-2 inline-flex cursor-pointer items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] font-bold text-foreground/70 transition-colors duration-150 hover:border-primary/40 hover:text-primary"
+                  onClick={() => onGo(s.target)}
+                >
+                  {isDone ? "Review" : "Set up"} <ArrowDown className="h-3 w-3 rotate-[-90deg]" aria-hidden="true" />
+                </button>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -3938,9 +4045,15 @@ function HeroPanel() {
 /* Theme & layout (palette, page width, corner radius)                 */
 /* ------------------------------------------------------------------ */
 
+function paletteToCustom(p: { swatch: { primary: string; deep: string; accent: string; surface: string } }): CustomColors {
+  return { primary: p.swatch.primary, accent: p.swatch.accent, deep: p.swatch.deep, surface: p.swatch.surface };
+}
+
 function AppearancePanel() {
-  const { theme, setPalette, setWidth, setRadius, reset } = useTheme();
+  const { theme, setPalette, setWidth, setRadius, setCustomColors, reset } = useTheme();
   const [notice, setNotice] = useState<string | null>(null);
+
+  const customVars = theme.palette === "custom" ? customOverrides({ ...theme, palette: "custom" }) : null;
 
   return (
     <div className="space-y-5">
@@ -3964,13 +4077,22 @@ function AppearancePanel() {
             <p className="text-xs text-foreground/55">Primary, accent and surface colours used across the site.</p>
           </div>
           <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary-400">
-            {THEME_PALETTES.find((p) => p.id === theme.palette)?.name ?? theme.palette}
+            {paletteLabel(theme.palette)}
           </span>
         </div>
 
         <div role="radiogroup" aria-label="Colour palette" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {THEME_PALETTES.map((p) => {
             const active = theme.palette === p.id;
+            const swatch =
+              p.id === "custom"
+                ? {
+                    primary: theme.custom?.primary ?? CUSTOM_DEFAULT_COLORS.primary,
+                    deep: theme.custom?.deep ?? CUSTOM_DEFAULT_COLORS.deep,
+                    accent: theme.custom?.accent ?? CUSTOM_DEFAULT_COLORS.accent,
+                    surface: theme.custom?.surface ?? CUSTOM_DEFAULT_COLORS.surface,
+                  }
+                : p.swatch;
             return (
               <button
                 key={p.id}
@@ -3978,8 +4100,15 @@ function AppearancePanel() {
                 role="radio"
                 aria-checked={active}
                 onClick={() => {
+                  if (p.id === "custom" && !theme.custom) {
+                    setCustomColors(paletteToCustom(THEME_PALETTES[0])); // seed from Cobalt
+                  }
                   setPalette(p.id);
-                  setNotice(`"${p.name}" palette applied — saved and synced.`);
+                  setNotice(
+                    p.id === "custom"
+                      ? "Custom palette active — pick your brand colours below, the rest follows automatically."
+                      : `"${p.name}" palette applied — saved and synced.`
+                  );
                 }}
                 className={`cursor-pointer rounded-2xl border p-4 text-left transition-all duration-150 ${
                   active
@@ -3988,13 +4117,13 @@ function AppearancePanel() {
                 }`}
               >
                 <span className="flex items-center gap-2" aria-hidden="true">
-                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.primary }} />
-                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.deep }} />
-                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.accent }} />
-                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: p.swatch.surface }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: swatch.primary }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: swatch.deep }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: swatch.accent }} />
+                  <span className="h-7 w-7 rounded-lg border border-white/10" style={{ background: swatch.surface }} />
                 </span>
                 <span className="mt-3 flex items-center gap-1.5 font-heading text-sm font-bold">
-                  {p.name}
+                  {p.id === "custom" ? "Custom" : p.name}
                   {active && <Check className="h-4 w-4 text-primary-400" aria-hidden="true" />}
                 </span>
                 <span className="mt-0.5 block text-xs leading-snug text-foreground/55">{p.tagline}</span>
@@ -4003,6 +4132,85 @@ function AppearancePanel() {
           })}
         </div>
       </div>
+
+      {/* Custom brand colours */}
+      {theme.palette === "custom" && (
+        <div className="card space-y-4 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="font-heading font-bold">Your brand colours</h3>
+              <p className="text-xs text-foreground/55">
+                Choose four colours — button gradients, page background, borders and glow accents are
+                derived from them automatically.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-ghost !px-3 !py-1.5 text-xs"
+              onClick={() => {
+                setCustomColors(CUSTOM_DEFAULT_COLORS);
+                setNotice("Custom colours reset to the starter set.");
+              }}
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Reset colours
+            </button>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(
+              [
+                { key: "primary", label: "Primary", hint: "Buttons, links and highlights" },
+                { key: "accent", label: "Accent", hint: "CTAs, prices and glow moments" },
+                { key: "deep", label: "Page background", hint: "The deepest shade behind everything" },
+                { key: "surface", label: "Card background", hint: "Panels and cards sit on this" },
+              ] as const
+            ).map((f) => (
+              <label key={f.key} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3">
+                <input
+                  type="color"
+                  aria-label={`${f.label} colour`}
+                  className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent p-0.5"
+                  value={theme.custom?.[f.key] ?? CUSTOM_DEFAULT_COLORS[f.key]}
+                  onChange={(e) => setCustomColors({ ...(theme.custom ?? CUSTOM_DEFAULT_COLORS), [f.key]: e.target.value })}
+                />
+                <span className="min-w-0">
+                  <span className="block text-sm font-bold">{f.label}</span>
+                  <span className="block truncate text-[11px] text-foreground/55">{f.hint}</span>
+                </span>
+                <span className="ml-auto shrink-0 font-mono text-[11px] font-bold text-foreground/45">
+                  {(theme.custom?.[f.key] ?? CUSTOM_DEFAULT_COLORS[f.key]).toUpperCase()}
+                </span>
+              </label>
+            ))}
+          </div>
+
+          {customVars && (
+            <div className="rounded-2xl border border-dashed border-border p-4">
+              <p className="text-xs font-semibold text-foreground/60">Your palette at a glance</p>
+              <div className="mt-2 space-y-1.5">
+                {(
+                  [
+                    { title: "Primary ramp", prefix: "--color-primary-" },
+                    { title: "Accent / glow ramp", prefix: "--color-gold-" },
+                  ] as const
+                ).map((row) => (
+                  <div key={row.prefix} className="flex items-center gap-2">
+                    <span className="w-32 shrink-0 text-[11px] font-semibold text-foreground/45">{row.title}</span>
+                    <div className="flex flex-1 overflow-hidden rounded-lg border border-border" aria-hidden="true">
+                      {(["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"] as const)
+                        .map((step) => `${row.prefix}${step}`)
+                        .filter((key) => customVars[key])
+                        .map((key) => (
+                          <span key={key} className="h-7 flex-1" style={{ background: customVars[key] }} title={key} />
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Layout */}
       <div className="card space-y-5 p-5">
@@ -4067,7 +4275,7 @@ function AppearancePanel() {
             <span className="eyebrow">Preview</span>
             <p className="mt-2 font-heading text-lg font-bold">
               Your <span className="text-gradient-deep">brand</span> in{" "}
-              {THEME_PALETTES.find((p) => p.id === theme.palette)?.name ?? theme.palette}
+              {paletteLabel(theme.palette)}
             </p>
             <p className="mt-1 text-sm text-foreground/60">
               The hero title uses the primary→accent gradient, buttons glow in the accent hue and
@@ -4092,8 +4300,8 @@ function AppearancePanel() {
           <RotateCcw className="h-4 w-4" aria-hidden="true" /> Reset to defaults
         </button>
         <p className="text-xs text-foreground/45">
-          Want a fully custom palette? Edit the <span className="font-mono">@theme</span> tokens in{" "}
-          <span className="font-mono">src/index.css</span> — see the setup guide in the repo docs.
+          Every change saves instantly and syncs across devices. For deeper tweaks (fonts, spacing),
+          the base tokens live in <span className="font-mono">src/index.css</span> — see the setup guide in the repo docs.
         </p>
       </div>
     </div>

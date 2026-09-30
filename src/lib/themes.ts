@@ -14,15 +14,32 @@
  * devices and browsers.
  */
 
-export type ThemeId = "cobalt" | "emerald" | "ruby" | "violet" | "amber" | "graphite";
+export type ThemeId = "cobalt" | "emerald" | "ruby" | "violet" | "amber" | "graphite" | "custom";
 export type LayoutWidth = "standard" | "compact" | "wide";
 export type CornerRadius = "rounded" | "sharp" | "pill";
+
+/** Four brand colours behind the "Custom" palette. Everything else (shade ramps,
+ *  surfaces, borders, glow accents) is derived from these automatically. */
+export interface CustomColors {
+  primary: string; // buttons, links, highlights
+  accent: string; // CTAs, prices, glow moments
+  deep: string; // page background family
+  surface: string; // card background
+}
 
 export interface ThemeState {
   palette: ThemeId;
   width: LayoutWidth;
   radius: CornerRadius;
+  custom?: CustomColors;
 }
+
+export const CUSTOM_DEFAULT_COLORS: CustomColors = {
+  primary: "#3f63d4",
+  accent: "#5c8df5",
+  deep: "#16233f",
+  surface: "#20293f",
+};
 
 export interface ThemePalette {
   id: ThemeId;
@@ -213,6 +230,13 @@ export const THEME_PALETTES: ThemePalette[] = [
       "--color-border": "oklch(0.36 0.02 264)",
     },
   },
+  {
+    id: "custom",
+    name: "Custom",
+    tagline: "Your brand colours — pick any primary, accent and surfaces",
+    swatch: { primary: CUSTOM_DEFAULT_COLORS.primary, deep: CUSTOM_DEFAULT_COLORS.deep, accent: CUSTOM_DEFAULT_COLORS.accent, surface: CUSTOM_DEFAULT_COLORS.surface },
+    overrides: {}, // handled dynamically by applyThemeState() below
+  },
 ];
 
 export const THEME_BY_ID = Object.fromEntries(THEME_PALETTES.map((p) => [p.id, p])) as Record<ThemeId, ThemePalette>;
@@ -237,12 +261,128 @@ export const RADIUS_OPTIONS: { id: CornerRadius; label: string; hint: string }[]
 /* Apply                                                               */
 /* ------------------------------------------------------------------ */
 
+/** All CSS custom properties the "Custom" palette may set — cleared
+ *  whenever a preset palette is active so attribute rules take over. */
+export const CUSTOM_VAR_KEYS: string[] = [
+  "--color-primary-50", "--color-primary-100", "--color-primary-200", "--color-primary-300",
+  "--color-primary-400", "--color-primary-500", "--color-primary-600", "--color-primary-700",
+  "--color-primary-800", "--color-primary-900", "--color-primary-950",
+  "--color-primary", "--color-primary-strong",
+  "--color-gold-100", "--color-gold-200", "--color-gold-300", "--color-gold-400",
+  "--color-gold-500", "--color-gold-600", "--color-gold-700",
+  "--color-accent", "--color-accent-soft", "--color-secondary",
+  "--color-background", "--color-surface", "--color-surface-2",
+  "--color-foreground", "--color-muted", "--color-border",
+];
+
+function hexToHsl(hex: string): { h: number; s: number; l: number } {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return { h: 224, s: 0.62, l: 0.55 }; // safe cobalt-ish fallback
+  const n = parseInt(m[1], 16);
+  const r = ((n >> 16) & 255) / 255;
+  const g = ((n >> 8) & 255) / 255;
+  const b = (n & 255) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  const l = (max + min) / 2;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  return { h, s, l };
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (h < 60) { r = c; g = x; }
+  else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; }
+  else if (h < 300) { r = x; b = c; }
+  else { r = c; b = x; }
+  const to = (v: number) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+  return `#${to(r)}${to(g)}${to(b)}`;
+}
+
+/** Derive a full 50→950 shade ramp from a single hex (treated as the 500 shade). */
+function shadeRamp(hex: string): Record<string, string> {
+  const { h, s, l } = hexToHsl(hex);
+  const light: [string, number][] = [
+    ["50", 0.965], ["100", 0.93], ["200", 0.88], ["300", 0.82], ["400", 0.73],
+    ["500", Math.min(0.72, Math.max(0.32, l))],
+    ["600", Math.max(0.24, Math.min(0.62, l * 0.86))],
+    ["700", Math.max(0.2, Math.min(0.52, l * 0.72))],
+    ["800", Math.max(0.17, Math.min(0.42, l * 0.59))],
+    ["900", Math.max(0.14, Math.min(0.34, l * 0.48))],
+    ["950", Math.max(0.11, Math.min(0.27, l * 0.38))],
+  ];
+  const out: Record<string, string> = {};
+  for (const [step, lightness] of light) {
+    const sMult = Number(step) <= 200 ? 0.7 : Number(step) >= 800 ? 0.85 : 1;
+    out[`--color-primary-${step}`] = hslToHex(h, Math.max(0, Math.min(1, s * sMult)), lightness);
+  }
+  return out;
+}
+
+/** CSS custom-property map for the "Custom" palette (ramps + surfaces). */
+export function customOverrides(state: ThemeState): Record<string, string> {
+  const c = state.custom ?? CUSTOM_DEFAULT_COLORS;
+  const primaryRamp = shadeRamp(c.primary);
+  const accentRamp = shadeRamp(c.accent);
+  const { h: ph, s: ps } = hexToHsl(c.primary);
+  const deep = hexToHsl(c.deep);
+  const surface = hexToHsl(c.surface);
+
+  const gold: Record<string, string> = {};
+  (["100", "200", "300", "400", "500", "600", "700"] as const).forEach((step) => {
+    gold[`--color-gold-${step}`] = accentRamp[`--color-primary-${step}`] ?? c.accent;
+  });
+
+  const deepL = Math.min(0.28, Math.max(0.12, deep.l));
+  const surfaceL = Math.min(0.3, Math.max(deep.l, surface.l));
+
+  return {
+    ...primaryRamp,
+    "--color-primary": primaryRamp["--color-primary-500"] ?? c.primary,
+    "--color-primary-strong": primaryRamp["--color-primary-600"] ?? c.primary,
+    ...gold,
+    "--color-accent": gold["--color-gold-500"] ?? c.accent,
+    "--color-accent-soft": gold["--color-gold-300"] ?? c.accent,
+    "--color-secondary": gold["--color-gold-500"] ?? c.accent,
+    "--color-background": hslToHex(deep.h, deep.s, deepL * 0.82),
+    "--color-surface": hslToHex(surface.h, surface.s, surfaceL * 0.9),
+    "--color-surface-2": hslToHex(surface.h, surface.s, Math.min(0.42, surfaceL * 1.06)),
+    "--color-foreground": hslToHex(ph, Math.min(0.06, ps * 0.4), 0.955),
+    "--color-muted": hslToHex(ph, Math.min(0.08, ps * 0.5), 0.73),
+    "--color-border": hslToHex(deep.h, deep.s, Math.min(0.38, deepL * 1.4)),
+  };
+}
+
 export function applyThemeState(state: ThemeState): void {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.setAttribute("data-theme", state.palette);
   root.setAttribute("data-width", state.width);
   root.setAttribute("data-radius", state.radius);
+
+  // Inline styles beat the attribute rules in theme.css — clear them first,
+  // then apply the custom ramp when the Custom palette is active.
+  for (const key of CUSTOM_VAR_KEYS) root.style.removeProperty(key);
+  if (state.palette === "custom") {
+    const vars = customOverrides(state);
+    for (const [key, value] of Object.entries(vars)) root.style.setProperty(key, value);
+  }
 }
 
 export function paletteLabel(id: ThemeId): string {

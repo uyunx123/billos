@@ -11,6 +11,7 @@ import {
   DEFAULT_THEME_STATE,
   applyThemeState,
   type CornerRadius,
+  type CustomColors,
   type LayoutWidth,
   type ThemeId,
   type ThemeState,
@@ -35,6 +36,7 @@ interface ThemeContextValue {
   setPalette: (id: ThemeId) => void;
   setWidth: (w: LayoutWidth) => void;
   setRadius: (r: CornerRadius) => void;
+  setCustomColors: (c: CustomColors) => void;
   reset: () => void;
 }
 
@@ -83,6 +85,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         if (typeof remote.palette === "string") patch.palette = remote.palette as ThemeId;
         if (typeof remote.width === "string") patch.width = remote.width as LayoutWidth;
         if (typeof remote.radius === "string") patch.radius = remote.radius as CornerRadius;
+        if (remote.custom && typeof remote.custom === "object") {
+          const c = remote.custom as Partial<CustomColors>;
+          if (
+            typeof c.primary === "string" &&
+            typeof c.accent === "string" &&
+            typeof c.deep === "string" &&
+            typeof c.surface === "string"
+          ) {
+            patch.custom = { primary: c.primary, accent: c.accent, deep: c.deep, surface: c.surface };
+          }
+        }
         if (Object.keys(patch).length > 0) {
           setTheme((prev) => ({ ...prev, ...patch }));
         }
@@ -101,6 +114,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setPalette: useCallback((palette: ThemeId) => setTheme((t) => ({ ...t, palette })), []),
       setWidth: useCallback((width: LayoutWidth) => setTheme((t) => ({ ...t, width })), []),
       setRadius: useCallback((radius: CornerRadius) => setTheme((t) => ({ ...t, radius })), []),
+      setCustomColors: useCallback((custom: CustomColors) => setTheme((t) => ({ ...t, custom, palette: t.palette === "custom" ? "custom" : t.palette })), []),
       reset: useCallback(() => setTheme(DEFAULT_THEME_STATE), []),
     }),
     [theme]
