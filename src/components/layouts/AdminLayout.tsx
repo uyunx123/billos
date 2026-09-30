@@ -53,8 +53,8 @@ export function AdminLayout() {
     <div className="admin min-h-screen bg-background text-foreground">
       <div className="flex h-screen overflow-hidden">
         {/* Desktop sidebar */}
-        <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
-          <AdminSidebarContent onNavigate={() => setSidebarOpen(false)} />
+        <aside className="hidden min-h-0 w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
+          <AdminSidebarContent onNavigate={() => setSidebarOpen(false)} compact />
         </aside>
 
         {/* Mobile drawer */}
@@ -65,8 +65,8 @@ export function AdminLayout() {
               onClick={() => setSidebarOpen(false)}
               aria-hidden="true"
             />
-            <aside className="absolute inset-y-0 left-0 w-72 border-r border-border bg-surface shadow-xl">
-              <div className="flex justify-end p-3">
+            <aside className="absolute inset-y-0 left-0 flex w-72 flex-col overflow-hidden border-r border-border bg-surface shadow-xl">
+              <div className="flex shrink-0 justify-end p-3">
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(false)}
@@ -126,11 +126,17 @@ export function AdminLayout() {
   );
 }
 
-function AdminSidebarContent({ onNavigate }: { onNavigate: () => void }) {
+function AdminSidebarContent({
+  onNavigate,
+  compact = false,
+}: {
+  onNavigate: () => void;
+  compact?: boolean;
+}) {
   const { profile } = useAuth();
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-2.5 border-b border-border px-4">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-border px-4">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-on-primary">
           <Trophy className="h-4 w-4" aria-hidden="true" />
         </span>
@@ -139,28 +145,33 @@ function AdminSidebarContent({ onNavigate }: { onNavigate: () => void }) {
           <p className="text-xs text-muted">Admin console</p>
         </div>
       </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Admin navigation">
-        {adminNav.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={"end" in item && item.end}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors duration-150",
-                isActive
-                  ? "bg-primary text-on-primary"
-                  : "text-muted hover:bg-surface-2 hover:text-foreground",
-              )
-            }
-          >
-            <item.icon className="h-4.5 w-4.5" aria-hidden="true" />
-            {item.label}
-          </NavLink>
-        ))}
+      <nav className="min-h-0 flex-1 overflow-y-auto p-3" aria-label="Admin navigation">
+        <div className={compact ? "grid grid-cols-2 gap-1" : "space-y-1"}>
+          {adminNav.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={"end" in item && item.end}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                cn(
+                  "flex cursor-pointer items-center rounded-lg font-medium transition-colors duration-150",
+                  compact
+                    ? "flex-col gap-1 px-1 py-2.5 text-center text-xs"
+                    : "gap-3 px-3 py-2.5 text-sm",
+                  isActive
+                    ? "bg-primary text-on-primary"
+                    : "text-muted hover:bg-surface-2 hover:text-foreground",
+                )
+              }
+            >
+              <item.icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+              <span className="leading-tight">{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
       </nav>
-      <div className="border-t border-border p-3 text-xs text-muted">
+      <div className="shrink-0 border-t border-border p-3 text-xs text-muted">
         <CalendarRange className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
         Logged in as <span className="font-semibold text-foreground">{profile?.role}</span>
       </div>
