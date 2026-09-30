@@ -108,16 +108,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // All callbacks are top-level hooks — never call hooks inside useMemo/useEffect.
+  const setPalette = useCallback((palette: ThemeId) => setTheme((t) => ({ ...t, palette })), []);
+  const setWidth = useCallback((width: LayoutWidth) => setTheme((t) => ({ ...t, width })), []);
+  const setRadius = useCallback((radius: CornerRadius) => setTheme((t) => ({ ...t, radius })), []);
+  // Custom colours only apply while the Custom palette is selected; the admin
+  // panel calls setPalette("custom") separately when the Custom card is chosen.
+  const setCustomColors = useCallback((custom: CustomColors) => setTheme((t) => ({ ...t, custom })), []);
+  const reset = useCallback(() => setTheme(DEFAULT_THEME_STATE), []);
+
   const value = useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      setPalette: useCallback((palette: ThemeId) => setTheme((t) => ({ ...t, palette })), []),
-      setWidth: useCallback((width: LayoutWidth) => setTheme((t) => ({ ...t, width })), []),
-      setRadius: useCallback((radius: CornerRadius) => setTheme((t) => ({ ...t, radius })), []),
-      setCustomColors: useCallback((custom: CustomColors) => setTheme((t) => ({ ...t, custom, palette: t.palette === "custom" ? "custom" : t.palette })), []),
-      reset: useCallback(() => setTheme(DEFAULT_THEME_STATE), []),
-    }),
-    [theme]
+    () => ({ theme, setPalette, setWidth, setRadius, setCustomColors, reset }),
+    [theme, setPalette, setWidth, setRadius, setCustomColors, reset]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
