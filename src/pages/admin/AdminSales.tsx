@@ -489,7 +489,7 @@ function SalesConsole() {
                 id="sale-price"
                 type="number"
                 min="1"
-                step="1000"
+                step="1"
                 className="input"
                 value={unitPrice}
                 onChange={(e) => setUnitPrice(e.target.value)}

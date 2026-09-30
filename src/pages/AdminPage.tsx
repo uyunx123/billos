@@ -299,7 +299,7 @@ function AdminConsole() {
         role="tablist"
         aria-label="Admin sections"
         onKeyDown={onKeyDown}
-        className="no-scrollbar mt-8 flex gap-1 overflow-x-auto border-b border-border pb-px"
+        className="mt-8 flex flex-wrap gap-1 border-b border-border pb-px"
       >
         {TABS.map((t) => (
           <button
@@ -1223,7 +1223,7 @@ function ProductForm({ initial, onSubmit, onCancel }: { initial: ProductFormStat
         </div>
         <div>
           <label htmlFor="pf-price" className="field-label">Price (Rp) *</label>
-          <input id="pf-price" type="number" min="1" step="1000" className="input" required value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="1500000" />
+          <input id="pf-price" type="number" min="1" step="1" className="input" required value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="1500000" />
         </div>
         <div>
           <label htmlFor="pf-discount" className="field-label">Discount (%)</label>
