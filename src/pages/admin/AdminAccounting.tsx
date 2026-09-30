@@ -5,7 +5,6 @@ import {
   BadgeDollarSign,
   Banknote,
   Calculator,
-  CalendarDays,
   Check,
   HandCoins,
   Info,
@@ -32,7 +31,6 @@ import {
   SUGGESTED_CATEGORIES,
   computeAccounting,
   currentMonthKey,
-  employeeName,
   filterMonths,
   monthKeyOf,
   totalsOf,
@@ -58,10 +56,6 @@ function formatCompact(value: number): string {
     return `Rp ${(value / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} rb`;
   }
   return formatIDR(value);
-}
-
-function Money({ value, className }: { value: number; className?: string }) {
-  return <span className={className ?? ""}>{formatIDR(value)}</span>;
 }
 
 function KpiTile({
@@ -180,9 +174,11 @@ export default function AdminAccounting() {
 
 function AccountingConsole() {
   const { orders } = useStore();
-  const { isSuperAdmin } = useAuth();
+  // Only the store owner (top privilege) may edit payroll and the ledger;
+  // other admins get a read-only view of the books.
+  const { isOwner: isSuperAdmin } = useAuth();
   const accounting = useAccounting();
-  const { employees, payouts, adjustments } = accounting;
+  const { employees } = accounting;
   const [period, setPeriod] = useState<ReportPeriod>("month");
 
   const report = useMemo(() => computeAccounting(orders, accounting.config), [orders, accounting.config]);

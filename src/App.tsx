@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { StoreProvider } from "./context/StoreContext";
+import { AccountingProvider } from "./context/AccountingContext";
 import { ConfigProvider } from "./context/ConfigContext";
 import { GatewayProvider } from "./context/GatewayContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -32,6 +33,7 @@ import BlogPostPage from "./pages/BlogPostPage";
 import ContactPage from "./pages/ContactPage";
 import CustomPage from "./pages/CustomPage";
 import AdminPage from "./pages/AdminPage";
+import AdminAccountingPage from "./pages/admin/AdminAccounting";
 import { AdminIntegrationsPage } from "./pages/admin/AdminIntegrations";
 import PartnershipsPage from "./pages/PartnershipsPage";
 import NewstickerPage from "./pages/NewstickerPage";
@@ -44,6 +46,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <StoreProvider>
+      <AccountingProvider>
       <ConfigProvider>
         <CourierProvider>
         <GatewayProvider>
@@ -78,6 +81,7 @@ export default function App() {
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/page/:slug" element={<CustomPage />} />
                         <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/admin/accounting" element={<AdminAccountingPage />} />
                         <Route path="/admin/setup-guide" element={<AdminSetupGuide />} />
                         <Route path="/admin/integrations" element={<AdminIntegrationsPage />} />
                         <Route path="/admin/partnerships" element={<PartnershipsPage />} />
@@ -100,6 +104,7 @@ export default function App() {
         </GatewayProvider>
         </CourierProvider>
       </ConfigProvider>
+      </AccountingProvider>
       </StoreProvider>
     </ThemeProvider>
   );

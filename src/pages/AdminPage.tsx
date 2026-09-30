@@ -51,6 +51,7 @@ import {
   Flame,
   Timer,
   Compass,
+  Calculator,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useChat } from "../context/ChatContext";
@@ -103,9 +104,10 @@ import { COURIER_CATALOG, STATUS_KEY_LABEL, courierName } from "../lib/courier";
 import { useCourier } from "../context/CourierContext";
 import FlashSaleEditor from "../components/FlashSaleEditor";
 import AdminSetupGuide from "./admin/AdminSetupGuide";
+import AdminAccounting from "./admin/AdminAccounting";
 import { flashDiscountPercent, flashPhase } from "../lib/flashSale";
 
-type Tab = "overview" | "products" | "stock" | "shipping" | "orders" | "reviews" | "chat" | "users" | "config" | "setup";
+type Tab = "overview" | "products" | "stock" | "shipping" | "orders" | "reviews" | "chat" | "users" | "config" | "accounting" | "setup";
 
 const TABS: { id: Tab; label: string; icon: typeof Boxes }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -117,6 +119,7 @@ const TABS: { id: Tab; label: string; icon: typeof Boxes }[] = [
   { id: "chat", label: "Chat", icon: MessageSquare },
   { id: "users", label: "Users", icon: Users },
   { id: "config", label: "Configuration", icon: Settings2 },
+  { id: "accounting", label: "Accounting & payroll", icon: Calculator },
   { id: "setup", label: "Setup guide", icon: Compass },
 ];
 
@@ -364,6 +367,11 @@ function AdminConsole() {
         {tab === "setup" && (
           <div id="admin-panel-setup" role="tabpanel" aria-labelledby="admin-tab-setup">
             <AdminSetupGuide />
+          </div>
+        )}
+        {tab === "accounting" && (
+          <div id="admin-panel-accounting" role="tabpanel" aria-labelledby="admin-tab-accounting">
+            <AdminAccounting />
           </div>
         )}
       </div>
